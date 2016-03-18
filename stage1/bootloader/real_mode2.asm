@@ -1,61 +1,61 @@
 org 0x7C00 ; boot sector address
  bits 16
 Boot:
-	;
-	;mov ah,0x00	; reset disk
-	;mov dl,0x80	; drive number
-	;int 0x13
-	;
+    ;
+    ;mov ah,0x00    ; reset disk
+    ;mov dl,0x80    ; drive number
+    ;int 0x13
+    ;
     ; dl already contains the drive number
-	mov ah,0x02	; read sectors into memory
-	mov al,0x10	; number of sectors to read (16)
-	;mov dl,0x80	; drive number
-	mov ch,0	; cylinder number
-	mov dh,0	; head number
-	mov cl,2	; starting sector number
-	mov bx,Main	; address to load to
-	int 0x13	; call the interrupt routine
-	;
-	jmp Main
-	;
+    mov ah,0x02    ; read sectors into memory
+    mov al,0x10    ; number of sectors to read (16)
+    ;mov dl,0x80    ; drive number
+    mov ch,0    ; cylinder number
+    mov dh,0    ; head number
+    mov cl,2    ; starting sector number
+    mov bx,Main    ; address to load to
+    int 0x13    ; call the interrupt routine
+    ;
+    jmp Main
+    ;
 
 PreviousLabel:
 
 PadOutWithZeroesSectorOne:
-	times ((0x200 - 2) - ($ - $$)) db 0x00
+    times ((0x200 - 2) - ($ - $$)) db 0x00
 
 BootSectorSignature:
-	dw 0xAA55
+    dw 0xAA55
 
 ;===========================================
 
 Main:
-	;
-	; set the display to VGA text mode now
-	; because interrupts must be disabled
-	;
+    ;
+    ; set the display to VGA text mode now
+    ; because interrupts must be disabled
+    ;
     mov ax, 0x2401
     int 0x15 ; enable A20 line
     
     mov si, here1
     call print_string
-	mov ax,3
-	int 0x10    ; set VGA text mode 3
-	;
-	; set up data for entering protected mode
-	;
+    mov ax,3
+    int 0x10    ; set VGA text mode 3
+    ;
+    ; set up data for entering protected mode
+    ;
         xor edx,edx ; edx = 0
         mov dx,ds   ; get the data segment
         shl edx,4   ; shift it left a nibble
         add [GlobalDescriptorTable+2],edx ; GDT's base addr = edx
-	;
+    ;
         lgdt [GlobalDescriptorTable] ; load the GDT  
         mov eax,cr0 ; eax = machine status word (MSW)
         or al,1     ; set the protection enable bit of the MSW to 1
-	;
+    ;
         cli         ; disable interrupts
         mov cr0,eax ; start protected mode
-	;
+    ;
 
         
         jmp 0x8:prot_mode ; this will change cs to 0x8 and actually make it works in protected mode ( We cant access directly to cs.
@@ -90,9 +90,9 @@ prot_mode:
         ;mov cs,bx   ; fs = the 2nd GDT descriptor, a 4 GB data seg
         ; TODO: more segments??
         
-	;
-	; write a status message
-	;
+    ;
+    ; write a status message
+    ;
     
     mov eax, 0x100003
     mov ebx,0x100F68
@@ -152,40 +152,40 @@ mode64:
     ;invlpg [0xffffff0000000000] ; pte
     
     
-    
-	mov rbx,0xffffff0000000000 ; address of first char for VGA mode 3
+
+    mov rbx,0xffffff0000000000 ; address of first char for VGA mode 3
     mov word [rbx],0x0f44
-	;
-	mov rsi,TextProtectedMode ; si = message text
-	;
-	ForEachChar:
-		;
-		mov eax, 0
-        lodsb		; get next char	
-		cmp al,0x00	; if it's null, break       
-		je EndForEachChar
+    ;
+    mov rsi,TextProtectedMode ; si = message text
+    ;
+    ForEachChar:
+        ;
+        mov eax, 0
+        lodsb        ; get next char    
+        cmp al,0x00    ; if it's null, break       
+        je EndForEachChar
         or eax, 0x0f00
-		;
-		mov [rbx],ax	; write char to display memory
-		;
-		inc rbx		; 2 bytes per char
-		inc rbx		; so increment twice
-		;
-	jmp ForEachChar
-	EndForEachChar:
-	;
-	LoopForever: jmp LoopForever
-	;
-	ret
-	;
-	TextProtectedMode: db 'The processor is in protected and paging 64 bit mode.',0
+        ;
+        mov [rbx],ax    ; write char to display memory
+        ;
+        inc rbx        ; 2 bytes per char
+        inc rbx        ; so increment twice
+        ;
+    jmp ForEachChar
+    EndForEachChar:
+    ;
+    LoopForever: jmp LoopForever
+    ;
+    ret
+    ;
+    TextProtectedMode: db 'The processor is in protected and paging 64 bit mode.',0
 
 GlobalDescriptorTable: 
 NULL_DESC: ; Not really NULL. no one use it so we use it.
-	dw GlobalDescriptorTableEnd - GlobalDescriptorTable - 1 
-	; segment address bits 0-15, 16-23
-	dw GlobalDescriptorTable 
-	dd 0
+    dw GlobalDescriptorTableEnd - GlobalDescriptorTable - 1 
+    ; segment address bits 0-15, 16-23
+    dw GlobalDescriptorTable 
+    dd 0
 
 CODE_DESC:
     dw 0xFFFF       ; limit low
@@ -241,4 +241,4 @@ here1 db 'here1', 0x0D, 0x0A, 0
 
    
 PadOutWithZeroesSectorsAll:
-	times (0x2000 - ($ - $$)) db 0x00
+    times (0x2000 - ($ - $$)) db 0x00
