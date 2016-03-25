@@ -53,11 +53,11 @@ struct Eff {
     gword num_of_relocations;
     gword relocations_offset;
     
-    gword num_of_exports;
-    gword exports_offset;
-    
     gword num_of_imports;
     gword imports_offset;
+    
+    gword num_of_exports;
+    gword exports_offset_when_loaded;
 }
 
 enum EffSegmentType {
@@ -81,8 +81,8 @@ struct EffRelocation {
 }
 
 struct EffExport {
-    gword name_offset;
-    gword virtual_address_offset;
+    gword name_offset_when_loaded;
+    gword target_address_offset_when_loaded;
 }
 
 struct EffImport {
