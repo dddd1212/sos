@@ -1,12 +1,8 @@
 org 0x7C00 ; boot sector address
- bits 16
+bits 16
+    jmp Boot
+    times (90 - ($ - $$)) db 0x00 ; space for file system
 Boot:
-    ;
-    ;mov ah,0x00    ; reset disk
-    ;mov dl,0x80    ; drive number
-    ;int 0x13
-    ;
-    ; dl already contains the drive number
     mov ah,0x02    ; read sectors into memory
     mov al,0x10    ; number of sectors to read (16)
     ;mov dl,0x80    ; drive number
@@ -37,45 +33,23 @@ Main:
     mov ax, 0x2401
     int 0x15 ; enable A20 line
     
-    mov si, here1
-    call print_string
     mov ax,3
     int 0x10    ; set VGA text mode 3
     ;
     ; set up data for entering protected mode
     ;
-        xor edx,edx ; edx = 0
-        mov dx,ds   ; get the data segment
-        shl edx,4   ; shift it left a nibble
-        add [GlobalDescriptorTable+2],edx ; GDT's base addr = edx
-    ;
-        lgdt [GlobalDescriptorTable] ; load the GDT  
-        mov eax,cr0 ; eax = machine status word (MSW)
-        or al,1     ; set the protection enable bit of the MSW to 1
-    ;
-        cli         ; disable interrupts
-        mov cr0,eax ; start protected mode
-    ;
+    xor edx,edx ; edx = 0
+    mov dx,ds   ; get the data segment
+    shl edx,4   ; shift it left a nibble
+    add [GlobalDescriptorTable+2],edx ; GDT's base addr = edx
 
-        
-        jmp 0x8:prot_mode ; this will change cs to 0x8 and actually make it works in protected mode ( We cant access directly to cs.
+    lgdt [GlobalDescriptorTable] ; load the GDT  
+    mov eax,cr0 ; eax = machine status word (MSW)
+    or al,1     ; set the protection enable bit of the MSW to 1
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- ; Real mode functions
- 
- print_string:
-   lodsb        ; grab a byte from SI
- 
-   or al, al  ; logical or AL by itself
-   jz .done   ; if the result is zero, get out
- 
-   mov ah, 0x0E
-   int 0x10      ; otherwise, print out the character!
- 
-   jmp print_string
- 
- .done:
-   ret
+    cli         ; disable interrupts
+    mov cr0,eax ; start protected mode    
+    jmp 0x8:prot_mode ; this will change cs to 0x8 and actually make it works in protected mode ( We cant access directly to cs.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;         
         
         
@@ -101,21 +75,25 @@ prot_mode:
     mov eax, 0x100000
     mov cr3, eax ; set cr3 point to the PXE root
     
-    mov eax, 0x101003
+    mov eax, 0x201003
     mov ebx,0x100000
     mov [ebx],eax ; set the PXE entry of code
     
-    mov eax, 0x102003
-    mov ebx, 0x101000
+    mov eax, 0x202003
+    mov ebx, 0x201000
     mov [ebx],eax ; set the PPE entry of code
     
-    mov eax, 0x103003
-    mov ebx, 0x102000
+    mov eax, 0x203003
+    mov ebx, 0x202000
     mov [ebx],eax ; set the PDE entry of code
     
     mov eax, 0x7003
-    mov ebx, 0x103038
-    mov [ebx],eax ; set the PDE entry of code
+    mov ebx, 0x203038
+    mov [ebx],eax ; set the PTE entry of code: 0x7000.
+    ;mov eax, 0x8003
+    ;mov ebx, 0x103040
+    ;mov [ebx],eax ; set the PTE entry of code: 0x8000.
+    
     
     mov eax, cr4                 ; Set the A-register to control register 4.
     or eax, 1 << 5               ; Set the PAE-bit, which is the 6th bit (bit 5).
@@ -130,55 +108,31 @@ prot_mode:
     or eax, 0x80000000
     mov cr0, eax
     
-    inc eax
     lgdt [GDT64.Pointer]
     jmp GDT64.Code:mode64
 bits 64
 mode64:
-    mov rax, 0xFFFFF6FB7DBEDFF0 ; pxe
+    ; map address 0xffff800000000000 to same physical pages and continue execution.
+    mov rax, 0xFFFFF6FB7DBED800 ; pxe
     mov qword [rax], 0x104003
-    ;invlpg [0xFFFFF6FB7DBFE000] ; ppe
     
-    mov rax, 0xFFFFF6FB7DBFE000 ; ppe
+    mov rax, 0xFFFFF6FB7DB00000 ; ppe
     mov qword [rax],0x105003
-    ;invlpg [0xFFFFF6FB7FC00000] ; pde
     
-    mov rax, 0xFFFFF6FB7FC00000 ; pde
+    mov rax, 0xFFFFF6FB60000000 ; pde
     mov qword [rax],0x106003
-    ;invlpg [0xFFFFF6FF80000000] ; pte
     
-    mov rax, 0xFFFFF6FF80000000 ; pte
-    mov qword [rax], 0xB8003 ; screen
-    ;invlpg [0xffffff0000000000] ; pte
+    mov rax, 0xFFFFF6C000000000 ; pte
+    mov qword [rax], 0x7003     ; map 4 pages. (we read 16 sectors)
+    add rax, 8
+    mov qword [rax], 0x8003
+    add rax, 8
+    mov qword [rax], 0x9003
+    add rax, 8
+    mov qword [rax], 0xA003
     
-    
-
-    mov rbx,0xffffff0000000000 ; address of first char for VGA mode 3
-    mov word [rbx],0x0f44
-    ;
-    mov rsi,TextProtectedMode ; si = message text
-    ;
-    ForEachChar:
-        ;
-        mov eax, 0
-        lodsb        ; get next char    
-        cmp al,0x00    ; if it's null, break       
-        je EndForEachChar
-        or eax, 0x0f00
-        ;
-        mov [rbx],ax    ; write char to display memory
-        ;
-        inc rbx        ; 2 bytes per char
-        inc rbx        ; so increment twice
-        ;
-    jmp ForEachChar
-    EndForEachChar:
-    ;
-    LoopForever: jmp LoopForever
-    ;
-    ret
-    ;
-    TextProtectedMode: db 'The processor is in protected and paging 64 bit mode.',0
+    mov rax, 0xFFFF800000000000 + (continue_at_kernel_space - $$ + 0xC00) ; this is the address of the same code - mapped to the 0xFFFF800000000000 area
+    jmp rax
 
 GlobalDescriptorTable: 
 NULL_DESC: ; Not really NULL. no one use it so we use it.
@@ -234,9 +188,18 @@ GDT64:                           ; Global Descriptor Table (64-bit).
     .Pointer:                    ; The GDT-pointer.
     dw $ - GDT64 - 1             ; Limit.
     dq GDT64                     ; Base.
+    .PointerAtKernelSpace:
+    dw $ - GDT64 - 1             ; Limit.
+    dq GDT64+0xFFFF800000000000 - $$ + 0xC00 ; Base.
     
 ;===========================================
-here1 db 'here1', 0x0D, 0x0A, 0
+
+continue_at_kernel_space:
+    mov rax,GDT64.PointerAtKernelSpace + 0xFFFF800000000000 - $$ + 0xC00
+    lgdt [rax]
+    ; clean the mapping at address 0x7000
+    mov rax, 0xFFFFF6FB7DBED000
+    mov qword [rax], 0
 
 
    
