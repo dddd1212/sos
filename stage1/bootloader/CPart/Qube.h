@@ -8,4 +8,8 @@
 #define uint32 unsigned int
 #define int64 long long
 #define uint64 unsigned long long
+
+#define FALSE 0
+#define TRUE 1
+#define BOOL int32
 #endif
