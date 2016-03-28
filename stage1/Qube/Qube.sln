@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bootloader", "bootloader\bootloader.vcxproj", "{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kernel", "kernel\kernel.vcxproj", "{43200A7A-8FF2-4465-8340-49E4C87475C6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}.Debug|x64.ActiveCfg = BootLoader|x64
+		{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}.Debug|x64.Build.0 = BootLoader|x64
+		{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}.Debug|x86.ActiveCfg = BootLoader|Win32
+		{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}.Debug|x86.Build.0 = BootLoader|Win32
+		{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}.Release|x64.ActiveCfg = BootLoader|x64
+		{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}.Release|x64.Build.0 = BootLoader|x64
+		{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}.Release|x86.ActiveCfg = BootLoader|Win32
+		{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}.Release|x86.Build.0 = BootLoader|Win32
+		{43200A7A-8FF2-4465-8340-49E4C87475C6}.Debug|x64.ActiveCfg = Debug|x64
+		{43200A7A-8FF2-4465-8340-49E4C87475C6}.Debug|x64.Build.0 = Debug|x64
+		{43200A7A-8FF2-4465-8340-49E4C87475C6}.Debug|x86.ActiveCfg = Debug|x64
+		{43200A7A-8FF2-4465-8340-49E4C87475C6}.Debug|x86.Build.0 = Debug|x64
+		{43200A7A-8FF2-4465-8340-49E4C87475C6}.Release|x64.ActiveCfg = Release|x64
+		{43200A7A-8FF2-4465-8340-49E4C87475C6}.Release|x86.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
