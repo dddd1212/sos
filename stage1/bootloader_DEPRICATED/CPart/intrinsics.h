@@ -4,11 +4,11 @@
 #define INTRINSICS_H
 
 #include "Qube.h"
-inline int8 __in8(uint16 port) __attribute__((always_inline));
-inline void __out8(uint16 port, uint8 data) __attribute__((always_inline));
-inline void __insw(uint16 port, uint32 count, void *addr) __attribute__((always_inline));
+static inline int8 __in8(uint16 port) __attribute__((always_inline));
+static inline void __out8(uint16 port, uint8 data) __attribute__((always_inline));
+static inline void __insw(uint16 port, uint32 count, void *addr) __attribute__((always_inline));
 
-inline int8 __in8(uint16 port){
+static inline int8 __in8(uint16 port){
 	int8 res;
 	__asm__(
 		".intel_syntax noprefix;"
@@ -22,7 +22,7 @@ inline int8 __in8(uint16 port){
 	return res;
 }
 
-inline void __out8(uint16 port, uint8 data){
+static inline void __out8(uint16 port, uint8 data){
 	int8 res;
 	__asm__(
 		".intel_syntax noprefix;"
@@ -36,7 +36,7 @@ inline void __out8(uint16 port, uint8 data){
 	return;
 }
 
-inline void __insw(uint16 port, uint32 count, void *addr){
+static inline void __insw(uint16 port, uint32 count, void *addr){
 	// TODO: verify that [mov ecx,%1] zeros the upper 32bit of rcx
 	__asm__(
 		".intel_syntax noprefix;"
