@@ -12,6 +12,9 @@ REAL_MODE_FILE_PATH = os.path.join("bootloader", "real_mode2.asm")
 REAL_MODE_OUTPUT = os.path.join("bootloader", "real_mode.bin")
 #####################################################
 
+
+
+
 ######### Glue configuration ###########
 GLUE_ALL = True
 ########################################
