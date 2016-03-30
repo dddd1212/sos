@@ -18,7 +18,12 @@ struct STAGE0BootModules {
 };
 
 // This is the function that the bootloader is.
-void main(void * my_address) {
+void _start(void * my_address) {
+    Allocator allocator;
+	hdDesc desc;
+	init_allocator(&allocator);
+	init_hd(&allocator, &desc); 
+    
 	char boot_txt_data[BOOT_TXT_FILE_MAX_SIZE];
 	struct STAGE0BootModules boot_modules[MAX_BOOT_MODULES];
 	char * boot_txt_end;

@@ -1,10 +1,11 @@
 #include "mem.h"
-// Reserve for us numOfPages pages.
-void * STAGE0_virtual_commit(unsigned int numOfPages) {
-	return 0;
+int32 init_allocator(Allocator *allocator){
+	allocator->next_physical_nonvolatile = 0x101000;
+	allocator->next_virtual_nonvolatile = 0xFF;//TODO
+	allocator->next_physical_volatile = 0x407000;
+	allocator->next_virtual_volatile = 0xffff800000008000;
+	return -1;
 }
+char* mem_alloc(Allocator *allocator, int32 size, BOOL isVolatile){
 
-// allocate commited pages.
-int STAGE0_virtual_pages_alloc(void * requestedAddr, unsigned int numOfPages, enum PAGE_ACCESS access) {
-	return 0;
 }

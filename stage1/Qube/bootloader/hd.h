@@ -1,5 +1,9 @@
-#pragma once
+#ifndef HD_H
+#define HD_H
 
-unsigned int STAGE0_get_file_size(char * file_path);
+#include "Qube.h"
+#include "intrinsics.h"
+int read_sectors(uint32 LBA, uint8 numOfSectors, void *out_buf);
 
-int STAGE0_read_file(char * file_path, void * out);
+
+#endif
