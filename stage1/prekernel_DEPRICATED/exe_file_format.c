@@ -40,22 +40,26 @@ Then array of num_of_exports EffImport structs. Each struct has:
                                    
 */
 
+struct DualAddress {
+    unsigned long long offset;
+    void * va;
+}
 
 struct Eff {
-    unsigned long magic;
-    unsigned long entry_point_offset
+    unsigned long long magic;
+    DualAddress entry_point;
+        
+    unsigned long long num_of_segments;
+    DualAddress segments;
     
-    unsigned long num_of_segments;
-    unsigned long segments_offset;
+    unsigned long long num_of_relocations;
+    DualAddress relocations;
     
-    unsigned long num_of_relocations;
-    unsigned long relocations_offset;
+    unsigned long long num_of_exports;
+    DualAddress exports;
     
-    unsigned long num_of_exports;
-    unsigned long exports_offset;
-    
-    unsigned long num_of_imports;
-    unsigned long imports_offset;
+    unsigned long long num_of_imports;
+    DualAddress imports;
 }
 
 enum EffSegmentType {
@@ -68,24 +72,23 @@ enum EffSegmentType {
 }
 
 struct EffSegment {
-    EffSegmentType type;
-    unsigned long virtual_address;
-    unsigned long size;
-    unsigned long offset_in_file;
+    EffSegmentType type; // 8 bytes
+    unsigned long long size;
+    DualAddress addr;
 }
 
 struct EffRelocation {
-    unsigned long virtual_address_offset;
+    DualAddress addr;
 }
 
 struct EffExport {
-    unsigned long name_offset;
-    unsigned long virtual_address_offset;
+    DualAddress target_addr;
+    DualAddress name_addr;
 }
 
 struct EffImport {
-    unsigned long name_offset;
-    unsigned long virtual_address_offset;
+    DualAddress target_addr;
+    DualAddress name_addr;
 }
 
 

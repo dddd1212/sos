@@ -15,3 +15,7 @@ int read_sectors(uint32 LBA, uint8 numOfSectors, void *out_buf){
 	__insw(0x1f0, numOfSectors*0x100, out_buf);
 	return 0; //success
 }
+
+int main() {
+
+}
