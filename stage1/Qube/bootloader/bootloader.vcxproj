@@ -23,7 +23,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='BootLoader|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
@@ -48,6 +48,9 @@
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <GenerateManifest>false</GenerateManifest>
     <OutDir>$(SolutionDir)_output\$(Platform)\$(Configuration)\</OutDir>
+    <NMakeBuildCommandLine>make all</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>make cleen</NMakeCleanCommandLine>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='BootLoader|Win32'">
     <ClCompile>
@@ -111,7 +114,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="long_mode.c" />
+    <ClCompile Include="long_mode_main.c" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hd.c">
@@ -126,6 +129,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="bootloader_post_build.py" />
+    <None Include="linker.ld" />
+    <None Include="makefile" />
     <None Include="real_mode.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

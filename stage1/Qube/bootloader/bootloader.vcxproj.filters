@@ -14,13 +14,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="long_mode.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="hd.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mem.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="long_mode_main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -42,5 +42,7 @@
     <None Include="real_mode.asm">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="makefile" />
+    <None Include="linker.ld" />
   </ItemGroup>
 </Project>
