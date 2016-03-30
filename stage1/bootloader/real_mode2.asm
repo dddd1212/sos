@@ -114,13 +114,13 @@ bits 64
 mode64:
     ; map address 0xffff800000000000 to same physical pages and continue execution.
     mov rax, 0xFFFFF6FB7DBED800 ; pxe
-    mov qword [rax], 0x104003
+    mov qword [rax], 0x400003
     
     mov rax, 0xFFFFF6FB7DB00000 ; ppe
-    mov qword [rax],0x105003
+    mov qword [rax],0x401003
     
     mov rax, 0xFFFFF6FB60000000 ; pde
-    mov qword [rax],0x106003
+    mov qword [rax],0x402003
     
     mov rax, 0xFFFFF6C000000000 ; pte
     mov qword [rax], 0x7003     ; map 4 pages. (we read 16 sectors)
@@ -200,8 +200,22 @@ continue_at_kernel_space:
     ; clean the mapping at address 0x7000
     mov rax, 0xFFFFF6FB7DBED000
     mov qword [rax], 0
-
-
-   
+    
+    ; map the stack. (maximum of 4 pages)
+    mov rax, 0xFFFFF6C000000020
+    mov qword [rax], 0x403003
+    add rax, 8
+    mov qword [rax], 0x404003
+    add rax, 8
+    mov qword [rax], 0x405003
+    add rax, 8
+    mov qword [rax], 0x406003
+    
+    mov rsp, 0xffff800000008000
+    ; now, in the physical space: non-volatile area is the pages up to 0x400000 and we use only 0x100000.
+    ;                             volatile area is the pages from 0x400000. the next free page is 0x407000.
+    ; and in the virtual space: non-volatile area is only the page of the root PXEs. (0xFFFFF6FB7DBED000)
+    ;                           volatile area is anything under the PXE at 0xFFFFF6FB7DBED800
+                                
 PadOutWithZeroesSectorsAll:
     times (0x2000 - ($ - $$)) db 0x00

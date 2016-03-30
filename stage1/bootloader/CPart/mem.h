@@ -1,6 +1,10 @@
+#include "Qube.h"
 typedef struct {
-	int32 tbd;
+	int64 next_physical_nonvolatile;
+	int64 next_virtual_nonvolatile;
+	int64 next_physical_volatile;
+	int64 next_virtual_volatile;
 } Allocator;
 
-int32 init_allocator(Allocator *allocator){return -1;}
-char* mem_alloc(Allocator *allocator, int32 size, BOOL isVolatile){return 0;}
+int32 init_allocator(Allocator *allocator);
+char* mem_alloc(Allocator *allocator, int32 size, BOOL isVolatile);

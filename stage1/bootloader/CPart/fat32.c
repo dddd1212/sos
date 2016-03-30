@@ -138,8 +138,8 @@ static int32 get_child_directory_entry(FAT32Desc *fat32_desc, DirectoryEntry *pa
 static int32 fat32_get_file_size(FAT32Desc *fat32_desc, char *filename){
 	int32 res;
 	DirectoryEntry entry;
-	entry->fstClusLo = fat32_desc->root_dir_cluster_num&0xFFFF;
-	entry->fstClusHi = fat32_desc->root_dir_cluster_num>>16;
+	entry.fstClusLo = fat32_desc->root_dir_cluster_num&0xFFFF;
+	entry.fstClusHi = fat32_desc->root_dir_cluster_num>>16;
 	char* start = filename;
 	char* end = start;
 	while (*end!='\0'){
@@ -167,7 +167,7 @@ int32 get_file_size(hdDesc *desc, char *filename){
 }
 
 
-void main(){
+void _start(){
 	Allocator allocator;
 	hdDesc desc;
 	init_allocator(&allocator);
