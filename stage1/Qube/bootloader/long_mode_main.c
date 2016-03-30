@@ -20,9 +20,9 @@ struct STAGE0BootModules {
 // This is the function that the bootloader is.
 void _start(void * my_address) {
     Allocator allocator;
-	hdDesc desc;
+	hdDesc hd_desc;
 	init_allocator(&allocator);
-	init_hd(&allocator, &desc); 
+	init_hd(&allocator, &hd_desc); 
     
 	char boot_txt_data[BOOT_TXT_FILE_MAX_SIZE];
 	struct STAGE0BootModules boot_modules[MAX_BOOT_MODULES];
@@ -39,7 +39,7 @@ void _start(void * my_address) {
 	int i, temp, line, num_of_lines;
 	
 	// First, calculate how many bytes we need to allocate for the kgd (KernelGlobalData), for the symbol table, and for the boot modules:
-	boot_txt_file_size = STAGE0_get_file_size(boot_txt_file_name);
+	boot_txt_file_size = get_file_size(&hd_desc,boot_txt_file_name);
 	if (boot_txt_file_size >= BOOT_TXT_FILE_MAX_SIZE) {
 		STAGE0_suicide(0x1000);
 	}
@@ -47,7 +47,7 @@ void _start(void * my_address) {
 		STAGE0_suicide(0x2000);
 	}
 
-	STAGE0_read_file(boot_txt_file_name, boot_txt_data);
+	read_file(&hd_desc, boot_txt_file_name, boot_txt_data);
 	boot_txt_data[boot_txt_file_size] = '\x00';
 
 	i = 0;
@@ -70,15 +70,15 @@ void _start(void * my_address) {
 
 	// get alloc size:
 	for (line = 0; line < num_of_lines; line++) {
-		temp = STAGE0_get_file_size(boot_modules[line].file_name);
+		temp = get_file_size(&hd_desc, boot_modules[line].file_name);
 		boot_modules[line].file_pages = NUM_OF_PAGES(temp);
 		if (temp == -1) STAGE0_suicide(0x4000); // error reading the file.
 		alloc_pages += temp;
 	}
 
 	// Commit the wanted pages for the files:
-	kgd = (struct KernelGlobalData *)STAGE0_virtual_commit(alloc_pages);
-	ret = STAGE0_virtual_pages_alloc(kgd, alloc_pages, PAGE_ACCESS_RW);
+	kgd = (struct KernelGlobalData *)virtual_commit(&allocator, alloc_pages);
+	ret = virtual_pages_alloc(&allocator, alloc_pages, PAGE_ACCESS_RW);
 	if (kgd == NULL || ret == NULL) {
 		STAGE0_suicide(0x5000);
 	}
@@ -93,7 +93,7 @@ void _start(void * my_address) {
 											  // Now we can read the boot-modules to the memory:
 	for (line = 0; line < num_of_lines; line++) {
 		// read
-		STAGE0_read_file(boot_modules[line].file_name, modules_addr);
+		read_file(&hd_desc, boot_modules[line].file_name, modules_addr);
 
 		// points to the data:
 		boot_modules[line].file_data = modules_addr;

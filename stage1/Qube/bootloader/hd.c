@@ -1,5 +1,20 @@
 #include "Qube.h"
 #include "intrinsics.h"
+#include "hd.h"
+#include "fat32.h"
+
+int32 init_hd(Allocator *allocator, hdDesc *desc){
+	desc->type = FAT32;
+	init_FAT32(allocator, 0, &desc->desc.fat32desc);
+}
+
+int32 get_file_size(hdDesc *desc, char *filename){
+	if (desc->type == FAT32){
+		return fat32_get_file_size(&desc->desc.fat32desc,filename);
+	}
+	return -1;
+}
+int32 read_file(hdDesc *desc, char *filename, int8 *out_buf){return -1;}
 int read_sectors(uint32 LBA, uint8 numOfSectors, void *out_buf){
 	uint8 read_status;
 	__out8(0x1f6, (LBA>>24)|0b11100000) ;

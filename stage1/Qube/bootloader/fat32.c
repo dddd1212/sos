@@ -1,33 +1,6 @@
 #include "Qube.h"
 #include "hd.h"
 #include "mem.h"
-typedef struct{
-	int16 bytes_per_sector;
-	int8 sectors_per_cluster;
-	int16 num_of_reserved_sectors;
-	int8 num_of_FATs;
-	int32 num_of_hidden_sectors;
-	int32 total_num_of_sectors;
-	int32 num_of_sectors_in_FAT;
-	int32 root_dir_cluster_num;
-	
-	int32 first_data_sector;
-	int32 *FAT;
-	int8 *cluster_buf;
-
-	Allocator *allocator;
-} FAT32Desc;
-
-typedef enum {
-	FAT32
-} hdType;
-
-typedef struct{
-	int32 type;
-	union {
-		FAT32Desc fat32desc;
-	} desc;
-} hdDesc;
 
 typedef struct{
 	char name[11];
@@ -44,7 +17,7 @@ typedef struct{
 	int32 fileSize;
 } __attribute__((packed)) DirectoryEntry;
 
-static int32 init_FAT32(Allocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc){
+int32 init_FAT32(Allocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc){
 	int8 buf[0x200]; // buffer for one sector
 	int32 num_of_sectors;
 	int32 res;
@@ -135,7 +108,7 @@ static int32 get_child_directory_entry(FAT32Desc *fat32_desc, DirectoryEntry *pa
 	return -1;
 }
 
-static int32 fat32_get_file_size(FAT32Desc *fat32_desc, char *filename){
+int32 fat32_get_file_size(FAT32Desc *fat32_desc, char *filename){
 	int32 res;
 	DirectoryEntry entry;
 	entry.fstClusLo = fat32_desc->root_dir_cluster_num&0xFFFF;
@@ -154,14 +127,3 @@ static int32 fat32_get_file_size(FAT32Desc *fat32_desc, char *filename){
 	return entry.fileSize;
 }
 
-int32 init_hd(Allocator *allocator, hdDesc *desc){
-	desc->type = FAT32;
-	init_FAT32(allocator, 0, &desc->desc.fat32desc);
-}
-
-int32 get_file_size(hdDesc *desc, char *filename){
-	if (desc->type == FAT32){
-		return fat32_get_file_size(&desc->desc.fat32desc,filename);
-	}
-	return -1;
-}

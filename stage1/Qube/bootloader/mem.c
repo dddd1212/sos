@@ -9,3 +9,5 @@ int32 init_allocator(Allocator *allocator){
 char* mem_alloc(Allocator *allocator, int32 size, BOOL isVolatile){
 
 }
+char* virtual_commit(Allocator* allocator, int32 size){return 0;}
+char* virtual_pages_alloc(Allocator* allocator, int32 num_of_pages, PAGE_ACCESS access){return 0;}
