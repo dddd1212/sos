@@ -1,9 +1,9 @@
 OUTPUT_FORMAT("binary")
-ENTRY(_start)
-STARTUP("long_mode_main.o")
+ENTRY(real_mode)
+STARTUP("real_mode.o")
 SECTIONS
 {
-	.text BLOCK(4K) : ALIGN(4K)
+	.text 0x7c00:
 	{
 		*(.text)
 	}
