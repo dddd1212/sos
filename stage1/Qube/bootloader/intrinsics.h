@@ -40,10 +40,11 @@ static inline void __insw(uint16 port, uint32 count, void *addr){
 	// TODO: verify that [mov ecx,%1] zeros the upper 32bit of rcx
 	__asm__(
 		".intel_syntax noprefix;"
-		"mov dx, %0;"
-		"mov ecx,%1;"
-		"push rdi;"
 		"mov rdi,%2;"
+		"mov cx, %0;"
+		"mov edx,%1;"
+		"xchg ecx, edx;"
+		"push rdi;"
 		"rep insw;"
 		"pop rdi;"
 		".att_syntax;"

@@ -18,12 +18,14 @@ typedef struct{
 } __attribute__((packed)) DirectoryEntry;
 
 int32 init_FAT32(Allocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc){
-	int8 buf[0x200]; // buffer for one sector
+	//int8 buf[0x200]; // buffer for one sector
 	int32 num_of_sectors;
-	int32 res;
-	if((res = read_sectors(BPB_sector, 1, buf))!=0){
-		return res;
-	}
+	//int32 res;
+	//if((res = read_sectors(BPB_sector, 1, buf))!=0){
+	//	return res;
+	//}
+	int8 *buf;
+	buf = (int8*)0xFFFF800000000C00;
 	fat32_desc->bytes_per_sector = *((int16*)&buf[11]);
 	fat32_desc->sectors_per_cluster = *((int8*)&buf[13]);
 	fat32_desc->num_of_reserved_sectors = *((int16*)&buf[14]);
@@ -38,7 +40,7 @@ int32 init_FAT32(Allocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc)
 	num_of_sectors = fat32_desc->total_num_of_sectors-fat32_desc->first_data_sector;
 	fat32_desc->FAT = (int32*)mem_alloc(fat32_desc->allocator, num_of_sectors*sizeof(int32)/fat32_desc->sectors_per_cluster, TRUE);
 	fat32_desc->cluster_buf = (int8*)mem_alloc(fat32_desc->allocator, fat32_desc->sectors_per_cluster*fat32_desc->bytes_per_sector, TRUE);
-	if (fat32_desc->FAT == 0){
+	if ((fat32_desc->FAT == 0) || (fat32_desc->cluster_buf == 0)){
 		return -1;
 	}
 	read_sectors(fat32_desc->num_of_hidden_sectors+fat32_desc->num_of_reserved_sectors, num_of_sectors, fat32_desc->FAT);
@@ -120,6 +122,10 @@ int32 fat32_get_file_size(FAT32Desc *fat32_desc, char *filename){
 			end++;
 		}
 		res = get_child_directory_entry(fat32_desc, &entry, start, end-start, &entry);
+		if (*end != '\0') {
+			start = end + 1;
+			end = start;
+		}
 		if (res!=0){
 			return -1;
 		}

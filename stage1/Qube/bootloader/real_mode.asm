@@ -8,12 +8,12 @@ real_mode:
     . = real_mode + 90 # space for file system
 Boot:
     mov ah,0x02    # read sectors into memory
-    mov al,0x10    # number of sectors to read (16)
+    mov al,0x20    # number of sectors to read (32)
     #mov dl,0x80    # drive number
-    mov ch,0    # cylinder number
-    mov dh,0    # head number
-    mov cl,2    # starting sector number
-    mov bx,Main    # address to load to
+	mov ch,0    # cylinder number
+    mov dh,2    # head number
+    mov cl,4    # starting sector number. we need sector number 2+128 (because the MBR part), so we need sector 4 in head 2.
+    mov bx, offset Main    # address to load to
     int 0x13    # call the interrupt routine
     #
     jmp Main
@@ -69,9 +69,14 @@ prot_mode:
         # TODO: more segments??
         
     #
-    # write a status message
+    # zero the root PXE page.
     #
-    
+    mov edi, 0x100000
+	mov ecx, 0x400
+	xor eax, eax
+	cld
+	rep stosd
+
     mov eax, 0x100003
     mov ebx,0x100F68
     mov [ebx],eax # set the PXE point to itself
@@ -128,7 +133,7 @@ mode64:
     mov qword ptr [rax],0x402003
     
     mov rax, 0xFFFFF6C000000000 # pte
-    mov qword ptr [rax], 0x7003     # map 4 pages. (we read 16 sectors)
+    mov qword ptr [rax], 0x7003     # map 4 pages. (we read 32 sectors)
     add rax, 8
     mov qword ptr [rax], 0x8003
     add rax, 8
@@ -220,6 +225,8 @@ continue_at_kernel_space:
     mov qword ptr [rax], 0x406003
     
     mov rsp, 0xffff800000008000
+	jmp _start
+
     # now, in the physical space: non-volatile area is the pages up to 0x400000 and we use only 0x100000.
     #                             volatile area is the pages from 0x400000. the next free page is 0x407000.
     # and in the virtual space: non-volatile area is only the page of the root PXEs. (0xFFFFF6FB7DBED000)
