@@ -3,10 +3,10 @@
 
 #include "Qube.h"
 typedef struct {
-	int64 next_physical_nonvolatile;
-	int64 next_virtual_nonvolatile;
-	int64 next_physical_volatile;
-	int64 next_virtual_volatile;
+	uint64 next_physical_nonvolatile;
+	uint64 next_virtual_nonvolatile;
+	uint64 next_physical_volatile;
+	uint64 next_virtual_volatile;
 } Allocator;
 typedef enum {
 	PAGE_ACCESS_NONE = 0x0,
@@ -19,7 +19,7 @@ typedef enum {
 	PAGE_ACCESS_RWX = 0x7,
 }PAGE_ACCESS;
 int32 init_allocator(Allocator *allocator);
-void* mem_alloc(Allocator *allocator, int32 size, BOOL isVolatile);
-char* virtual_commit(Allocator* allocator, int32 size);
-char* virtual_pages_alloc(Allocator* allocator, int32 num_of_pages, PAGE_ACCESS access);
+void* mem_alloc(Allocator *allocator, uint32 size, BOOL isVolatile);
+void* virtual_commit(Allocator* allocator, uint32 size, BOOL isVolatile);
+int32 alloc_committed(Allocator* allocator, uint32 size, void *addr);
 #endif
