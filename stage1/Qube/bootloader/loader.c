@@ -34,7 +34,7 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 		// Load the program headers to the memory:
 		// Iterate over the program header tables:
 		for (j = 0, ph = (struct Elf64ProgramHeader*)(((char *)boot_module->file_data) + boot_module->file_data->e_phoff); j < boot_module->file_data->e_phnum; j++, ph++) {
-			ret = virtual_pages_alloc(module_base + ph->p_vaddr, NUM_OF_PAGES(ph->p_memsz), PAGE_ACCESS_RWX);
+			ret = alloc_commited(module_base + ph->p_vaddr, NUM_OF_PAGES(ph->p_memsz), PAGE_ACCESS_RWX);
 			if (ret == NULL) return 0x2000;
 			memcpy((char*)(module_base + ph->p_vaddr), ((char*)boot_module->file_data) + ph->offset, ph->p_filesz);
 			ASSERT(ph->p_filesz <= ph->p_memsz); // TODO: Handle this assert thing
@@ -82,6 +82,12 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 			*((Elf64_Addr *)(module_base + rela->r_addr)) = symbol_addr;
 		}
 	}
+
+	// Finally, call to the entry points:
+	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
+		if (ret2 = boot_module->entry_point(kgd) != 0) return i*0x10000000 + ret2;
+	}
+	// should not reach here!
 	return 0;
 }
 // The function returns pointer to the first section data with type 'type'. the size of the section will be in size_out.

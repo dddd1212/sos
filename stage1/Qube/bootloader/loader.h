@@ -1,11 +1,14 @@
 #ifndef __LOADER_H__
 #define __LOADER_H__
+
+typedef int(*EntryPoint)(struct KernelGlobalData * kgd);
+
 struct STAGE0BootModule {
 	char * file_name; // pointer to the module file name
 	unsigned int file_pages; // num of pages the file need.
 	struct Elf64Header * file_data; // data of the eff file.
 	void * module_base; // pointer to the loaded module.
-	void * entry_point; // module entry point
+	EntryPoint entry_point; // module entry point
 };
 
 #define Elf64_Off uint64
@@ -123,12 +126,16 @@ struct Elf64Symbol {
 	Elf64_Xword sym_size;
 };
 
+
+
 int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_modules, BootLoaderAllocator * boot_loader_allocator, int num_of_modules);
 int count_sections_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type);
 void * find_section_by_name(struct STAGE0BootModule * boot_modules, char * name, Elf64_Xword * size_out);
 void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type, Elf64_Xword * size_out);
 Elf64_Addr find_symbol(struct KernelGlobalData * kgd, char * sym_name);
 int add_to_symbol_table(struct KernelGlobalData * kgd, char * sym_name, Elf64_Addr sym_addr);
+
+
 #endif // __LOADER_H__
 
 

@@ -73,8 +73,6 @@ void _start(void * my_address) {
 	}
 
 	// Commit the wanted pages for the files:
-	//kgd = (struct KernelGlobalData *)virtual_commit(&allocator, alloc_pages);
-	//ret = virtual_pages_alloc(&allocator, alloc_pages, PAGE_ACCESS_RW);
 	kgd = (struct KernelGlobalData *) mem_alloc(&allocator, alloc_pages << 12, FALSE);
 	if (kgd == NULL || ret == NULL) {
 		STAGE0_suicide(0x5000);
@@ -99,7 +97,16 @@ void _start(void * my_address) {
 		modules_addr = (int8*)modules_addr + PAGE_SIZE * boot_modules[line].file_pages;
 	}
 
-	
+	// init the symbol table:
+	kgd->bootloader_symbols.symbols = (struct Symbol *)mem_alloc(&allocator, sizeof(struct Symbol)*MAX_PRIMITIVE_SYMBOLS + MAX_NAME_STORAGE,FALSE);
+	kgd->bootloader_symbols.names_storage = ((char *)kgd->bootloader_symbols.symbols) + sizeof(struct Symbol)*MAX_PRIMITIVE_SYMBOLS;
+	kgd->bootloader_symbols.index = 0;
+	kgd->bootloader_symbols.names_storage_index = 0;
+
+	// load the modules:
+	int ret2 = load_modules(kgd, boot_modules, &allocator, num_of_lines);
+	if (ret2 != 0) STAGE0_suicide(ret2);
+
 	// Should not reach here!
 	STAGE0_suicide(0xffffffff);
 }
