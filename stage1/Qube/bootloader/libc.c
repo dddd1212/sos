@@ -21,3 +21,20 @@ int strcmp(char * src, char * dst) {
 	}
 	return *src - *dst;
 }
+
+int strlen(char * str) {
+	int i;
+	for (i = 0; *str != '\x00'; str++, i++);
+	return i;
+
+}
+
+void strcpy(char * dst, char * src) {
+	while (*src) {
+		*dst = *src;
+		dst++;
+		src++;
+	}
+	*dst = '\x00';
+	return;
+}

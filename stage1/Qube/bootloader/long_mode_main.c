@@ -1,7 +1,10 @@
+#include "Qube.h"
 #include "long_mode.h"
 #include "hd.h"
 #include "mem.h"
 #include "loader.h"
+#include "libc.h"
+
 // This file initialize the very first things in the kernel:
 // 1. init the KernelGlobalData struct.
 //    a. Init the symbols table. (The symbols table will be right after 
@@ -76,7 +79,7 @@ void _start(void * my_address) {
 	if (kgd == NULL || ret == NULL) {
 		STAGE0_suicide(0x5000);
 	}
-	STAGE0_memset(kgd, 0, sizeof(struct KernelGlobalData) + sizeof(ModulesList));
+	memset((char *)kgd, 0, sizeof(struct KernelGlobalData) + sizeof(ModulesList));
 
 	// init the KernelGLobalData and the modules array.
 	kgd->modules = (ModulesList *)(kgd + 1); // points after the kgd.
@@ -101,33 +104,9 @@ void _start(void * my_address) {
 	STAGE0_suicide(0xffffffff);
 }
 
-void * STAGE0_find_symbol(struct KernelGlobalData * kgd, char * symbol_name) {
-	/*
-	for (int i = 0; i < MAX_LOADED_MODULES; i++) {
-		void * base = (void*)kgd->modules[i];
-		EffExport * exp = base + ((Eff)(base))->exports_offset_when_loaded;
-		for (int j = 0; j < kgd->modules[i]->num_of_exports; j++, exp++) {
-			if (STAGE0_memcmp(base + exp->name_offset_when_loaded, symbol_name)) return base + exp->target_address_offset_when_loaded;
-		}
-	}
-	*/
-	// TODO
-	return NULL;
-}
-// We include the files to make it compile like a one pic-code
-
-
-
-
-
-
 void STAGE0_suicide(int error) {
 	int * s = 0;
 	*s = 0;
-}
-void STAGE0_memset(void * addr, char c, int count) {
-	// TODO
-	return;
 }
 
 

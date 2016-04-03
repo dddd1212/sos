@@ -53,7 +53,7 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 		for (symbol_entry = symbol_table; (char *)symbol_entry < ((char *)symbol_table) + size; symbol_entry++) {
 			if (memcmp(string_table + symbol_entry->sym_name, export_prefix, sizeof(export_prefix))) continue; // skip non export symbol
 			if (symbol_entry->sym_info >> 4 == 1) continue; // it is STB_GLOBAL - means that is import and not an export.
-			ret2 = add_to_symbol_table(string_table + symbol_entry->sym_name, module_base + symbol_entry->sym_value);
+			ret2 = add_to_symbol_table(kgd, string_table + symbol_entry->sym_name, module_base + symbol_entry->sym_value);
 			if (ret2 != 0) return 0x3000 + ret2;
 		}
 
@@ -77,7 +77,7 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 			if (rela->r_type != 7) return 0x6000;
 			dynsym = dynsym_table + rela->r_index;
 			dynstr = ((char*)boot_module) + (sh + dynsym->sym_shndx)->s_offset;
-			Elf64_Addr symbol_addr = find_symbol(dynstr + dynsym->sym_name);
+			Elf64_Addr symbol_addr = find_symbol(kgd, dynstr + dynsym->sym_name);
 			if (symbol_addr == NULL) return 0x7000;
 			*((Elf64_Addr *)(module_base + rela->r_addr)) = symbol_addr;
 		}
@@ -127,11 +127,34 @@ int count_sections_by_type(struct STAGE0BootModule * boot_modules, s_type64_e ty
 }
 
 /// Symbol table functions:
-int add_to_symbol_table(char * sym_name, Elf64_Addr sym_addr) {
+// return: 0 - success
+//         1 - failure
+int add_to_symbol_table(struct KernelGlobalData * kgd, char * sym_name, Elf64_Addr sym_addr) {
+	int symlen = strlen(sym_name) + 1; // include the null.
+	// Check for memory:
+	if (kgd->bootloader_symbols.index >= MAX_PRIMITIVE_SYMBOLS) return 1;
+	if (kgd->bootloader_symbols.names_storage_index + symlen > MAX_NAME_STORAGE) return 1;
+
+	// copy the name to the name storage:
+	strcpy(kgd->bootloader_symbols.names_storage + kgd->bootloader_symbols.names_storage_index, sym_name);
+
+	// fill the symbol:
+	(kgd->bootloader_symbols.symbols + kgd->bootloader_symbols.index)->addr = sym_addr;
+	(kgd->bootloader_symbols.symbols + kgd->bootloader_symbols.index)->name = kgd->bootloader_symbols.names_storage + kgd->bootloader_symbols.names_storage_index;
+	
+	// increment the indices:
+	kgd->bootloader_symbols.names_storage_index += symlen;
+	kgd->bootloader_symbols.index++;
 	return 0;
 }
 
-Elf64_Addr find_symbol(char * sym_name) {
-	return 0x1212121212121212;
+Elf64_Addr find_symbol(struct KernelGlobalData * kgd, char * sym_name) {
+	int max = kgd->bootloader_symbols.index;
+	struct Symbol * cur = kgd->bootloader_symbols.symbols;
+	for (int i = 0; i < max; i++, cur++) {
+		if (strcmp(sym_name, cur->name) == 0) return cur->addr;
+
+	}
+	return NULL;
 }
 

@@ -31,7 +31,21 @@
 // Global kernel data:
 typedef void * ModulesList[MAX_LOADED_MODULES];
 
+struct Symbol {
+	char * name;
+	uint64 addr;
+};
+
+#define MAX_PRIMITIVE_SYMBOLS 0x100
+#define MAX_NAME_STORAGE 0x100*0x10
+struct PrimitiveSymbols {
+	int index;
+	struct Symbol * symbols;
+	int names_storage_index;
+	char * names_storage;
+};
 struct KernelGlobalData {
+	struct PrimitiveSymbols bootloader_symbols; // symbols for the primitive loader.
 	ModulesList * modules;
 };
 
