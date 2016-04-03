@@ -12,7 +12,7 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 	struct Elf64ProgramHeader * ph;
 	int i, j;
 	Elf64_Addr module_base;
-	char *ret;
+	uint32 ret;
 	int ret2;
 	char string_strtab[] = { '.','s','t','r','t','a','b','\x00' };
 	char export_prefix[] = { 'E','X','P','_' };
@@ -29,12 +29,12 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 			if (ph->p_vaddr + ph->p_memsz > reserved_end) reserved_end = ph->p_vaddr + ph->p_memsz;
 		}
 		// Reserve the memory for the module:
-		module_base = virtual_commit(boot_loader_allocator, NUM_OF_PAGES(reserved_end - reserved_start));
+		module_base = (Elf64_Addr) virtual_commit(boot_loader_allocator, NUM_OF_PAGES(reserved_end - reserved_start), FALSE);
 		if (module_base == NULL) return 0x1000;
 		// Load the program headers to the memory:
 		// Iterate over the program header tables:
 		for (j = 0, ph = (struct Elf64ProgramHeader*)(((char *)boot_module->file_data) + boot_module->file_data->e_phoff); j < boot_module->file_data->e_phnum; j++, ph++) {
-			ret = alloc_commited(module_base + ph->p_vaddr, NUM_OF_PAGES(ph->p_memsz), PAGE_ACCESS_RWX);
+			ret = alloc_committed(boot_loader_allocator, NUM_OF_PAGES(ph->p_memsz), (void*)(module_base + ph->p_vaddr));
 			if (ret == NULL) return 0x2000;
 			memcpy((char*)(module_base + ph->p_vaddr), ((char*)boot_module->file_data) + ph->offset, ph->p_filesz);
 			ASSERT(ph->p_filesz <= ph->p_memsz); // TODO: Handle this assert thing
