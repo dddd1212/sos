@@ -1,6 +1,7 @@
 #include "long_mode.h"
 #include "hd.h"
 #include "mem.h"
+#include "loader.h"
 // This file initialize the very first things in the kernel:
 // 1. init the KernelGlobalData struct.
 //    a. Init the symbols table. (The symbols table will be right after 
@@ -8,14 +9,6 @@
 //
 //
 // The file is compiled as image and it found in the memory right before the KernelGlobalData struct.
-
-struct STAGE0BootModules {
-	char * file_name; // pointer to the module file name
-	unsigned int file_pages; // num of pages the file need.
-	void * file_data; // data of the eff file.
-	void * module_base; // pointer to the loaded module.
-	void * entry_point; // module entry point
-};
 
 // This is the function that the bootloader is.
 void _start(void * my_address) {
@@ -25,7 +18,7 @@ void _start(void * my_address) {
 	init_hd(&allocator, &hd_desc); 
     
 	char boot_txt_data[BOOT_TXT_FILE_MAX_SIZE];
-	struct STAGE0BootModules boot_modules[MAX_BOOT_MODULES];
+	struct STAGE0BootModule boot_modules[MAX_BOOT_MODULES];
 	char * boot_txt_end;
 	
 	char boot_txt_file_name[] = { 'b','o','o','t','.','t','x','t','\x00' };
@@ -102,7 +95,7 @@ void _start(void * my_address) {
 		modules_addr = (int)modules_addr + PAGE_SIZE * boot_modules[line].file_pages;
 	}
 
-	// Now its time to load the file into the memory:
+	// Now its time to load the files into the memory:
 	// First, we load the segments, handle relocation and export symbols.
 	/* TODO
 	int modules_list_index = 0;

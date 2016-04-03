@@ -114,6 +114,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="loader.c" />
     <ClCompile Include="long_mode_main.c" />
   </ItemGroup>
   <ItemGroup>
@@ -121,11 +122,13 @@
       <FileType>CppHeader</FileType>
     </ClCompile>
     <ClInclude Include="hd.h" />
+    <ClInclude Include="loader.h" />
     <ClInclude Include="long_mode.h" />
     <ClCompile Include="mem.c">
       <FileType>CppHeader</FileType>
     </ClCompile>
     <ClInclude Include="mem.h" />
+    <ClInclude Include="Qube.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bootloader_post_build.py" />
