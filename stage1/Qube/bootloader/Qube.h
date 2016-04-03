@@ -1,5 +1,6 @@
-#ifndef QUBE_H
-#define QUBE_H
+#ifndef __QUBE_H__
+#define __QUBE_H__
+// C general defines:
 #define int8 char
 #define uint8 unsigned char
 #define int16 short
@@ -9,7 +10,45 @@
 #define int64 long long
 #define uint64 unsigned long long
 
+#define NULL 0
 #define FALSE 0
 #define TRUE 1
 #define BOOL int32
-#endif
+
+#define ASSERT
+// base configuration and basic defines:
+#define BOOT_TXT_FILE_MAX_SIZE 0x1000
+#define MAX_BOOT_MODULES 0x10
+
+#define PAGE_SIZE 0x1000
+#define NUM_OF_PAGES(bytes) ((bytes + PAGE_SIZE-1)/PAGE_SIZE)
+#define ALIGN_UP(addr) ((addr + PAGES_SIZE-1)/PAGE_SIZE*PAGE_SIZE)
+
+#define MAX_LOADED_MODULES 0x100
+///// We need to split this file to couple of files...
+
+
+// Global kernel data:
+typedef void * ModulesList[MAX_LOADED_MODULES];
+
+struct Symbol {
+	char * name;
+	uint64 addr;
+};
+
+#define MAX_PRIMITIVE_SYMBOLS 0x100
+#define MAX_NAME_STORAGE 0x100*0x10
+struct PrimitiveSymbols {
+	int index;
+	struct Symbol * symbols;
+	int names_storage_index;
+	char * names_storage;
+};
+struct KernelGlobalData {
+	struct PrimitiveSymbols bootloader_symbols; // symbols for the primitive loader.
+	ModulesList * modules;
+};
+
+
+
+#endif // __QUBE_H__

@@ -16,11 +16,11 @@ typedef struct{
 	int32 *FAT;
 	int8 *cluster_buf;
 
-	Allocator *allocator;
+	BootLoaderAllocator *allocator;
 } FAT32Desc;
 
 int32 fat32_get_file_size(FAT32Desc *fat32_desc, char *filename);
 int32 fat32_read_file(FAT32Desc *fat32_desc, char *filename, int8* out_buf);
-int32 init_FAT32(Allocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc);
+int32 init_FAT32(BootLoaderAllocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc);
 
 #endif

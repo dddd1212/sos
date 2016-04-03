@@ -114,18 +114,25 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="fat32.c" />
+    <ClCompile Include="libc.c" />
+    <ClCompile Include="loader.c" />
     <ClCompile Include="long_mode_main.c" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hd.c">
       <FileType>CppHeader</FileType>
     </ClCompile>
+    <ClInclude Include="fat32.h" />
     <ClInclude Include="hd.h" />
+    <ClInclude Include="libc.h" />
+    <ClInclude Include="loader.h" />
     <ClInclude Include="long_mode.h" />
     <ClCompile Include="mem.c">
       <FileType>CppHeader</FileType>
     </ClCompile>
     <ClInclude Include="mem.h" />
+    <ClInclude Include="Qube.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bootloader_post_build.py" />

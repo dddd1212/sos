@@ -23,6 +23,15 @@
     <ClCompile Include="long_mode_main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="loader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fat32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="long_mode.h">
@@ -32,6 +41,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Qube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fat32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
