@@ -21,10 +21,6 @@ typedef enum {
 }PAGE_ACCESS;
 
 int32 init_allocator(BootLoaderAllocator *allocator);
-void* mem_alloc(BootLoaderAllocator *allocator, int32 size, BOOL isVolatile);
-char* virtual_commit(BootLoaderAllocator* allocator, int32 size);
-char* virtual_pages_alloc(BootLoaderAllocator* allocator, int32 num_of_pages, PAGE_ACCESS access);
-#endif // MEM_H
 void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile);
 void* virtual_commit(BootLoaderAllocator* allocator, uint32 size, BOOL isVolatile);
 int32 alloc_committed(BootLoaderAllocator* allocator, uint32 size, void *addr);
