@@ -1,5 +1,4 @@
 #ifndef MEM_H
-#ifndef MEM_H
 #define MEM_H
 
 #include "Qube.h"
@@ -8,7 +7,8 @@ typedef struct {
 	int64 next_virtual_nonvolatile;
 	int64 next_physical_volatile;
 	int64 next_virtual_volatile;
-} BootLevelAllocator;
+} BootLoaderAllocator;
+
 typedef enum {
 	PAGE_ACCESS_NONE = 0x0,
 	PAGE_ACCESS_READ = 0x1,
@@ -19,12 +19,9 @@ typedef enum {
 	PAGE_ACCESS_WX = 0x6,
 	PAGE_ACCESS_RWX = 0x7,
 }PAGE_ACCESS;
-int32 init_allocator(BootLevelAllocator *allocator);
-int32 init_allocator(Allocator *allocator);
-char* mem_alloc(BootLevelAllocator *allocator, int32 size, BOOL isVolatile);
-void* mem_alloc(Allocator *allocator, int32 size, BOOL isVolatile);
-char* virtual_commit(BootLevelAllocator* allocator, int32 size);
-char* virtual_commit(Allocator* allocator, int32 size);
-char* virtual_pages_alloc(BootLevelAllocator* allocator, int32 num_of_pages, PAGE_ACCESS access);
-char* virtual_pages_alloc(Allocator* allocator, int32 num_of_pages, PAGE_ACCESS access);
-#endif // MEM_H#endif
+
+int32 init_allocator(BootLoaderAllocator *allocator);
+void* mem_alloc(BootLoaderAllocator *allocator, int32 size, BOOL isVolatile);
+char* virtual_commit(BootLoaderAllocator* allocator, int32 size);
+char* virtual_pages_alloc(BootLoaderAllocator* allocator, int32 num_of_pages, PAGE_ACCESS access);
+#endif // MEM_H

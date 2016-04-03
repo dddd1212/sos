@@ -27,14 +27,12 @@
 #define MAX_LOADED_MODULES 0x100
 ///// We need to split this file to couple of files...
 
-#include "mem.h"
 
 // Global kernel data:
 typedef void * ModulesList[MAX_LOADED_MODULES];
 
 struct KernelGlobalData {
 	ModulesList * modules;
-	BootLevelAllocator * boot_loader_allocator;
 };
 
 

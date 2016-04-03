@@ -12,7 +12,7 @@
 
 // This is the function that the bootloader is.
 void _start(void * my_address) {
-    Allocator allocator;
+    BootLoaderAllocator allocator;
 	hdDesc hd_desc;
 	init_allocator(&allocator);
 	init_hd(&allocator, &hd_desc); 
@@ -96,88 +96,7 @@ void _start(void * my_address) {
 		modules_addr = (int8*)modules_addr + PAGE_SIZE * boot_modules[line].file_pages;
 	}
 
-	// Now its time to load the files into the memory:
-	// First, we load the segments, handle relocation and export symbols.
-	/* TODO
-	int modules_list_index = 0;
-	for (line = 0; line < num_of_lines; line++) {
-		int i;
-		EffSegment * seg;
-		EffRelocation * rel;
-		Eff * eff;
-		void * ret;
-
-		eff = boot_modules[line]->file_data;
-		// Sanity
-		if (eff->magic != EFF_MAGIC) {
-			STAGE0_suicide(0x100000);
-		}
-
-		// calculate how many memory we need to commit:
-		seg = eff + eff->segments_offset;
-		memory_to_commit = 0;
-		for (i = 0; i < eff->num_of_segments; i++, seg += sizeof(EffSegment)) {
-			if (seg->virtual_address + seg->size > memory_to_commit) {
-				memory_to_commit = seg->virtual_address + seg->size;
-			}
-		}
-
-		// Commit memory for this module:
-		void * module_base = STAGE0_virtual_commit(NUM_OF_PAGES(memory_to_commit));
-
-		// Copy segments to the memory
-		seg = eff + eff->segments_offset;
-		for (i = 0; i < eff->num_of_segments; i++, seg += sizeof(EffSegment);) {
-			if (seg->type & EffSegmentType_BYTES) {
-				ret = STAGE0_virtual_pages_alloc(module_base + seg->virtual_address, NUM_OF_PAGES(seg->size), PAGE_ACCES_RWX);
-				if (ret == NULL) {
-					STAGE0_suicide(0x101500);
-				}
-				STAGE0_memcpy(module_base + seg->virtual_address, eff + seg->offset_in_file, seg->size);
-			}
-			else if (seg->type & EffSegmentType_BSS) {
-				ret = STAGE0_virtual_pages_alloc(module_base + seg->virtual_address, NUM_OF_PAGES(seg->size), PAGE_ACCES_RW);
-				if (ret == NULL) {
-					STAGE0_suicide(0x101600);
-				}
-				STAGE0_memset(module_base + seg->virtual_address, '\x00', seg->size);
-			}
-			else {
-				STAGE0_suicide(0x101000);
-			}
-		}
-
-		// Relocating
-		rel = eff + eff->relocations_offset;
-		for (i = 0; i < eff->num_of_relocations; i++) {
-			*(module_base + rel->virtual_address_offset) += module_base;
-		}
-
-		// Exports - Just register the module in the modules list:
-		kgd->modules[line] = module_base;
-		boot_modules[line].module_base = module_base;
-		boot_modules[line].entry_point = module_base + eff + eff->entry_point_offset
-	}
 	
-	// Then, we handle import symbols:
-	for (line = 0; line < num_of_lines; line++) {
-		eff = boot_modules[line]->file_data;
-		module_base = boot_modules[line].module_base
-			imp = eff + eff->imports_offset;
-
-		for (i = 0; i < eff->num_of_imports; i++) {
-			if (*(module_base + imp->virtual_address_offset) = STAGE0_find_symbol(kgd, imp->name_offset) == NULL) {
-				STAGE0_suicide(0x102000);
-			}
-		}
-	}
-	*/
-	// Finally, call to each module callback:
-	// IMPORTANT: The boot modules need to be aware that some of thay import functions may be in modules that not yet called to their entry-point.
-	for (line = 0; line < num_of_lines; line++) {
-		//TODO
-		//boot_modules[line].entry_point();
-	}
 	// Should not reach here!
 	STAGE0_suicide(0xffffffff);
 }

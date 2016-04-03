@@ -114,6 +114,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="fat32.c" />
+    <ClCompile Include="libc.c" />
     <ClCompile Include="loader.c" />
     <ClCompile Include="long_mode_main.c" />
   </ItemGroup>
@@ -121,7 +123,9 @@
     <ClCompile Include="hd.c">
       <FileType>CppHeader</FileType>
     </ClCompile>
+    <ClInclude Include="fat32.h" />
     <ClInclude Include="hd.h" />
+    <ClInclude Include="libc.h" />
     <ClInclude Include="loader.h" />
     <ClInclude Include="long_mode.h" />
     <ClCompile Include="mem.c">

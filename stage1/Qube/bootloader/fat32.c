@@ -18,7 +18,7 @@ typedef struct{
 	int32 fileSize;
 } __attribute__((packed)) DirectoryEntry;
 
-int32 init_FAT32(Allocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc){
+int32 init_FAT32(BootLoaderAllocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc){
 	//int8 buf[0x200]; // buffer for one sector
 	int32 num_of_sectors;
 	//int32 res;

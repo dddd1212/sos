@@ -1,6 +1,6 @@
 #include "mem.h"
 #define PTE(x) ((int64*)(0xFFFFF6C000000000 + ((((int64)x - 0xFFFF800000000000)>>12)<<3)))
-int32 init_allocator(Allocator *allocator){
+int32 init_allocator(BootLoaderAllocator *allocator){
 	allocator->next_physical_nonvolatile = 0x101000;
 	allocator->next_virtual_nonvolatile = 0xfffff00000000000;//TODO
 	allocator->next_physical_volatile = 0x407000;
@@ -8,7 +8,7 @@ int32 init_allocator(Allocator *allocator){
 	return -1;
 }
 
-void* mem_alloc(Allocator *allocator, int32 size, BOOL isVolatile){
+void* mem_alloc(BootLoaderAllocator *allocator, int32 size, BOOL isVolatile){
 	int64 next_physical, next_virtual;
 	void *addr;
 	if (isVolatile) {
@@ -47,5 +47,5 @@ void* mem_alloc(Allocator *allocator, int32 size, BOOL isVolatile){
 	}
 	return addr;
 }
-char* virtual_commit(Allocator* allocator, int32 size){return 0;}
-char* virtual_pages_alloc(Allocator* allocator, int32 num_of_pages, PAGE_ACCESS access){return 0;}
+char* virtual_commit(BootLoaderAllocator* allocator, int32 size){return 0;}
+char* virtual_pages_alloc(BootLoaderAllocator* allocator, int32 num_of_pages, PAGE_ACCESS access){return 0;}

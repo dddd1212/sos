@@ -3,7 +3,7 @@
 #include "hd.h"
 #include "fat32.h"
 
-int32 init_hd(Allocator *allocator, hdDesc *desc){
+int32 init_hd(BootLoaderAllocator *allocator, hdDesc *desc){
 	desc->type = FAT32;
 	init_FAT32(allocator, 0, &desc->desc.fat32desc);
 }
