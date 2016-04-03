@@ -14,7 +14,12 @@ int32 get_file_size(hdDesc *desc, char *filename){
 	}
 	return -1;
 }
-int32 read_file(hdDesc *desc, char *filename, int8 *out_buf){return -1;}
+int32 read_file(hdDesc *desc, char *filename, int8 *out_buf){
+	if (desc->type == FAT32) {
+		return fat32_read_file(&desc->desc.fat32desc, filename, out_buf);
+	}
+	return -1;
+}
 int read_sectors(uint32 LBA, uint8 numOfSectors, void *out_buf){
 	uint8 read_status;
 	__out8(0x1f6, (LBA>>24)|0b11100000) ;

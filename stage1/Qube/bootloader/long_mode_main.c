@@ -21,7 +21,7 @@ void _start(void * my_address) {
 	struct STAGE0BootModule boot_modules[MAX_BOOT_MODULES];
 	char * boot_txt_end;
 	
-	char boot_txt_file_name[] = { 'b','o','o','t','.','t','x','t','\x00' };
+	char boot_txt_file_name[] = { 'B','O','O','T','.','T','X','T','\x00' };
 	unsigned int boot_txt_file_size;
 
 	int alloc_pages = NUM_OF_PAGES(sizeof(struct KernelGlobalData)) + // the kgd will be the first in the memory
@@ -70,8 +70,9 @@ void _start(void * my_address) {
 	}
 
 	// Commit the wanted pages for the files:
-	kgd = (struct KernelGlobalData *)virtual_commit(&allocator, alloc_pages);
-	ret = virtual_pages_alloc(&allocator, alloc_pages, PAGE_ACCESS_RW);
+	//kgd = (struct KernelGlobalData *)virtual_commit(&allocator, alloc_pages);
+	//ret = virtual_pages_alloc(&allocator, alloc_pages, PAGE_ACCESS_RW);
+	kgd = (struct KernelGlobalData *) mem_alloc(&allocator, alloc_pages << 12, FALSE);
 	if (kgd == NULL || ret == NULL) {
 		STAGE0_suicide(0x5000);
 	}
@@ -92,7 +93,7 @@ void _start(void * my_address) {
 		boot_modules[line].file_data = modules_addr;
 
 		// move to the next address
-		modules_addr = (int)modules_addr + PAGE_SIZE * boot_modules[line].file_pages;
+		modules_addr = (int8*)modules_addr + PAGE_SIZE * boot_modules[line].file_pages;
 	}
 
 	// Now its time to load the files into the memory:
