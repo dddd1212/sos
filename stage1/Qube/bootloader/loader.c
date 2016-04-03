@@ -11,7 +11,9 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 	struct STAGE0BootModule * boot_module;
 	struct Elf64ProgramHeader * ph;
 	int i, j;
-	char * module_base, ret;
+	Elf64_Addr module_base;
+	char *ret;
+	int ret2;
 	char string_strtab[] = { '.','s','t','r','t','a','b','\x00' };
 	char export_prefix[] = { 'E','X','P','_' };
 	Elf64_Xword size;
@@ -34,10 +36,10 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 		for (j = 0, ph = (struct Elf64ProgramHeader*)(((char *)boot_module->file_data) + boot_module->file_data->e_phoff); j < boot_module->file_data->e_phnum; j++, ph++) {
 			ret = virtual_pages_alloc(module_base + ph->p_vaddr, NUM_OF_PAGES(ph->p_memsz), PAGE_ACCESS_RWX);
 			if (ret == NULL) return 0x2000;
-			memcpy(module_base + ph->p_vaddr, ((char*)boot_module->file_data) + ph->offset, ph->p_filesz);
+			memcpy((char*)(module_base + ph->p_vaddr), ((char*)boot_module->file_data) + ph->offset, ph->p_filesz);
 			ASSERT(ph->p_filesz <= ph->p_memsz); // TODO: Handle this assert thing
 			if (ph->p_filesz < ph->p_memsz) {
-				memset(module_base + ph->p_vaddr + ph->p_filesz, 0, ph->p_memsz - ph->p_filesz);
+				memset((char*) (module_base + ph->p_vaddr + ph->p_filesz), 0, ph->p_memsz - ph->p_filesz);
 			}
 		}	
 
@@ -51,8 +53,8 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 		for (symbol_entry = symbol_table; (char *)symbol_entry < ((char *)symbol_table) + size; symbol_entry++) {
 			if (memcmp(string_table + symbol_entry->sym_name, export_prefix, sizeof(export_prefix))) continue; // skip non export symbol
 			if (symbol_entry->sym_info >> 4 == 1) continue; // it is STB_GLOBAL - means that is import and not an export.
-			ret = add_to_symbol_table(string_table + symbol_entry->sym_name, module_base + symbol_entry->sym_value);
-			if (ret != 0) return 0x3000 + ret;
+			ret2 = add_to_symbol_table(string_table + symbol_entry->sym_name, module_base + symbol_entry->sym_value);
+			if (ret2 != 0) return 0x3000 + ret2;
 		}
 
 		// Handle relocations:
@@ -62,9 +64,9 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 
 	// Now handle the imports:
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
-		struct Elf64Symbol * dynsym_table = (struct Elf64RelaStruct *) find_section_by_type(boot_module, SHT_DYNSYM, &size);
+		struct Elf64Symbol * dynsym_table = (struct Elf64Symbol *) find_section_by_type(boot_module, SHT_DYNSYM, &size);
 		struct Elf64Symbol * dynsym;
-		struct Elf64SectionHeader * sh = ((char *)boot_module) + boot_module->file_data->e_shoff;
+		struct Elf64SectionHeader * sh = (struct Elf64SectionHeader *) (((char *)boot_module) + boot_module->file_data->e_shoff);
 		char * dynstr;
 		struct Elf64RelaStruct * rela_table = (struct Elf64RelaStruct *) find_section_by_type(boot_module, SHT_RELA, &size);
 		size = size /= sizeof(struct Elf64RelaStruct); // num of structs.
@@ -84,7 +86,7 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 }
 // The function returns pointer to the first section data with type 'type'. the size of the section will be in size_out.
 // Return NULL if not found. size_out in that case will be set to 0.
-void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type, int * size_out) {
+void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type, Elf64_Xword * size_out) {
 	int sn = boot_modules->file_data->e_shnum;
 	struct Elf64SectionHeader * sh = (struct Elf64SectionHeader *) (((char*)boot_modules->file_data) + boot_modules->file_data->e_shoff);
 	for (int i = 0; i < sn; i++, sh++) {
@@ -98,7 +100,7 @@ void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e t
 }
 // The function returns pointer to the first section data with name 'name'. the size of the section will be in size_out.
 // Return NULL if not found. size_out in that case will be set to 0.
-void * find_section_by_name(struct STAGE0BootModule * boot_modules, char * name, int * size_out) {
+void * find_section_by_name(struct STAGE0BootModule * boot_modules, char * name, Elf64_Xword * size_out) {
 	int sn = boot_modules->file_data->e_shnum;
 	struct Elf64SectionHeader * sh = (struct Elf64SectionHeader *) (((char*)boot_modules->file_data) + boot_modules->file_data->e_shoff);
 	

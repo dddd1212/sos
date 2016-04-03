@@ -125,8 +125,8 @@ struct Elf64Symbol {
 
 int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_modules, BootLoaderAllocator * boot_loader_allocator, int num_of_modules);
 int count_sections_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type);
-void * find_section_by_name(struct STAGE0BootModule * boot_modules, char * name, int * size_out);
-void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type, int * size_out);
+void * find_section_by_name(struct STAGE0BootModule * boot_modules, char * name, Elf64_Xword * size_out);
+void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type, Elf64_Xword * size_out);
 Elf64_Addr find_symbol(char * sym_name);
 int add_to_symbol_table(char * sym_name, Elf64_Addr sym_addr);
 #endif // __LOADER_H__
