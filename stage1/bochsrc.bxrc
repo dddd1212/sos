@@ -10,7 +10,7 @@ floppy_bootsig_check: disabled=0
 # no floppya
 # no floppyb
 ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
-ata0-master: type=disk, path="e:\gilad\sos\output\sos.bin", mode=flat, cylinders=1, heads=1, spt=16, model="Generic 1234", biosdetect=auto, translation=auto
+ata0-master: type=disk, path="E:\gilad\sos-git2\sos\stage1\tools\createhd\disk.vhd", mode=flat, cylinders=1024, heads=16, spt=63, model="Generic 1234", biosdetect=auto, translation=auto
 ata0-slave: type=none
 ata1: enabled=1, ioaddr1=0x170, ioaddr2=0x370, irq=15
 ata1-master: type=none
