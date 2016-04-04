@@ -8,7 +8,7 @@ real_mode:
     . = real_mode + 90 # space for file system
 Boot:
     mov ah,0x02    # read sectors into memory
-    mov al,0x20    # number of sectors to read (32)
+    mov al,0x28    # number of sectors to read (40)
     #mov dl,0x80    # drive number
 	mov ch,0    # cylinder number
     mov dh,2    # head number
@@ -133,13 +133,15 @@ mode64:
     mov qword ptr [rax],0x402003
     
     mov rax, 0xFFFFF6C000000000 # pte
-    mov qword ptr [rax], 0x7003     # map 4 pages. (we read 32 sectors)
+    mov qword ptr [rax], 0x7003     # map 4 pages. (we read 40 sectors)
     add rax, 8
     mov qword ptr [rax], 0x8003
     add rax, 8
     mov qword ptr [rax], 0x9003
     add rax, 8
     mov qword ptr [rax], 0xA003
+	add rax, 8
+    mov qword ptr [rax], 0xB003
     
     mov rax, 0xFFFF800000000000
 	add rax, (continue_at_kernel_space - real_mode + 0xC00) # this is the address of the same code - mapped to the 0xFFFF800000000000 area. 
@@ -215,7 +217,7 @@ continue_at_kernel_space:
     mov qword ptr [rax], 0
     
     # map the stack. (maximum of 4 pages)
-    mov rax, 0xFFFFF6C000000020
+    mov rax, 0xFFFFF6C000000028 # start after the 5 pages of the boot code
     mov qword ptr [rax], 0x403003
     add rax, 8
     mov qword ptr [rax], 0x404003
