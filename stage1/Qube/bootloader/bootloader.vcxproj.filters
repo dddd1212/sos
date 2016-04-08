@@ -69,5 +69,8 @@
     <None Include="makefile">
       <Filter>Build</Filter>
     </None>
+    <None Include="create_bochs_sym_file.sh">
+      <Filter>Build</Filter>
+    </None>
   </ItemGroup>
 </Project>

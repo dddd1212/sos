@@ -27,8 +27,8 @@ void _start(void * my_address) {
 	char boot_txt_file_name[] = { 'B','O','O','T','.','T','X','T','\x00' };
 	unsigned int boot_txt_file_size;
 
-	int alloc_pages = NUM_OF_PAGES(sizeof(struct KernelGlobalData)) + // the kgd will be the first in the memory
-		NUM_OF_PAGES(sizeof(ModulesList)); // The modules list will be just after the kgd.
+	int alloc_bytes = sizeof(struct KernelGlobalData) + // the kgd will be the first in the memory
+		sizeof(ModulesList); // The modules list will be just after the kgd.
 	struct KernelGlobalData * kgd = NULL;
 	void * modules_addr = NULL;
 	void * ret = NULL;
@@ -54,11 +54,14 @@ void _start(void * my_address) {
 		}
 		boot_modules[line].file_name = &boot_txt_data[i]; // File
 		line++;
-		while (boot_txt_data[i] != '\n' || boot_txt_data[i] != '\x00') i++;
+		while (boot_txt_data[i] != '\n' && boot_txt_data[i] != '\x00') i++;
 		if (boot_txt_data[i] == '\x00') { // last line and its ends with no \n
 			break;
 		}
 		boot_txt_data[i] = '\x00';
+		if (i > 0 && boot_txt_data[i-1] == '\x0d') {
+			boot_txt_data[i - 1] = '\x00';
+		}
 		i++;
 
 	}
@@ -68,12 +71,12 @@ void _start(void * my_address) {
 	for (line = 0; line < num_of_lines; line++) {
 		temp = get_file_size(&hd_desc, boot_modules[line].file_name);
 		boot_modules[line].file_pages = NUM_OF_PAGES(temp);
-		if (temp == -1) STAGE0_suicide(0x4000); // error reading the file.
-		alloc_pages += temp;
+		if (temp == -1) STAGE0_suicide(0x4000 + line); // error reading the file.
+		alloc_bytes += temp;
 	}
 
 	// Commit the wanted pages for the files:
-	kgd = (struct KernelGlobalData *) mem_alloc(&allocator, alloc_pages << 12, FALSE);
+	kgd = (struct KernelGlobalData *) mem_alloc(&allocator, alloc_bytes, FALSE);
 	if (kgd == NULL || ret == NULL) {
 		STAGE0_suicide(0x5000);
 	}

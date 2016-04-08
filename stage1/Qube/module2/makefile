@@ -3,8 +3,8 @@ AS = x86_64-elf-as.exe
 LD = x86_64-elf-ld.exe
 module1:
 	python ../common/exports.py
-	$(CC) -c module2_funcs.c -fpic -fvisibility=hidden -Wno-implicit-function-declaration
-	$(LD) -fpic -fvisibility=hidden -shared module2_funcs.o -o libmodule2_funcs.so
+	$(CC) -c module2_funcs.c -fpic -fvisibility=hidden
+	$(LD) -fpic -fvisibility=hidden -shared module2_funcs.o -o libmodule2_funcs.so -L../module1/ -lmodule1_funcs
 
 all: module1
 
