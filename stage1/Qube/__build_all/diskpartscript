@@ -1,0 +1,3 @@
+select vdisk file="E:\gilad\sos-git2\sos\stage1\Qube\_output\disk\disk.vhd"
+select partition=1
+detach vdisk
