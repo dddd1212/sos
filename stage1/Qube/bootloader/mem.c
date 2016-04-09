@@ -3,7 +3,10 @@
 #define NONVOLATILE_VIRTUAL_START 0xfffff00000000000
 #define VOLATILE_VIRTUAL_START 0xffff800000008000
 int32 init_allocator(BootLoaderAllocator *allocator){
-	allocator->next_physical_nonvolatile = 0x101000;
+	*((uint64*)0xFFFFF6FB7DBEDF00) = 0x101000 | 3;
+	*((uint64*)0xFFFFF6FB7DBE0000) = 0x102000 | 3;
+	*((uint64*)0xFFFFF6FB7C000000) = 0x103000 | 3;
+	allocator->next_physical_nonvolatile = 0x104000;
 	allocator->next_virtual_nonvolatile = NONVOLATILE_VIRTUAL_START;
 	allocator->next_physical_volatile = 0x407000;
 	allocator->next_virtual_volatile = VOLATILE_VIRTUAL_START;
