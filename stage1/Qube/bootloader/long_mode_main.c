@@ -54,7 +54,7 @@ void _start(void * my_address) {
 		}
 		boot_modules[line].file_name = &boot_txt_data[i]; // File
 		line++;
-		while (boot_txt_data[i] != '\n' || boot_txt_data[i] != '\x00') i++;
+		while ((boot_txt_data[i] != '\n') && (boot_txt_data[i] != '\x00')) i++;
 		if (boot_txt_data[i] == '\x00') { // last line and its ends with no \n
 			break;
 		}
