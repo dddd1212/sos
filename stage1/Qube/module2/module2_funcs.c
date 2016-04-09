@@ -1,4 +1,4 @@
-#include "../module1/imports.h"
+#include "../module1/module1_funcs.h"
 
 
 int module2_func() {
@@ -7,5 +7,6 @@ int module2_func() {
 
 	// explicit:
 	int y = mod_func2(); // The function real name is EXP_module1_mod_func2
+
 	return x + y;
 }
