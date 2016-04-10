@@ -1,0 +1,3 @@
+ldsym global "E:\gilad\sos-git2\sos\stage1\Qube\bootloader\boot.elf.sym" 0xffff7fffffff9000
+vb 0008:0xffff800000003fc4
+vb 0008:0xffff8000000043ce

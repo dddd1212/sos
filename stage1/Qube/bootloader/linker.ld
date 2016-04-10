@@ -1,4 +1,3 @@
-OUTPUT_FORMAT("binary")
 ENTRY(real_mode)
 STARTUP("real_mode.o")
 SECTIONS
