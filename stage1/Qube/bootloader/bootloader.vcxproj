@@ -136,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="bootloader_post_build.py" />
+    <None Include="create_bochs_sym_file.sh" />
     <None Include="linker.ld" />
     <None Include="makefile" />
     <None Include="real_mode.asm" />
