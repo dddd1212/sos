@@ -27,9 +27,10 @@ typedef struct {
 } PysicalRegionEntry;
 
 int32 init_allocator(BootLoaderAllocator *allocator){
-	uint64* physical_pages_begin;
-	uint64* physical_pages_end;
-	physical_pages_end = physical_pages_begin = (uint64*)PHYISICAL_PAGES_LIST;
+#ifdef DEBUG
+	allocator->disable_non_volatile_allocs = FALSE;
+#endif
+	allocator->physical_pages_end = allocator->physical_pages_start = (uint64*)PHYISICAL_PAGES_LIST;
 
 	*(PXE(NONVOLATILE_VIRTUAL_START)) = FIRST_FREE_PHYSICAL | 3;
 	*(PPE(NONVOLATILE_VIRTUAL_START)) = (FIRST_FREE_PHYSICAL + 0x1000) | 3;
@@ -60,12 +61,12 @@ int32 init_allocator(BootLoaderAllocator *allocator){
 	// Now we build the list of physical pages.
 	// First, we add the addresses 0x60000-0x80000
 	for (uint64 addr = NONVOLATILE_PHYSICAL_START; addr < NONVOLATILE_PHYSICAL_END; addr+=0x1000) {
-		*physical_pages_end = addr;
-		physical_pages_end++;
+		*(allocator->physical_pages_end) = addr;
+		allocator->physical_pages_end++;
 	}
 
-	// Consider the 7 pages we already used (5 here and 1 in real_mode.asm)
-	physical_pages_begin += 5 + NONVOLATILE_PHYSICAL_USED;
+	// Consider the 6 pages we already used (5 here and 1 in real_mode.asm)
+	allocator->next_physical_nonvolatile = allocator->physical_pages_start + 5 + NONVOLATILE_PHYSICAL_USED;
 
 	uint64 last_addr = NONVOLATILE_PHYSICAL_END;
 	for (i = 0; entries[i].base != 0xFFFFFFFFFFFFFFFF; i++) {
@@ -78,43 +79,57 @@ int32 init_allocator(BootLoaderAllocator *allocator){
 			if (start < last_addr) {
 				start = last_addr;
 			}
-			for (uint64 cur = start; cur < end; cur += 0x1000, physical_pages_end++) {
-				if ((((uint64)physical_pages_end) & 0x1fffff) == 0) {
-					*PDE(physical_pages_end) = (*physical_pages_begin)|3;
-					physical_pages_begin++;
+			for (uint64 cur = start; cur < end; cur += 0x1000, allocator->physical_pages_end++) {
+				if ((((uint64)allocator->physical_pages_end) & 0x1fffff) == 0) {
+					*PDE(allocator->physical_pages_end) = (*allocator->next_physical_nonvolatile)|3;
+					allocator->next_physical_nonvolatile++;
 				}
-				if ((((uint64)physical_pages_end) & 0xfff) == 0) {
-					*PTE(physical_pages_end) = (*physical_pages_begin)|3;
-					physical_pages_begin++;
+				if ((((uint64)allocator->physical_pages_end) & 0xfff) == 0) {
+					*PTE(allocator->physical_pages_end) = (*allocator->next_physical_nonvolatile)|3;
+					allocator->next_physical_nonvolatile++;
 				}
-				*physical_pages_end = cur;
+				*allocator->physical_pages_end = cur;
 			}
 			last_addr = end;
 		}
 	}
 	
-	for (uint64 cur = VOLATILE_PHYSICAL_START; cur < VOLATILE_PHYSICAL_END; cur += 0x1000, physical_pages_end++) {
-		if ((((uint64)physical_pages_end) & 0x1fffff) == 0) {
-			*PDE(physical_pages_end) = (*physical_pages_begin) | 3;
-			physical_pages_begin++;
+	for (uint64 cur = VOLATILE_PHYSICAL_START; cur < VOLATILE_PHYSICAL_END; cur += 0x1000, allocator->physical_pages_end++) {
+		if ((((uint64)allocator->physical_pages_end) & 0x1fffff) == 0) {
+			*PDE(allocator->physical_pages_end) = (*allocator->next_physical_nonvolatile) | 3;
+			allocator->next_physical_nonvolatile++;
 		}
-		if ((((uint64)physical_pages_end) & 0xfff) == 0) {
-			*PTE(physical_pages_end) = (*physical_pages_begin) | 3;
-			physical_pages_begin++;
+		if ((((uint64)allocator->physical_pages_end) & 0xfff) == 0) {
+			*PTE(allocator->physical_pages_end) = (*allocator->next_physical_nonvolatile) | 3;
+			allocator->next_physical_nonvolatile++;
 		}
-		*physical_pages_end = cur;
+		*allocator->physical_pages_end = cur;
 	}
 	
 	*(PTE(VOLATILE_VIRTUAL_START)) = 0;
 	
-	allocator->next_physical_nonvolatile = physical_pages_begin;
-	allocator->next_physical_volatile = physical_pages_end-0x800; // maximum of 0x800 (minus the 0x60 pages at 0-0x60000) pages. [~8M]
+	allocator->next_physical_volatile = allocator->physical_pages_end-0x800; // maximum of 0x800 (minus the 0x60 pages at 0-0x60000) pages. [~8M]
+
 	allocator->next_virtual_nonvolatile = NONVOLATILE_VIRTUAL_START;
 	allocator->next_virtual_volatile = VOLATILE_VIRTUAL_START;
 	return 0;
 }
 
+void set_boot_info(BootLoaderAllocator *allocator, BootInfo* boot_info) {
+	boot_info->physical_pages_start = allocator->physical_pages_start;
+	boot_info->physical_pages_end = allocator->physical_pages_end;
+	boot_info->physical_pages_current = allocator->next_physical_nonvolatile;
+#ifdef DEBUG
+	allocator->disable_non_volatile_allocs = TRUE;
+#endif
+}
+
 void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
+#ifdef DEBUG
+	if (isVolatile && allocator->disable_non_volatile_allocs) {
+		return 0;
+	}
+#endif
 	uint64 *next_physical;
 	uint64 next_virtual;
 	void *addr;
@@ -154,7 +169,6 @@ void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
 	}
 	return addr;
 }
-
 
 void* virtual_commit(BootLoaderAllocator* allocator, uint32 size, BOOL isVolatile){
 	int32 num_of_pages = (size + 0xFFF) >> 12;
