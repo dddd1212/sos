@@ -114,12 +114,15 @@ prot_mode:
     mov ebx, 0x21000
     mov [ebx],eax # set the PDE entry of code
     
-    mov eax, 0x7003
+    
+	mov eax, 0x7003
     mov ebx, 0x22038
-    mov [ebx],eax # set the PTE entry of code: 0x7000.
-    #mov eax, 0x8003
-    #mov ebx, 0x22040
-    #mov [ebx],eax # set the PTE entry of code: 0x8000.
+	mov ecx, 6 # num of pages to map
+map_boot_pages:
+    mov [ebx],eax # set the PTE entry of code.
+	add eax, 0x1000
+	add ebx, 8
+    loop map_boot_pages
     
     
     mov eax, cr4                 # Set the A-register to control register 4.
@@ -140,32 +143,25 @@ prot_mode:
     jmp 8:mode64 # 8 is the code selector
 .code64
 mode64:
-    # map address 0xffff800000000000 to same physical pages and continue execution.
-    mov rax, 0xFFFFF6FB7DBED800 # pxe
+
+    # map the stack. (maximum of 4 pages)
+    mov rax, 0xFFFFF68000000000 # 4 pages of stack, starting at 0
+    mov qword ptr [rax], 0x23003
+    add rax, 8
     mov qword ptr [rax], 0x24003
-    
-    mov rax, 0xFFFFF6FB7DB00000 # ppe
-    mov qword ptr [rax],0x25003
-    
-    mov rax, 0xFFFFF6FB60000000 # pde
-    mov qword ptr [rax],0x26003
-    
-    mov rax, 0xFFFFF6C000000000 # pte
-    mov qword ptr [rax], 0x7003     # map 6 pages. (we read 40 sectors, start from 0x7c00)
     add rax, 8
-    mov qword ptr [rax], 0x8003
+    mov qword ptr [rax], 0x25003
     add rax, 8
-    mov qword ptr [rax], 0x9003
-    add rax, 8
-    mov qword ptr [rax], 0xA003
-	add rax, 8
-    mov qword ptr [rax], 0xB003
-	add rax, 8
-    mov qword ptr [rax], 0xC003
-    
-    mov rax, 0xFFFF800000000000
-	add rax, (continue_at_kernel_space - real_mode + 0xC00) # this is the address of the same code - mapped to the 0xFFFF800000000000 area. 
-    jmp rax
+    mov qword ptr [rax], 0x26003
+
+    mov rsp, 0x0000000000004000
+	jmp _start
+
+    # now, in the physical space: non-volatile area is the pages starting at 0x60000 and we use only 0x60000.
+    #                             volatile area is the pages up tp 0x60000. the next free page is 0x27000.
+    # and in the virtual space: non-volatile area is only the page of the root PXEs. (0xFFFFF6FB7DBED000)
+    #                           volatile area is anything under the PXE at 0xFFFFF6FB7DBED800
+
 
 GlobalDescriptorTable: 
 NULL_DESC: # Not really NULL. no one use it so we use it.
@@ -227,32 +223,6 @@ GDT64_Pointer:                    # The GDT-pointer.
 	.long 0xFFFF8000				# 0xFFFF800000000000 + GDT64 - real_mode + 0xC00 
     
 #===========================================
-
-continue_at_kernel_space:
-	mov rax, 0xFFFF800000000000
-    add rax,GDT64_PointerAtKernelSpace - real_mode + 0xC00
-    lgdt [rax]
-    # clean the mapping at address 0x7000
-    mov rax, 0xFFFFF6FB7DBED000
-    mov qword ptr [rax], 0
-    
-    # map the stack. (maximum of 4 pages)
-    mov rax, 0xFFFFF6C000000030 # start after the 6 pages of the boot code
-    mov qword ptr [rax], 0x20003
-    add rax, 8
-    mov qword ptr [rax], 0x21003
-    add rax, 8
-    mov qword ptr [rax], 0x22003
-    add rax, 8
-    mov qword ptr [rax], 0x23003
-    
-    mov rsp, 0xffff80000000A000
-	jmp _start
-
-    # now, in the physical space: non-volatile area is the pages starting at 0x60000 and we use only 0x60000.
-    #                             volatile area is the pages up tp 0x60000. the next free page is 0x27000.
-    # and in the virtual space: non-volatile area is only the page of the root PXEs. (0xFFFFF6FB7DBED000)
-    #                           volatile area is anything under the PXE at 0xFFFFF6FB7DBED800
                                 
 PadOutWithZeroesSectorsAll:
     . = real_mode + 0x2000

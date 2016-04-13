@@ -26,7 +26,7 @@ int32 init_FAT32(BootLoaderAllocator *allocator, uint32 BPB_sector, FAT32Desc *f
 	//	return res;
 	//}
 	int8 *buf;
-	buf = (int8*)0xFFFF800000000C00;
+	buf = (int8*)BPB_ADDR;
 	fat32_desc->bytes_per_sector = *((int16*)&buf[11]);
 	fat32_desc->sectors_per_cluster = *((int8*)&buf[13]);
 	fat32_desc->num_of_reserved_sectors = *((int16*)&buf[14]);
