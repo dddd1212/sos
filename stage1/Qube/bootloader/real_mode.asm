@@ -42,6 +42,24 @@ Main:
     #
     # set up data for entering protected mode
     #
+	mov edi, 0xF000
+	mov edx, 0x534D4150
+	xor ebx, ebx
+	mov es, bx
+	
+phy_pages_loop:
+	mov eax, 0xE820
+	mov ecx,24
+	int 0x15
+	add edi, 24
+	test ebx, ebx
+	jnz phy_pages_loop
+	mov eax, 0xFFFFFFFF
+	cld
+	stosd
+	stosd
+
+
     xor edx,edx # edx = 0
     mov dx,ds   # get the data segment
     shl edx,4   # shift it left a nibble
@@ -71,36 +89,36 @@ prot_mode:
     #
     # zero the root PXE page.
     #
-    mov edi, 0x100000
+    mov edi, 0x60000
 	mov ecx, 0x400
 	xor eax, eax
 	cld
 	rep stosd
 
-    mov eax, 0x100003
-    mov ebx,0x100F68
+    mov eax, 0x60003
+    mov ebx,0x60F68
     mov [ebx],eax # set the PXE point to itself
     
-    mov eax, 0x100000
+    mov eax, 0x60000
     mov cr3, eax # set cr3 point to the PXE root
     
-    mov eax, 0x201003
-    mov ebx,0x100000
+    mov eax, 0x20003
+    mov ebx, 0x60000
     mov [ebx],eax # set the PXE entry of code
     
-    mov eax, 0x202003
-    mov ebx, 0x201000
+    mov eax, 0x21003
+    mov ebx, 0x20000
     mov [ebx],eax # set the PPE entry of code
     
-    mov eax, 0x203003
-    mov ebx, 0x202000
+    mov eax, 0x22003
+    mov ebx, 0x21000
     mov [ebx],eax # set the PDE entry of code
     
     mov eax, 0x7003
-    mov ebx, 0x203038
+    mov ebx, 0x22038
     mov [ebx],eax # set the PTE entry of code: 0x7000.
     #mov eax, 0x8003
-    #mov ebx, 0x103040
+    #mov ebx, 0x22040
     #mov [ebx],eax # set the PTE entry of code: 0x8000.
     
     
@@ -124,16 +142,16 @@ prot_mode:
 mode64:
     # map address 0xffff800000000000 to same physical pages and continue execution.
     mov rax, 0xFFFFF6FB7DBED800 # pxe
-    mov qword ptr [rax], 0x400003
+    mov qword ptr [rax], 0x24003
     
     mov rax, 0xFFFFF6FB7DB00000 # ppe
-    mov qword ptr [rax],0x401003
+    mov qword ptr [rax],0x25003
     
     mov rax, 0xFFFFF6FB60000000 # pde
-    mov qword ptr [rax],0x402003
+    mov qword ptr [rax],0x26003
     
     mov rax, 0xFFFFF6C000000000 # pte
-    mov qword ptr [rax], 0x7003     # map 4 pages. (we read 40 sectors)
+    mov qword ptr [rax], 0x7003     # map 6 pages. (we read 40 sectors, start from 0x7c00)
     add rax, 8
     mov qword ptr [rax], 0x8003
     add rax, 8
@@ -142,6 +160,8 @@ mode64:
     mov qword ptr [rax], 0xA003
 	add rax, 8
     mov qword ptr [rax], 0xB003
+	add rax, 8
+    mov qword ptr [rax], 0xC003
     
     mov rax, 0xFFFF800000000000
 	add rax, (continue_at_kernel_space - real_mode + 0xC00) # this is the address of the same code - mapped to the 0xFFFF800000000000 area. 
@@ -217,20 +237,20 @@ continue_at_kernel_space:
     mov qword ptr [rax], 0
     
     # map the stack. (maximum of 4 pages)
-    mov rax, 0xFFFFF6C000000028 # start after the 5 pages of the boot code
-    mov qword ptr [rax], 0x403003
+    mov rax, 0xFFFFF6C000000030 # start after the 6 pages of the boot code
+    mov qword ptr [rax], 0x20003
     add rax, 8
-    mov qword ptr [rax], 0x404003
+    mov qword ptr [rax], 0x21003
     add rax, 8
-    mov qword ptr [rax], 0x405003
+    mov qword ptr [rax], 0x22003
     add rax, 8
-    mov qword ptr [rax], 0x406003
+    mov qword ptr [rax], 0x23003
     
-    mov rsp, 0xffff800000008000
+    mov rsp, 0xffff80000000A000
 	jmp _start
 
-    # now, in the physical space: non-volatile area is the pages up to 0x400000 and we use only 0x100000.
-    #                             volatile area is the pages from 0x400000. the next free page is 0x407000.
+    # now, in the physical space: non-volatile area is the pages starting at 0x60000 and we use only 0x60000.
+    #                             volatile area is the pages up tp 0x60000. the next free page is 0x27000.
     # and in the virtual space: non-volatile area is only the page of the root PXEs. (0xFFFFF6FB7DBED000)
     #                           volatile area is anything under the PXE at 0xFFFFF6FB7DBED800
                                 

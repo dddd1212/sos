@@ -3,9 +3,9 @@
 
 #include "Qube.h"
 typedef struct {
-	int64 next_physical_nonvolatile;
+	int64* next_physical_nonvolatile;
 	int64 next_virtual_nonvolatile;
-	int64 next_physical_volatile;
+	int64* next_physical_volatile;
 	int64 next_virtual_volatile;
 } BootLoaderAllocator;
 
