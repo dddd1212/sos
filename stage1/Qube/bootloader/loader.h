@@ -114,7 +114,7 @@ struct Elf64Header {
 	Elf64_Half e_phnum; // Number of program header entries
 	Elf64_Half e_shentsize; // Section header entry size
 	Elf64_Half e_shnum; // Nmber of section header entries
-	Elf64_Half e_shtrndx; // String table index
+	Elf64_Half e_shstrndx; // String table index
 };
 
 struct Elf64Symbol {

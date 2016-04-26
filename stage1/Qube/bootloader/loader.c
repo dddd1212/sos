@@ -29,23 +29,23 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 			if (ph->p_vaddr + ph->p_memsz > reserved_end) reserved_end = ph->p_vaddr + ph->p_memsz;
 		}
 		// Reserve the memory for the module:
-		module_base = (Elf64_Addr) virtual_commit(boot_loader_allocator, NUM_OF_PAGES(reserved_end - reserved_start), FALSE);
+		module_base = (Elf64_Addr) virtual_commit(boot_loader_allocator, reserved_end - reserved_start, FALSE);
 		if (module_base == NULL) return 0x1000;
 		// Load the program headers to the memory:
 		// Iterate over the program header tables:
 		for (j = 0, ph = (struct Elf64ProgramHeader*)(((char *)boot_module->file_data) + boot_module->file_data->e_phoff); j < boot_module->file_data->e_phnum; j++, ph++) {
-			ret = alloc_committed(boot_loader_allocator, 0x1000*NUM_OF_PAGES(ph->p_memsz), (void*)(module_base + ph->p_vaddr));
+			ret = alloc_committed(boot_loader_allocator, ph->p_memsz, (void*)(module_base - reserved_start + ph->p_vaddr));
 			if (ret == NULL) return 0x2000;
-			memcpy((char*)(module_base + ph->p_vaddr), ((char*)boot_module->file_data) + ph->offset, ph->p_filesz);
+			memcpy((char*)(module_base - reserved_start + ph->p_vaddr), ((char*)boot_module->file_data) + ph->offset, ph->p_filesz);
 			// CR: Ha?
 			ASSERT(ph->p_filesz <= ph->p_memsz); // TODO: Handle this assert thing
 			if (ph->p_filesz < ph->p_memsz) {
-				memset((char*) (module_base + ph->p_vaddr + ph->p_filesz), 0, ph->p_memsz - ph->p_filesz);
+				memset((char*) (module_base - reserved_start + ph->p_vaddr + ph->p_filesz), 0, ph->p_memsz - ph->p_filesz);
 			}
 		}	
 
 		// Get string table ptr:
-		char * string_table = ((char*)boot_module->file_data) + ((struct Elf64SectionHeader *)(((char*)boot_module->file_data) + boot_module->file_data->e_shoff))->s_offset;
+		char * string_table = ((char*)boot_module->file_data) + ((struct Elf64SectionHeader *)(((char*)boot_module->file_data) + boot_module->file_data->e_shoff))[boot_module->file_data->e_shstrndx].s_offset;
 
 		// Handle exports:
 		struct Elf64Symbol * symbol_entry;
@@ -111,7 +111,7 @@ void * find_section_by_name(struct STAGE0BootModule * boot_modules, char * name,
 	int sn = boot_modules->file_data->e_shnum;
 	struct Elf64SectionHeader * sh = (struct Elf64SectionHeader *) (((char*)boot_modules->file_data) + boot_modules->file_data->e_shoff);
 	
-	char * symtab = ((char *)boot_modules->file_data) + (sh + boot_modules->file_data->e_shtrndx)->s_offset;
+	char * symtab = ((char *)boot_modules->file_data) + (sh + boot_modules->file_data->e_shstrndx)->s_offset;
 	for (int i = 0; i < sn; i++, sh++) {
 		
 		if (strcmp(symtab + sh->s_name,name) == 0) {
