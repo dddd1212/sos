@@ -1,23 +1,137 @@
 #include "mem.h"
-// CR: GIlad - You should define just one number (0 to 256) that will say the choise that we choose for the PTE address.
-//			   Its very difficult to understand what you try to do here and y.
-#define PTE(x) ((int64*)(0xFFFFF6C000000000 + ((((int64)x - 0xFFFF800000000000)>>12)<<3)))
+#define PTE(x) ((uint64*)(0xFFFFF68000000000 + (((((uint64)x) & 0x0000FFFFFFFFFFFF)>>12)<<3)))
+#define PDE(x) PTE(PTE(x))
+#define PPE(x) PTE(PDE(x))
+#define PXE(x) PTE(PPE(x))
+
 #define NONVOLATILE_VIRTUAL_START 0xfffff00000000000
-#define VOLATILE_VIRTUAL_START 0xffff800000008000
+#define VOLATILE_VIRTUAL_START 0x0000000000010000
+
+#define VOLATILE_PHYSICAL_START 0x00000
+#define VOLATILE_PHYSICAL_END 0x60000
+#define NONVOLATILE_PHYSICAL_START 0x60000
+#define NONVOLATILE_PHYSICAL_END 0x80000
+
+#define NONVOLATILE_PHYSICAL_USED 1
+#define FIRST_FREE_PHYSICAL (NONVOLATILE_PHYSICAL_START+NONVOLATILE_PHYSICAL_USED*0x1000)
+
+#define PHYSICAL_PAGES_ENTRIES_PHY_ADDR 0xF000
+
+#define PHYISICAL_PAGES_LIST 0xfffff00040000000
+
+typedef struct {
+	uint64 base;
+	uint64 length;
+	uint32 type;
+	uint32 ex_attrs;
+} PysicalRegionEntry;
+
 int32 init_allocator(BootLoaderAllocator *allocator){
-	// CR: Gilad - again, remove these numbers..
-	*((uint64*)0xFFFFF6FB7DBEDF00) = 0x101000 | 3;
-	*((uint64*)0xFFFFF6FB7DBE0000) = 0x102000 | 3;
-	*((uint64*)0xFFFFF6FB7C000000) = 0x103000 | 3;
-	allocator->next_physical_nonvolatile = 0x104000;
+#ifdef DEBUG
+	allocator->disable_non_volatile_allocs = FALSE;
+#endif
+	allocator->physical_pages_end = allocator->physical_pages_start = (uint64*)PHYISICAL_PAGES_LIST;
+
+	*(PXE(NONVOLATILE_VIRTUAL_START)) = FIRST_FREE_PHYSICAL | 3;
+	*(PPE(NONVOLATILE_VIRTUAL_START)) = (FIRST_FREE_PHYSICAL + 0x1000) | 3;
+	
+	*(PPE(PHYISICAL_PAGES_LIST)) = (FIRST_FREE_PHYSICAL + 0x2000) | 3; // use same PXE
+	*(PDE(PHYISICAL_PAGES_LIST)) = (FIRST_FREE_PHYSICAL + 0x3000) | 3; // use same PXE
+	*(PTE(PHYISICAL_PAGES_LIST)) = (FIRST_FREE_PHYSICAL + 0x4000) | 3; // use same PXE
+
+
+	// The list of physical regions from the BIOS are in the physical address PHYSICAL_PAGES_ENTRIES_PHY_ADDR.
+	// This code sort the list.
+	*(PTE(VOLATILE_VIRTUAL_START)) = (PHYSICAL_PAGES_ENTRIES_PHY_ADDR) | 3;
+	PysicalRegionEntry* entries = (PysicalRegionEntry*)VOLATILE_VIRTUAL_START;
+	uint32 i = 0;
+	uint32 j = 0;
+	while (entries[i].base != 0xFFFFFFFFFFFFFFFF) {
+		j = i;
+		while (j > 0 && entries[j].base < entries[j - 1].base) {
+			PysicalRegionEntry e = entries[j];
+			entries[j] = entries[j - 1];
+			entries[j - 1] = e;
+			j--;
+		}
+		i++;
+	}
+	
+
+	// Now we build the list of physical pages.
+	// First, we add the addresses 0x60000-0x80000
+	for (uint64 addr = NONVOLATILE_PHYSICAL_START; addr < NONVOLATILE_PHYSICAL_END; addr+=0x1000) {
+		*(allocator->physical_pages_end) = addr;
+		allocator->physical_pages_end++;
+	}
+
+	// Consider the 6 pages we already used (5 here and 1 in real_mode.asm)
+	allocator->next_physical_nonvolatile = allocator->physical_pages_start + 5 + NONVOLATILE_PHYSICAL_USED;
+
+	uint64 last_addr = NONVOLATILE_PHYSICAL_END;
+	for (i = 0; entries[i].base != 0xFFFFFFFFFFFFFFFF; i++) {
+		if (entries[i].type != 1) {
+			continue;
+		}
+		uint64 start = (entries[i].base + 0xFFF) & 0xFFFFFFFFFFFFF000;
+		uint64 end = (entries[i].base + entries[i].length) & 0xFFFFFFFFFFFFF000;
+		if (end > last_addr) {
+			if (start < last_addr) {
+				start = last_addr;
+			}
+			for (uint64 cur = start; cur < end; cur += 0x1000, allocator->physical_pages_end++) {
+				if ((((uint64)allocator->physical_pages_end) & 0x1fffff) == 0) {
+					*PDE(allocator->physical_pages_end) = (*allocator->next_physical_nonvolatile)|3;
+					allocator->next_physical_nonvolatile++;
+				}
+				if ((((uint64)allocator->physical_pages_end) & 0xfff) == 0) {
+					*PTE(allocator->physical_pages_end) = (*allocator->next_physical_nonvolatile)|3;
+					allocator->next_physical_nonvolatile++;
+				}
+				*allocator->physical_pages_end = cur;
+			}
+			last_addr = end;
+		}
+	}
+	
+	for (uint64 cur = VOLATILE_PHYSICAL_START; cur < VOLATILE_PHYSICAL_END; cur += 0x1000, allocator->physical_pages_end++) {
+		if ((((uint64)allocator->physical_pages_end) & 0x1fffff) == 0) {
+			*PDE(allocator->physical_pages_end) = (*allocator->next_physical_nonvolatile) | 3;
+			allocator->next_physical_nonvolatile++;
+		}
+		if ((((uint64)allocator->physical_pages_end) & 0xfff) == 0) {
+			*PTE(allocator->physical_pages_end) = (*allocator->next_physical_nonvolatile) | 3;
+			allocator->next_physical_nonvolatile++;
+		}
+		*allocator->physical_pages_end = cur;
+	}
+	
+	*(PTE(VOLATILE_VIRTUAL_START)) = 0;
+	
+	allocator->next_physical_volatile = allocator->physical_pages_end-0x800; // maximum of 0x800 (minus the 0x60 pages at 0-0x60000) pages. [~8M]
+
 	allocator->next_virtual_nonvolatile = NONVOLATILE_VIRTUAL_START;
-	allocator->next_physical_volatile = 0x407000;
 	allocator->next_virtual_volatile = VOLATILE_VIRTUAL_START;
-	return -1; 
+	return 0;
+}
+
+void set_boot_info(BootLoaderAllocator *allocator, BootInfo* boot_info) {
+	boot_info->physical_pages_start = allocator->physical_pages_start;
+	boot_info->physical_pages_end = allocator->physical_pages_end;
+	boot_info->physical_pages_current = allocator->next_physical_nonvolatile;
+#ifdef DEBUG
+	allocator->disable_non_volatile_allocs = TRUE;
+#endif
 }
 
 void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
-	uint64 next_physical, next_virtual;
+#ifdef DEBUG
+	if (isVolatile && allocator->disable_non_volatile_allocs) {
+		return 0;
+	}
+#endif
+	uint64 *next_physical;
+	uint64 next_virtual;
 	void *addr;
 	if (isVolatile) {
 		next_physical = allocator->next_physical_volatile;
@@ -31,20 +145,18 @@ void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
 
 	uint32 num_of_pages = (size + 0xFFF) >> 12;
 	for (int i = 0; i < num_of_pages; i++) {
-		// CR: gilad - #define SIZE_OF_????? 0x1fffff
 		if ((next_virtual & 0x1fffff) == 0) { // need new PDE
 			uint64* pte = PTE(next_virtual);
-			// CR: gilad - #define ?@#??!@# 3
-			*PTE(pte) = next_physical|3; // this is the pde
-			next_physical += 0x1000;
+			*PTE(pte) = (*next_physical)|3; // this is the pde
+			next_physical++;
 			// zero the new ptes page:
 			for (int j = 0; j < (0x1000 / 8);j++) {
 				pte[j] = 0;
 			}
 		}
-		*PTE(next_virtual) = next_physical | 3;
+		*PTE(next_virtual) = (*next_physical) | 3;
 		next_virtual += 0x1000;
-		next_physical += 0x1000;
+		next_physical++;
 	}
 
 	if (isVolatile) {
@@ -58,9 +170,7 @@ void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
 	return addr;
 }
 
-
 void* virtual_commit(BootLoaderAllocator* allocator, uint32 size, BOOL isVolatile){
-	// CR: GIlad - change to SIZE_OF_PAGE - 1
 	int32 num_of_pages = (size + 0xFFF) >> 12;
 	void *addr;
 	if (isVolatile) {

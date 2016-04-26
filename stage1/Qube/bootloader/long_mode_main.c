@@ -23,20 +23,20 @@ void _start(void * my_address) {
     
 	char boot_txt_data[BOOT_TXT_FILE_MAX_SIZE];
 	struct STAGE0BootModule boot_modules[MAX_BOOT_MODULES];
-	char * boot_txt_end;
+	//char * boot_txt_end;
 	
 	char boot_txt_file_name[] = { 'B','O','O','T','.','T','X','T','\x00' };
 	unsigned int boot_txt_file_size;
 
-	int alloc_bytes = sizeof(struct KernelGlobalData) + // the kgd will be the first in the memory
+	int32 alloc_bytes = sizeof(struct KernelGlobalData) + // the kgd will be the first in the memory
 		sizeof(ModulesList); // The modules list will be just after the kgd.
 	struct KernelGlobalData * kgd = NULL;
 	void * modules_addr = NULL;
 	void * ret = NULL;
-	int i, temp, line, num_of_lines;
+	int32 i, temp, line, num_of_lines;
 	
 	// First, calculate how many bytes we need to allocate for the kgd (KernelGlobalData), for the symbol table, and for the boot modules:
-	boot_txt_file_size = get_file_size(&hd_desc,boot_txt_file_name);
+	boot_txt_file_size = get_file_size(&hd_desc, boot_txt_file_name);
 	if (boot_txt_file_size >= BOOT_TXT_FILE_MAX_SIZE) {
 		STAGE0_suicide(0x1000);
 	}
@@ -56,7 +56,7 @@ void _start(void * my_address) {
 		boot_modules[line].file_name = &boot_txt_data[i]; // File
 		line++;
 		while ((boot_txt_data[i] != '\n') && (boot_txt_data[i] != '\x00')) i++;
-		if (boot_txt_data[i] == '\x00') { // last line and its ends with no \n
+		if (boot_txt_data[i] == '\x00') { // last line and it ends with no \n
 			break;
 		}
 		boot_txt_data[i] = '\x00';
@@ -69,6 +69,7 @@ void _start(void * my_address) {
 	num_of_lines = line;
 
 	// get alloc size:
+	// CR: dont we want to alloc each module on page boundary? looks like the next code assume this, and it should be "alloc_bytes += PAGES_ROUND_UP(temp)" or something.
 	for (line = 0; line < num_of_lines; line++) {
 		temp = get_file_size(&hd_desc, boot_modules[line].file_name);
 		boot_modules[line].file_pages = NUM_OF_PAGES(temp);
@@ -77,7 +78,9 @@ void _start(void * my_address) {
 	}
 
 	// Commit the wanted pages for the files:
+	// CR: there is one nonvolatile alloc for kgd + modules-list + modules-data, but isn't the module-data should be volatile?
 	kgd = (struct KernelGlobalData *) mem_alloc(&allocator, alloc_bytes, FALSE);
+	// CR: ret set to NULL...
 	if (kgd == NULL || ret == NULL) {
 		STAGE0_suicide(0x5000);
 	}

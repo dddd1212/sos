@@ -34,9 +34,10 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 		// Load the program headers to the memory:
 		// Iterate over the program header tables:
 		for (j = 0, ph = (struct Elf64ProgramHeader*)(((char *)boot_module->file_data) + boot_module->file_data->e_phoff); j < boot_module->file_data->e_phnum; j++, ph++) {
-			ret = alloc_committed(boot_loader_allocator, NUM_OF_PAGES(ph->p_memsz), (void*)(module_base + ph->p_vaddr));
+			ret = alloc_committed(boot_loader_allocator, 0x1000*NUM_OF_PAGES(ph->p_memsz), (void*)(module_base + ph->p_vaddr));
 			if (ret == NULL) return 0x2000;
 			memcpy((char*)(module_base + ph->p_vaddr), ((char*)boot_module->file_data) + ph->offset, ph->p_filesz);
+			// CR: Ha?
 			ASSERT(ph->p_filesz <= ph->p_memsz); // TODO: Handle this assert thing
 			if (ph->p_filesz < ph->p_memsz) {
 				memset((char*) (module_base + ph->p_vaddr + ph->p_filesz), 0, ph->p_memsz - ph->p_filesz);
