@@ -1,5 +1,5 @@
 ENTRY(real_mode)
-STARTUP("real_mode.o")
+STARTUP("../_output/bootloader/inter/real_mode.o")
 SECTIONS
 {
 	.text 0x7c00:

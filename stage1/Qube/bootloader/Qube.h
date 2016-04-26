@@ -44,17 +44,18 @@ struct PrimitiveSymbols {
 	int names_storage_index;
 	char * names_storage;
 };
+typedef struct {
+	uint64 *physical_pages_start;
+	uint64 *physical_pages_end;
+	uint64 *physical_pages_current;
+} BootInfo;
 struct KernelGlobalData {
 	struct PrimitiveSymbols bootloader_symbols; // symbols for the primitive loader.
 	ModulesList * modules;
 	BootInfo *boot_info;
 };
 
-typedef struct {
-	uint64 *physical_pages_start;
-	uint64 *physical_pages_end;
-	uint64 *physical_pages_current;
-} BootInfo;
+
 
 
 
