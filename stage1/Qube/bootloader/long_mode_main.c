@@ -17,6 +17,7 @@
 void _start(void * my_address) {
     BootLoaderAllocator allocator;
 	hdDesc hd_desc;
+	// CR: Gilad - check the return values
 	init_allocator(&allocator);
 	init_hd(&allocator, &hd_desc); 
     

@@ -19,7 +19,7 @@ typedef enum {
 	PAGE_ACCESS_WX = 0x6,
 	PAGE_ACCESS_RWX = 0x7,
 }PAGE_ACCESS;
-
+// CR: GIlad - you have to doc. these functions. Including the params and return address
 int32 init_allocator(BootLoaderAllocator *allocator);
 void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile);
 void* virtual_commit(BootLoaderAllocator* allocator, uint32 size, BOOL isVolatile);

@@ -1,8 +1,11 @@
 #include "mem.h"
+// CR: GIlad - You should define just one number (0 to 256) that will say the choise that we choose for the PTE address.
+//			   Its very difficult to understand what you try to do here and y.
 #define PTE(x) ((int64*)(0xFFFFF6C000000000 + ((((int64)x - 0xFFFF800000000000)>>12)<<3)))
 #define NONVOLATILE_VIRTUAL_START 0xfffff00000000000
 #define VOLATILE_VIRTUAL_START 0xffff800000008000
 int32 init_allocator(BootLoaderAllocator *allocator){
+	// CR: Gilad - again, remove these numbers..
 	*((uint64*)0xFFFFF6FB7DBEDF00) = 0x101000 | 3;
 	*((uint64*)0xFFFFF6FB7DBE0000) = 0x102000 | 3;
 	*((uint64*)0xFFFFF6FB7C000000) = 0x103000 | 3;
@@ -10,7 +13,7 @@ int32 init_allocator(BootLoaderAllocator *allocator){
 	allocator->next_virtual_nonvolatile = NONVOLATILE_VIRTUAL_START;
 	allocator->next_physical_volatile = 0x407000;
 	allocator->next_virtual_volatile = VOLATILE_VIRTUAL_START;
-	return -1;
+	return -1; 
 }
 
 void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
@@ -28,8 +31,10 @@ void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
 
 	uint32 num_of_pages = (size + 0xFFF) >> 12;
 	for (int i = 0; i < num_of_pages; i++) {
+		// CR: gilad - #define SIZE_OF_????? 0x1fffff
 		if ((next_virtual & 0x1fffff) == 0) { // need new PDE
 			uint64* pte = PTE(next_virtual);
+			// CR: gilad - #define ?@#??!@# 3
 			*PTE(pte) = next_physical|3; // this is the pde
 			next_physical += 0x1000;
 			// zero the new ptes page:
@@ -55,6 +60,7 @@ void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
 
 
 void* virtual_commit(BootLoaderAllocator* allocator, uint32 size, BOOL isVolatile){
+	// CR: GIlad - change to SIZE_OF_PAGE - 1
 	int32 num_of_pages = (size + 0xFFF) >> 12;
 	void *addr;
 	if (isVolatile) {

@@ -3,22 +3,32 @@
 .text
 .code16
 .globl real_mode
+
+
+; OK. We starts in real_mode. This is address 0x7c00.
+; When we start, only 512 bytes are loaded from the disk.
 real_mode:
+; First we want to jump a little because we need space for the file system.
     jmp Boot
+; This is the space (90 bytes).
     . = real_mode + 90 # space for file system
 Boot:
-    mov ah,0x02    # read sectors into memory
-    mov al,0x28    # number of sectors to read (40)
-    #mov dl,0x80    # drive number
-	mov ch,0    # cylinder number
-    mov dh,2    # head number
+; Now, we want to read from the HD couple of pages that contains the remainder of this bootloader code.
+    mov ah,0x02    ; READ command: read sectors into memory
+; CR: Gilad: Y 40?!? this is need to be variable.
+    mov al,0x28    ; number of sectors to read (40)
+; CR: Gilad: Y this line is comment out?	
+    ;mov dl,0x80    # drive number
+	mov ch,0    ; cylinder number
+    mov dh,2    ; head number
+; CR: Gilad: WTF?!?!? Y the hell this is writen like this?!?! change it to make it less MAVCHIL.
     mov cl,4    # starting sector number. we need sector number 2+128 (because the MBR part), so we need sector 4 in head 2.
-    mov bx, offset Main    # address to load to
-    int 0x13    # call the interrupt routine
+    mov bx, offset Main    ; address to load to
+    int 0x13    ; call the interrupt routine
     #
     jmp Main
     #
-
+; Pad the rest of the 512 bytes.
 PreviousLabel:
 
 PadOutWithZeroesSectorOne:
@@ -26,7 +36,8 @@ PadOutWithZeroesSectorOne:
 
 BootSectorSignature:
     .word 0xAA55
-
+; CR: Gilad - what is this \?	
+	\
 #===========================================
 
 Main:
@@ -39,8 +50,9 @@ Main:
     
     mov ax,3
     int 0x10    # set VGA text mode 3
-    #
-    # set up data for entering protected mode
+    
+	#
+    # setup data for entering protected mode
     #
     xor edx,edx # edx = 0
     mov dx,ds   # get the data segment
@@ -53,21 +65,24 @@ Main:
 
     cli         # disable interrupts
     mov cr0,eax # start protected mode    
-    jmp 0x8:prot_mode # this will change cs to 0x8 and actually make it works in protected mode ( We cant access directly to cs.
+    jmp 0x8:prot_mode # this will change cs to 0x8 and actually make it works in protected mode (We cant access directly to cs).
 ############################         
         
-        
+; Now we in protected mode! Good. Lets move on to long-mode:
 .code32
 prot_mode:
         mov ebx,0x10 # the size of a GDT descriptor is 8 bytes
         mov fs,bx   # fs = the 2nd GDT descriptor, a 4 GB data seg
-        mov ds,bx   # fs = the 2nd GDT descriptor, a 4 GB data seg
-        mov ss,bx   # fs = the 2nd GDT descriptor, a 4 GB data seg
-        mov es,bx   # fs = the 2nd GDT descriptor, a 4 GB data seg
-        mov gs,bx   # fs = the 2nd GDT descriptor, a 4 GB data seg
-        #mov cs,bx   # fs = the 2nd GDT descriptor, a 4 GB data seg
-        # TODO: more segments??
+        mov ds,bx   # ds = the 2nd GDT descriptor, a 4 GB data seg
+        mov ss,bx   # ss = the 2nd GDT descriptor, a 4 GB data seg
+        mov es,bx   # es = the 2nd GDT descriptor, a 4 GB data seg
+        mov gs,bx   # gs = the 2nd GDT descriptor, a 4 GB data seg
         
+; Initialize the PXE:
+
+; CR: Gilad - make the number 0x100000 a parameter.
+;			  0x400 too. need to be something like - PAGE_SIZE_IN_DWORDS
+; CR: GIlad - Are we allow to use the address 0x100000?
     #
     # zero the root PXE page.
     #
@@ -77,13 +92,16 @@ prot_mode:
 	cld
 	rep stosd
 
+; CR: Gilad - here too - you need to switch all of these numbers to paramters.
+;			  The best is to use only one number in the definitions - the id of the PXE (range(0,256))
     mov eax, 0x100003
     mov ebx,0x100F68
     mov [ebx],eax # set the PXE point to itself
     
     mov eax, 0x100000
     mov cr3, eax # set cr3 point to the PXE root
-    
+; CR: Gilad - The address 0x200000 is ok?
+; CR: Gilad - Add doc. here that says the map between the physical and the virtual (in what virtual address each of the following pages can be accees? (The same?))
     mov eax, 0x201003
     mov ebx,0x100000
     mov [ebx],eax # set the PXE entry of code
@@ -120,8 +138,11 @@ prot_mode:
     lgdt [GDT64_Pointer]
 	
     jmp 8:mode64 # 8 is the code selector
+
+; Long mode!
 .code64
 mode64:
+; CR: Gilad - Again - get the numbers out of here :)
     # map address 0xffff800000000000 to same physical pages and continue execution.
     mov rax, 0xFFFFF6FB7DBED800 # pxe
     mov qword ptr [rax], 0x400003
@@ -133,6 +154,7 @@ mode64:
     mov qword ptr [rax],0x402003
     
     mov rax, 0xFFFFF6C000000000 # pte
+; CR: Gilad - maybe we want to do this in loop, and the number of pages should be variable?	
     mov qword ptr [rax], 0x7003     # map 4 pages. (we read 40 sectors)
     add rax, 8
     mov qword ptr [rax], 0x8003
@@ -204,10 +226,12 @@ GDT64_Pointer:                    # The GDT-pointer.
     GDT64_PointerAtKernelSpace:
     .word GDT64_Pointer - GDT64 - 1             # Limit.
     .long GDT64 - real_mode + 0xC00 # Base.
+; CR: Gilad - what this comment means?
 	.long 0xFFFF8000				# 0xFFFF800000000000 + GDT64 - real_mode + 0xC00 
     
 #===========================================
 
+; CR: Gilad - change the numbers into variables..
 continue_at_kernel_space:
 	mov rax, 0xFFFF800000000000
     add rax,GDT64_PointerAtKernelSpace - real_mode + 0xC00
@@ -216,6 +240,7 @@ continue_at_kernel_space:
     mov rax, 0xFFFFF6FB7DBED000
     mov qword ptr [rax], 0
     
+; CR: Gilad - You need to make the size of the stack a variable.
     # map the stack. (maximum of 4 pages)
     mov rax, 0xFFFFF6C000000028 # start after the 5 pages of the boot code
     mov qword ptr [rax], 0x403003
@@ -230,6 +255,7 @@ continue_at_kernel_space:
 	jmp _start
 
     # now, in the physical space: non-volatile area is the pages up to 0x400000 and we use only 0x100000.
+; CR: GIlad - Where you use this fact that the next free page is 0x407000? If we will want to add one more page here? So how this place will know it?
     #                             volatile area is the pages from 0x400000. the next free page is 0x407000.
     # and in the virtual space: non-volatile area is only the page of the root PXEs. (0xFFFFF6FB7DBED000)
     #                           volatile area is anything under the PXE at 0xFFFFF6FB7DBED800
