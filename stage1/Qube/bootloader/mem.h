@@ -1,12 +1,22 @@
 #ifndef MEM_H
 #define MEM_H
 
+#define DEBUG
+
+#define BPB_ADDR 0x0000000000007C00
+
 #include "Qube.h"
 typedef struct {
 	int64* next_physical_nonvolatile;
 	int64 next_virtual_nonvolatile;
 	int64* next_physical_volatile;
 	int64 next_virtual_volatile;
+
+	int64* physical_pages_start;
+	int64* physical_pages_end;
+#ifdef DEBUG
+	BOOL disable_non_volatile_allocs;
+#endif
 } BootLoaderAllocator;
 
 typedef enum {
