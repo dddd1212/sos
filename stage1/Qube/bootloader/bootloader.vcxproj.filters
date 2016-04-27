@@ -43,9 +43,6 @@
     <ClInclude Include="mem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Qube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
