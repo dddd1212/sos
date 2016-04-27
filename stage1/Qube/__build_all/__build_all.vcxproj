@@ -22,6 +22,7 @@
     <ProjectGuid>{D858AA0D-1BC1-4D8F-B30F-8B8A1C69C148}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>__build_all</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -88,6 +89,7 @@
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="gdbinit" />
     <None Include="make.py" />
     <None Include="run.py" />
   </ItemGroup>

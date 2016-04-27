@@ -47,10 +47,11 @@
     <LinkIncremental>false</LinkIncremental>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>$(SolutionDir)_output\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>../_output/bootloader</OutDir>
     <NMakeBuildCommandLine>make all</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>make cleen</NMakeCleanCommandLine>
+    <IntDir>../_output/bootloader/inter</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='BootLoader|Win32'">
     <ClCompile>
@@ -112,6 +113,9 @@
     <PostBuildEvent>
       <Command>c:\python26\python.exe bootloader_post_build.py</Command>
     </PostBuildEvent>
+    <BuildLog>
+      <Path>../_output/bootloader/inter/$(MSBuildProjectName).log</Path>
+    </BuildLog>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="fat32.c" />

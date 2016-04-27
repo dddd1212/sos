@@ -30,5 +30,8 @@
     <None Include="run.py">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="gdbinit">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
