@@ -1,7 +1,7 @@
 #ifndef HD_H
 #define HD_H
 
-#include "Qube.h"
+#include "../Common/inc/Qube.h"
 #include "intrinsics.h"
 #include "fat32.h"
 

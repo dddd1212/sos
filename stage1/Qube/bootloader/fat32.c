@@ -1,6 +1,4 @@
-#include "Qube.h"
 #include "hd.h"
-#include "mem.h"
 #include "fat32.h"
 #define __attribute__(x)
 typedef struct{
