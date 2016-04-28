@@ -18,15 +18,7 @@
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="exports.py">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="auto_exports.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="inc\Qube.h">
+    <ClInclude Include="Qbject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

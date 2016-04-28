@@ -1,6 +1,4 @@
-#include "Qube.h"
 #include "hd.h"
-#include "mem.h"
 #include "fat32.h"
 #define __attribute__(x)
 typedef struct{
@@ -18,7 +16,7 @@ typedef struct{
 	int32 fileSize;
 } __attribute__((packed)) DirectoryEntry;
 
-int32 init_FAT32(BootLoaderAllocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc){
+QResult init_FAT32(BootLoaderAllocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc){
 	//int8 buf[0x200]; // buffer for one sector
 	int32 num_of_sectors;
 	//int32 res;
@@ -132,7 +130,7 @@ static int32 fat32_get_entry(FAT32Desc *fat32_desc, char *filename, DirectoryEnt
 	return 0;
 }
 
-int32 fat32_get_file_size(FAT32Desc *fat32_desc, char *filename){
+QResult fat32_get_file_size(FAT32Desc *fat32_desc, char *filename){
 	DirectoryEntry entry;
 	if (fat32_get_entry(fat32_desc, filename, &entry) == -1) {
 		return -1;
@@ -140,7 +138,7 @@ int32 fat32_get_file_size(FAT32Desc *fat32_desc, char *filename){
 	return entry.fileSize;
 }
 
-int32 fat32_read_file(FAT32Desc *fat32_desc, char *filename, int8* out_buf) {
+QResult fat32_read_file(FAT32Desc *fat32_desc, char *filename, int8* out_buf) {
 	uint32 cur_cluster;
 	uint32 byte_to_read;
 	uint32 cluster_size;

@@ -1,6 +1,7 @@
 #ifndef FAT32_H
 #define FAT32_H
 
+#include "../Common/inc/Qube.h"
 #include "mem.h"
 typedef struct{
 	int16 bytes_per_sector;
@@ -19,8 +20,8 @@ typedef struct{
 	BootLoaderAllocator *allocator;
 } FAT32Desc;
 
-int32 fat32_get_file_size(FAT32Desc *fat32_desc, char *filename);
-int32 fat32_read_file(FAT32Desc *fat32_desc, char *filename, int8* out_buf);
-int32 init_FAT32(BootLoaderAllocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc);
+QResult fat32_get_file_size(FAT32Desc *fat32_desc, char *filename);
+QResult fat32_read_file(FAT32Desc *fat32_desc, char *filename, int8* out_buf);
+QResult init_FAT32(BootLoaderAllocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc);
 
 #endif

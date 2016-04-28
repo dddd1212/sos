@@ -1,4 +1,4 @@
-#include "Qube.h"
+#include "../Common/inc/Qube.h"
 #include "long_mode.h"
 #include "hd.h"
 #include "mem.h"

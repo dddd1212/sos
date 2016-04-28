@@ -5,7 +5,7 @@
 
 #define BPB_ADDR 0x0000000000007C00
 
-#include "Qube.h"
+#include "../Common/inc/Qube.h"
 typedef struct {
 	int64* next_physical_nonvolatile;
 	int64 next_virtual_nonvolatile;

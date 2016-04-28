@@ -1,5 +1,5 @@
 
-#include "Qube.h"
+#include "../Common/inc/Qube.h"
 #include "hd.h"
 #include "mem.h"
 #include "loader.h"
