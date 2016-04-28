@@ -32,6 +32,10 @@ typedef enum {
 
 int32 init_allocator(BootLoaderAllocator *allocator);
 void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile);
+
+// commit and allocate 'size' bytes with the allocator 'allocator' using the 'specific_phys_addr' physical address.
+void* mem_alloc_ex(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile, uint64 specific_phys_addr);
 void* virtual_commit(BootLoaderAllocator* allocator, uint32 size, BOOL isVolatile);
 int32 alloc_committed(BootLoaderAllocator* allocator, uint32 size, void *addr);
+void * map_first_MB(BootLoaderAllocator *allocator);
 #endif

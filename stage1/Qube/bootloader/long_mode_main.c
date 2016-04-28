@@ -4,7 +4,7 @@
 #include "mem.h"
 #include "loader.h"
 #include "libc.h"
-
+#include "screen.h"
 // This file initialize the very first things in the kernel:
 // 1. init the KernelGlobalData struct.
 //    a. Init the symbols table. (The symbols table will be right after 
@@ -16,6 +16,7 @@
 // This is the function that the bootloader is.
 void _start(void * my_address) {
     BootLoaderAllocator allocator;
+	ScreenHandle scr;
 	hdDesc hd_desc;
 	// CR: Gilad - check the return values
 	init_allocator(&allocator);
@@ -24,7 +25,7 @@ void _start(void * my_address) {
 	char boot_txt_data[BOOT_TXT_FILE_MAX_SIZE];
 	struct STAGE0BootModule boot_modules[MAX_BOOT_MODULES];
 	//char * boot_txt_end;
-	
+	char a[] = { "asdf" };
 	char boot_txt_file_name[] = { 'B','O','O','T','.','T','X','T','\x00' };
 	unsigned int boot_txt_file_size;
 
@@ -85,6 +86,14 @@ void _start(void * my_address) {
 		STAGE0_suicide(0x5000);
 	}
 	memset((char *)kgd, 0, sizeof(struct KernelGlobalData) + sizeof(ModulesList));
+
+	// map the first MB of pysical memory, and store pointer of it in kgd.
+	kgd->first_MB = map_first_MB(&allocator);
+	
+	// Init the screen:
+	INIT_SCREEN(&scr, kgd->first_MB);
+	PUTS(&scr, "Screen init complete successfuly!");
+	PUTS(&scr, "blablabla!");
 
 	// init the KernelGLobalData and the modules array.
 	kgd->modules = (ModulesList *)(kgd + 1); // points after the kgd.

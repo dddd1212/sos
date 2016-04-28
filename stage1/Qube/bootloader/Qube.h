@@ -15,7 +15,7 @@
 #define TRUE 1
 #define BOOL int32
 
-#define ASSERT
+#define ASSERT // Need to implement
 // base configuration and basic defines:
 #define BOOT_TXT_FILE_MAX_SIZE 0x1000
 #define MAX_BOOT_MODULES 0x10
@@ -53,6 +53,7 @@ struct KernelGlobalData {
 	struct PrimitiveSymbols bootloader_symbols; // symbols for the primitive loader.
 	ModulesList * modules;
 	BootInfo *boot_info;
+	void * first_MB; // pointer to the first MB of pysical memory.
 };
 
 
