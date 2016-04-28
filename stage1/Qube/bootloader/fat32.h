@@ -1,7 +1,7 @@
 #ifndef FAT32_H
 #define FAT32_H
 
-#include "../Common/inc/Qube.h"
+#include "../Common/Qube.h"
 #include "mem.h"
 typedef struct{
 	int16 bytes_per_sector;

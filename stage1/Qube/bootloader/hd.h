@@ -1,8 +1,7 @@
 #ifndef HD_H
 #define HD_H
 
-#include "../Common/inc/Qube.h"
-#include "intrinsics.h"
+#include "../Common/Qube.h"
 #include "fat32.h"
 
 typedef enum {

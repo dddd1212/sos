@@ -1,6 +1,6 @@
 #ifndef QBJECT_H
 #define QBJECT_H
-#include "../Common/inc/Qube.h"
+#include "../Common/Qube.h"
 typedef union {
 	uint32 value;
 	struct {

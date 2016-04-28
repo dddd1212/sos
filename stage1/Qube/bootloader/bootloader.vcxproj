@@ -137,7 +137,6 @@
       <FileType>CppHeader</FileType>
     </ClCompile>
     <ClInclude Include="mem.h" />
-    <ClInclude Include="Qube.h" />
     <ClInclude Include="screen.h" />
   </ItemGroup>
   <ItemGroup>

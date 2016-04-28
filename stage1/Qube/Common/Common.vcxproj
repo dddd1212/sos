@@ -81,7 +81,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="auto_exports.h" />
-    <ClInclude Include="inc\Qube.h" />
+    <ClInclude Include="intrinsics.h" />
+    <ClInclude Include="Qube.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

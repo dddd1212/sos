@@ -1,4 +1,4 @@
-#include "../Common/inc/Qube.h"
+#include "../Common/Qube.h"
 #include "long_mode.h"
 #include "hd.h"
 #include "mem.h"
@@ -94,6 +94,10 @@ void _start(void * my_address) {
 	INIT_SCREEN(&scr, kgd->first_MB);
 	PUTS(&scr, "Screen init complete successfuly!");
 	PUTS(&scr, "blablabla!");
+	for (int asdf = 0; asdf < 15; asdf++) {
+		PUTS(&scr, "blablabla1!");
+		PUTS(&scr, "blablabla2!");
+	}
 
 	// init the KernelGLobalData and the modules array.
 	kgd->modules = (ModulesList *)(kgd + 1); // points after the kgd.

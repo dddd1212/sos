@@ -1,5 +1,5 @@
 #include "libc.h"
-#include "../Common/inc/Qube.h"
+#include "../Common/Qube.h"
 
 void memcpy(char * dst, char * src, int count) {
 	for (int i = 0; i < count; i++, dst++, src++) *dst = *src;
