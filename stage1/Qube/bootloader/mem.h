@@ -5,7 +5,7 @@
 
 #define BPB_ADDR 0x0000000000007C00
 
-#include "../Common/inc/Qube.h"
+#include "../Common/Qube.h"
 typedef struct {
 	int64* next_physical_nonvolatile;
 	int64 next_virtual_nonvolatile;
@@ -32,6 +32,10 @@ typedef enum {
 
 int32 init_allocator(BootLoaderAllocator *allocator);
 void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile);
+
+// commit and allocate 'size' bytes with the allocator 'allocator' using the 'specific_phys_addr' physical address.
+void* mem_alloc_ex(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile, uint64 specific_phys_addr);
 void* virtual_commit(BootLoaderAllocator* allocator, uint32 size, BOOL isVolatile);
 int32 alloc_committed(BootLoaderAllocator* allocator, uint32 size, void *addr);
+void * map_first_MB(BootLoaderAllocator *allocator);
 #endif

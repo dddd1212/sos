@@ -124,7 +124,7 @@ void set_boot_info(BootLoaderAllocator *allocator, BootInfo* boot_info) {
 #endif
 }
 
-void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
+void* mem_alloc_ex(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile, uint64 specific_phys_addr) {
 #ifdef DEBUG
 	if (isVolatile && allocator->disable_non_volatile_allocs) {
 		return 0;
@@ -147,6 +147,7 @@ void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
 	for (int i = 0; i < num_of_pages; i++) {
 		if ((next_virtual & 0x1fffff) == 0) { // need new PDE
 			uint64* pte = PTE(next_virtual);
+			// The physical addresses to store PTEs are always from the list.
 			*PTE(pte) = (*next_physical)|3; // this is the pde
 			next_physical++;
 			// zero the new ptes page:
@@ -154,7 +155,11 @@ void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
 				pte[j] = 0;
 			}
 		}
-		*PTE(next_virtual) = (*next_physical) | 3;
+		if (specific_phys_addr == -1) { // Take physical address from the list
+			*PTE(next_virtual) = (*next_physical) | 3;
+		} else { // Set specific physical address:
+			*PTE(next_virtual) = (specific_phys_addr + i * 0x1000) | 3;
+		}
 		next_virtual += 0x1000;
 		next_physical++;
 	}
@@ -168,6 +173,9 @@ void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile){
 		allocator->next_virtual_nonvolatile = next_virtual;
 	}
 	return addr;
+}
+void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile) {
+	return mem_alloc_ex(allocator, size, isVolatile, -1);
 }
 
 void* virtual_commit(BootLoaderAllocator* allocator, uint32 size, BOOL isVolatile){
@@ -201,3 +209,7 @@ int32 alloc_committed(BootLoaderAllocator* allocator, uint32 size, void *addr){
 	return 0;
 }
 
+void * map_first_MB(BootLoaderAllocator *allocator) {
+	// map 1MB non volotile memory from the start of the physical memory (0).
+	return mem_alloc_ex(allocator, 1024 * 1024, FALSE, 0);
+}

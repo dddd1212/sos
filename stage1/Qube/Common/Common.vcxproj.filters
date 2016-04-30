@@ -26,7 +26,10 @@
     <ClInclude Include="auto_exports.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inc\Qube.h">
+    <ClInclude Include="Qube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="intrinsics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
