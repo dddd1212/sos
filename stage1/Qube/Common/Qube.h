@@ -51,6 +51,8 @@ typedef struct {
 	uint64 *physical_pages_start;
 	uint64 *physical_pages_end;
 	uint64 *physical_pages_current;
+	void* nonvolatile_virtual_start;
+	void* nonvolatile_virtual_end;
 } BootInfo;
 typedef struct KernelGlobalData {
 	struct PrimitiveSymbols bootloader_symbols; // symbols for the primitive loader.
