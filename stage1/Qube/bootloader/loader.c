@@ -4,10 +4,13 @@
 #include "mem.h"
 #include "loader.h"
 #include "libc.h"
+#include "screen.h"
 // kgd - pointer to KernelGlobalData\
 // boot_modules - ptr to array of STAGE0BootModules
 // num_of_modules - boot_modules entries
-int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_modules, BootLoaderAllocator * boot_loader_allocator, int num_of_modules) {
+int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule * boot_modules, BootLoaderAllocator * boot_loader_allocator, int num_of_modules) {
+	ScreenHandle * screen_ptr = kgd->boot_info->scr; // This name is need to make the DBG_PRINT macro works.
+	DBG_PRINT("load_modules_and_run_kernel called!");
 	struct STAGE0BootModule * boot_module;
 	struct Elf64ProgramHeader * ph;
 	int i, j;
@@ -16,6 +19,7 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 	int ret2;
 	char string_strtab[] = { '.','s','t','r','t','a','b','\x00' };
 	char export_prefix[] = { 'E','X','P','_' };
+	char entry_point_prefix[] = { 'E','N','P','_' };
 	Elf64_Xword size;
 	// First - load the segments, handle exports, and reloacations
 	
@@ -52,6 +56,12 @@ int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_m
 		struct Elf64Symbol * symbol_table = (struct Elf64Symbol *) find_section_by_name(boot_module, string_strtab, &size);
 		if (symbol_table == NULL) return 0x2800;
 		for (symbol_entry = symbol_table; (char *)symbol_entry < ((char *)symbol_table) + size; symbol_entry++) {
+			if (memcmp(string_table + symbol_entry->sym_name, entry_point_prefix, sizeof(entry_point_prefix)) == 0) {
+				if (boot_module->entry_point) {
+					return 0x2500; // to many entry points!
+				}
+				boot_module->entry_point = (EntryPoint) module_base + symbol_entry->sym_value;
+			}
 			if (memcmp(string_table + symbol_entry->sym_name, export_prefix, sizeof(export_prefix))) continue; // skip non export symbol
 			if (symbol_entry->sym_info >> 4 == 1) continue; // it is STB_GLOBAL - means that is import and not an export.
 			ret2 = add_to_symbol_table(kgd, string_table + symbol_entry->sym_name, module_base + symbol_entry->sym_value);
@@ -136,7 +146,7 @@ int count_sections_by_type(struct STAGE0BootModule * boot_modules, s_type64_e ty
 /// Symbol table functions:
 // return: 0 - success
 //         1 - failure
-int add_to_symbol_table(struct KernelGlobalData * kgd, char * sym_name, Elf64_Addr sym_addr) {
+int add_to_symbol_table(KernelGlobalData * kgd, char * sym_name, Elf64_Addr sym_addr) {
 	int symlen = strlen(sym_name) + 1; // include the null.
 	// Check for memory:
 	if (kgd->bootloader_symbols.index >= MAX_PRIMITIVE_SYMBOLS) return 1;
@@ -155,7 +165,7 @@ int add_to_symbol_table(struct KernelGlobalData * kgd, char * sym_name, Elf64_Ad
 	return 0;
 }
 
-Elf64_Addr find_symbol(struct KernelGlobalData * kgd, char * sym_name) {
+Elf64_Addr find_symbol(KernelGlobalData * kgd, char * sym_name) {
 	int max = kgd->bootloader_symbols.index;
 	struct Symbol * cur = kgd->bootloader_symbols.symbols;
 	for (int i = 0; i < max; i++, cur++) {

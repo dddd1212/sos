@@ -1,3 +1,4 @@
+#include "exports_auto_gen.h"
 #include "imports.h"
 #define MODULE_NAME module1
 #include "../common/auto_exports.h"

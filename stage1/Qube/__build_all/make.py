@@ -39,12 +39,12 @@ if sys.argv[1] in ('build','rebuild'):
 	###
 
 	STATIC_FILES_PATH = os.path.abspath("../_static_files/")
-
+	SYSTEM_PATH = os.path.abspath("../_output/system/")
 
 	### MODULES: 
 	BOOTLOADER_DIR = os.path.abspath("../bootloader")
 	BOOTLOADER_OUT = os.path.abspath("../_output/bootloader/boot.bin")
-	print BOOTLOADER_OUT 
+	print BOOTLOADER_OUT
 
 	#####
 
@@ -85,12 +85,18 @@ if sys.argv[1] in ('build','rebuild'):
 	os.chdir(CUR_DIR)
 
 	files = [f for f in os.listdir(STATIC_FILES_PATH) if os.path.isfile(os.path.join(STATIC_FILES_PATH,f)) and f not in ("_static_files.vcxproj", "_static_files.vcxproj.filters")]
+	system_files = [f for f in os.listdir(SYSTEM_PATH) if os.path.isfile(os.path.join(SYSTEM_PATH,f)) and f not in ("_static_files.vcxproj", "_static_files.vcxproj.filters")]
+	
 	print files
 	# copy the static files to the disk:
 	for file in files:
 		open(os.path.join(DISK_FOLDER_MOUNT, file),"wb").write(open(os.path.join(STATIC_FILES_PATH, file),"rb").read())
 		print "write file %s!"%file
-
+	print system_files
+	# copy the system files to the disk:
+	for file in system_files:
+		open(os.path.join(DISK_FOLDER_MOUNT, file),"wb").write(open(os.path.join(SYSTEM_PATH, file),"rb").read())
+		print "write file %s!"%file
 	try:
 		ret = ""
 		for i in last_compile_times.items():

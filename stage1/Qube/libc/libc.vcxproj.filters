@@ -14,26 +14,32 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="build">
-      <UniqueIdentifier>{ba8d7a79-fca7-4673-883e-ed25a4b6819c}</UniqueIdentifier>
+      <UniqueIdentifier>{87acf610-32b6-4d61-af1e-1f421e2be74d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="kernel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="exports.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="exports_auto_gen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="makefile">
       <Filter>build</Filter>
     </ClCompile>
-    <ClCompile Include="kernel.c">
+    <ClCompile Include="string.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="exports.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="string.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="exports_auto_gen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

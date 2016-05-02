@@ -14,7 +14,7 @@
 // The file is compiled as image and it found in the memory right before the KernelGlobalData struct.
 
 // This is the function that the bootloader is.
-void _start(void * my_address) {
+void _start() {
     BootLoaderAllocator allocator;
 	ScreenHandle scr;
 	hdDesc hd_desc;
@@ -29,9 +29,9 @@ void _start(void * my_address) {
 	char boot_txt_file_name[] = { 'B','O','O','T','.','T','X','T','\x00' };
 	unsigned int boot_txt_file_size;
 
-	int32 alloc_bytes = sizeof(struct KernelGlobalData) + // the kgd will be the first in the memory
+	int32 alloc_bytes = sizeof(KernelGlobalData) + // the kgd will be the first in the memory
 		sizeof(ModulesList); // The modules list will be just after the kgd.
-	struct KernelGlobalData * kgd = NULL;
+	KernelGlobalData * kgd = NULL;
 	void * modules_addr = NULL;
 	void * ret = NULL;
 	int32 i, temp, line, num_of_lines;
@@ -55,6 +55,7 @@ void _start(void * my_address) {
 			STAGE0_suicide(0x3000);
 		}
 		boot_modules[line].file_name = &boot_txt_data[i]; // File
+		boot_modules[line].entry_point = 0;
 		line++;
 		while ((boot_txt_data[i] != '\n') && (boot_txt_data[i] != '\x00')) i++;
 		if (boot_txt_data[i] == '\x00') { // last line and it ends with no \n
@@ -80,18 +81,19 @@ void _start(void * my_address) {
 
 	// Commit the wanted pages for the files:
 	// CR: there is one nonvolatile alloc for kgd + modules-list + modules-data, but isn't the module-data should be volatile?
-	kgd = (struct KernelGlobalData *) mem_alloc(&allocator, alloc_bytes, FALSE);
+	kgd = (KernelGlobalData *) mem_alloc(&allocator, alloc_bytes, FALSE);
 	// CR: ret set to NULL...
 	if (kgd == NULL || ret == NULL) {
 		STAGE0_suicide(0x5000);
 	}
-	memset((char *)kgd, 0, sizeof(struct KernelGlobalData) + sizeof(ModulesList));
+	memset((char *)kgd, 0, sizeof(KernelGlobalData) + sizeof(ModulesList));
 
 	// map the first MB of pysical memory, and store pointer of it in kgd.
 	kgd->first_MB = map_first_MB(&allocator);
 	
 	// Init the screen:
 	INIT_SCREEN(&scr, kgd->first_MB);
+	kgd->boot_info->scr = &scr;
 	PUTS(&scr, "Screen init complete successfuly!");
 	PUTS(&scr, "blablabla!");
 	for (int asdf = 0; asdf < 15; asdf++) {
@@ -124,8 +126,9 @@ void _start(void * my_address) {
 	kgd->bootloader_symbols.names_storage_index = 0;
 
 	// load the modules:
-	int ret2 = load_modules(kgd, boot_modules, &allocator, num_of_lines);
+	int ret2 = load_modules_and_run_kernel(kgd, boot_modules, &allocator, num_of_lines);
 	if (ret2 != 0) STAGE0_suicide(ret2);
+
 
 	// Should not reach here!
 	STAGE0_suicide(0xffffffff);
