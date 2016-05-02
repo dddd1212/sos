@@ -9,7 +9,7 @@
 #define uint32 unsigned int
 #define int64 long long
 #define uint64 unsigned long long
-
+#define size_t unsigned int
 #define NULL 0
 #define FALSE 0
 #define TRUE 1
@@ -18,6 +18,7 @@
 #define ASSERT
 
 typedef int32 QResult;
+#define QSuccess 0
 
 // base configuration and basic defines:
 #define BOOT_TXT_FILE_MAX_SIZE 0x1000

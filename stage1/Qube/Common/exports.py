@@ -1,7 +1,7 @@
 ﻿import os
 import sys
 EXPORTS_FILE_NAME = "exports.h"
-IMPORTS_FILE_NAME = "imports.h"
+IMPORTS_FILE_NAME = "exports_auto_gen.h"
 linesep = "\r\n"
 if not os.path.exists(EXPORTS_FILE_NAME):
     print "No exports.h file found. Finished."
@@ -17,7 +17,7 @@ while True:
     if line == '':
         break
     line2 = line.strip()
-    if first_line and not line2.startswith('#include "imports.h"'):
+    if first_line and not line2.startswith('#include "%s"'%IMPORTS_FILE_NAME):
         add_include_imports = True
     if line2 != '':
         first_line = False
@@ -48,7 +48,7 @@ if not auto_exports_include:
 if add_include_imports:
     exports_data = open(EXPORTS_FILE_NAME,"rb").read()
     exports_file = open(EXPORTS_FILE_NAME,"wb")
-    exports_file.write("#include \"imports.h\"" + linesep)
+    exports_file.write("#include \"%s\""%IMPORTS_FILE_NAME + linesep)
     exports_file.write(exports_data)
     exports_file.close()
 imports_data = []
