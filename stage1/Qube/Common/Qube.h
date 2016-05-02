@@ -64,6 +64,8 @@ typedef struct {
 	uint64 *physical_pages_end;
 	uint64 *physical_pages_current;
 	ScreenHandle * scr;
+	void* nonvolatile_virtual_start;
+	void* nonvolatile_virtual_end;
 } BootInfo;
 
 typedef struct {

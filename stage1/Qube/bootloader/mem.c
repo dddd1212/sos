@@ -119,6 +119,8 @@ void set_boot_info(BootLoaderAllocator *allocator, BootInfo* boot_info) {
 	boot_info->physical_pages_start = allocator->physical_pages_start;
 	boot_info->physical_pages_end = allocator->physical_pages_end;
 	boot_info->physical_pages_current = allocator->next_physical_nonvolatile;
+	boot_info->nonvolatile_virtual_start = NONVOLATILE_VIRTUAL_START;
+	boot_info->nonvolatile_virtual_end = allocator->next_virtual_nonvolatile;
 #ifdef DEBUG
 	allocator->disable_non_volatile_allocs = TRUE;
 #endif
