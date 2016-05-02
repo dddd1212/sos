@@ -53,12 +53,12 @@ typedef struct {
 	uint64 *physical_pages_end;
 	uint64 *physical_pages_current;
 } BootInfo;
-struct KernelGlobalData {
+typedef struct KernelGlobalData {
 	struct PrimitiveSymbols bootloader_symbols; // symbols for the primitive loader.
 	ModulesList * modules;
 	BootInfo *boot_info;
 	void * first_MB; // pointer to the first MB of pysical memory.
-};
+} KernelGlobalData;
 
 // DLLMain function header: (Every module may implements this function):
 QResult qmo_main();
