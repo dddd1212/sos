@@ -76,11 +76,6 @@
     <Text Include="BOOT.TXT" />
     <Text Include="readme.txt" />
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="LIBFAT32.SOS" />
-    <Library Include="LIBLOAD.SOS" />
-    <Library Include="LIBMEM.SOS" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

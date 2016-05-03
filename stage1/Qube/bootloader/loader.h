@@ -1,7 +1,7 @@
 #ifndef __LOADER_H__
 #define __LOADER_H__
 
-typedef int(*EntryPoint)(struct KernelGlobalData * kgd);
+typedef int(*EntryPoint)(KernelGlobalData * kgd);
 
 struct STAGE0BootModule {
 	char * file_name; // pointer to the module file name
@@ -128,12 +128,12 @@ struct Elf64Symbol {
 
 
 
-int load_modules(struct KernelGlobalData * kgd, struct STAGE0BootModule * boot_modules, BootLoaderAllocator * boot_loader_allocator, int num_of_modules);
+int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule * boot_modules, BootLoaderAllocator * boot_loader_allocator, int num_of_modules);
 int count_sections_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type);
 void * find_section_by_name(struct STAGE0BootModule * boot_modules, char * name, Elf64_Xword * size_out);
 void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type, Elf64_Xword * size_out);
-Elf64_Addr find_symbol(struct KernelGlobalData * kgd, char * sym_name);
-int add_to_symbol_table(struct KernelGlobalData * kgd, char * sym_name, Elf64_Addr sym_addr);
+Elf64_Addr find_symbol(KernelGlobalData * kgd, char * sym_name);
+int add_to_symbol_table(KernelGlobalData * kgd, char * sym_name, Elf64_Addr sym_addr);
 
 
 #endif // __LOADER_H__

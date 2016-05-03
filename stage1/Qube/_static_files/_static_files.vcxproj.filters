@@ -20,15 +20,4 @@
       <Filter>Source Files</Filter>
     </Text>
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="LIBFAT32.SOS">
-      <Filter>Source Files</Filter>
-    </Library>
-    <Library Include="LIBLOAD.SOS">
-      <Filter>Source Files</Filter>
-    </Library>
-    <Library Include="LIBMEM.SOS">
-      <Filter>Source Files</Filter>
-    </Library>
-  </ItemGroup>
 </Project>

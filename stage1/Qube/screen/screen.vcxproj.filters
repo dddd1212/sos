@@ -14,26 +14,26 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="build">
-      <UniqueIdentifier>{ba8d7a79-fca7-4673-883e-ed25a4b6819c}</UniqueIdentifier>
+      <UniqueIdentifier>{5479bcfb-6439-4a57-afe2-383b0d4915a0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="kernel.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Makefile">
+      <Filter>build</Filter>
+    </ClCompile>
+    <ClCompile Include="screen.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="exports.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="exports_auto_gen.h">
+    <ClInclude Include="screen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="makefile">
-      <Filter>build</Filter>
-    </ClCompile>
-    <ClCompile Include="kernel.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

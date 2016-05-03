@@ -1,23 +1,27 @@
 #ifndef __QUBE_H__
 #define __QUBE_H__
 // C general defines:
-#define int8 char
-#define uint8 unsigned char
-#define int16 short
-#define uint16 unsigned short
-#define int32 int
-#define uint32 unsigned int
-#define int64 long long
-#define uint64 unsigned long long
-
+typedef char			 int8;
+typedef unsigned char	 uint8;
+typedef short			 int16;
+typedef unsigned short	 uint16;
+typedef int				 int32;
+typedef unsigned int	 uint32;
+typedef long long		 int64;
+typedef unsigned long long uint64;
+typedef uint64			 size_t;
 #define NULL 0
 #define FALSE 0
 #define TRUE 1
-#define BOOL int32
+typedef int32 BOOL;
 
+
+// TODO: Do with it something
 #define ASSERT
 
 typedef int32 QResult;
+#define QSuccess 0
+#define QFail -1
 
 // base configuration and basic defines:
 #define BOOT_TXT_FILE_MAX_SIZE 0x1000
@@ -47,22 +51,37 @@ struct PrimitiveSymbols {
 	int names_storage_index;
 	char * names_storage;
 };
+
+// Little ugly. maybe we need to define the ScreenHandle in another place??
+typedef struct {
+	short * start_screen_ptr;
+	short * cur_screen_ptr;
+	short * end_screen_ptr;
+} ScreenHandle;
+
 typedef struct {
 	uint64 *physical_pages_start;
 	uint64 *physical_pages_end;
 	uint64 *physical_pages_current;
+	ScreenHandle * scr;
 	void* nonvolatile_virtual_start;
 	void* nonvolatile_virtual_end;
 } BootInfo;
-typedef struct KernelGlobalData {
+
+typedef struct {
 	struct PrimitiveSymbols bootloader_symbols; // symbols for the primitive loader.
 	ModulesList * modules;
 	BootInfo *boot_info;
 	void * first_MB; // pointer to the first MB of pysical memory.
 } KernelGlobalData;
 
+typedef struct {
+	KernelGlobalData * kgd;
+} PEB;
+
 // DLLMain function header: (Every module may implements this function):
-QResult qmo_main();
+// TODO: Change kgd to PEB
+QResult qkr_main(KernelGlobalData * kgd);
 
 #include "intrinsics.h"
 

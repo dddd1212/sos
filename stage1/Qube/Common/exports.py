@@ -1,7 +1,9 @@
 ﻿import os
 import sys
 EXPORTS_FILE_NAME = "exports.h"
-IMPORTS_FILE_NAME = "imports.h"
+IMPORTS_FILE_NAME = "exports_auto_gen.h"
+
+ENTRY_POINT_NAME = "qkr_main"
 linesep = "\r\n"
 if not os.path.exists(EXPORTS_FILE_NAME):
     print "No exports.h file found. Finished."
@@ -17,7 +19,7 @@ while True:
     if line == '':
         break
     line2 = line.strip()
-    if first_line and not line2.startswith('#include "imports.h"'):
+    if first_line and not line2.startswith('#include "%s"'%IMPORTS_FILE_NAME):
         add_include_imports = True
     if line2 != '':
         first_line = False
@@ -48,12 +50,15 @@ if not auto_exports_include:
 if add_include_imports:
     exports_data = open(EXPORTS_FILE_NAME,"rb").read()
     exports_file = open(EXPORTS_FILE_NAME,"wb")
-    exports_file.write("#include \"imports.h\"" + linesep)
+    exports_file.write("#include \"%s\""%IMPORTS_FILE_NAME + linesep)
     exports_file.write(exports_data)
     exports_file.close()
 imports_data = []
 for export in exports:
-    imports_data.append("#define %s EXP_%s_%s"%(export, module_name, export))
+	if export == ENTRY_POINT_NAME:
+		imports_data.append("#define %s ENP_%s_%s"%(export, module_name, export))
+	else:
+		imports_data.append("#define %s EXP_%s_%s"%(export, module_name, export))
 imports_data = "// Auto generated file!" + linesep + linesep.join(imports_data)
 if os.path.exists(IMPORTS_FILE_NAME):
     orig_imports_data = open(IMPORTS_FILE_NAME,"rb").read()
