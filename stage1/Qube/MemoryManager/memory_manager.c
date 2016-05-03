@@ -5,13 +5,18 @@
 #define PPE(x) PTE(PDE(x))
 #define PXE(x) PTE(PPE(x))
 
+//addresses must start on PPE start area
 #define MEMORY_MANAGEMENT_START_ADDRESS 0xffffc00000000000
-#define MODULES_MANAGEMENT_START_ADDRESS 0xffffd00000000000
-#define KHEAP_MANAGEMENT_START_ADDRESS 0xffffe00000000000
+#define MODULES_START_ADDRESS 0xffffd00000000000
+#define KHEAP_START_ADDRESS 0xffffe00000000000
+
+#define MODULES_BITMAP_SIZE 0x100
+#define KHEAP_BITMAP_SIZE 0x100
+
 uint64 *g_physical_pages_current;
 uint64 *g_physical_pages_end;
 uint64 *g_physical_pages_start;
-MemoryRegion* g_regions[NUM_OF_REGION_TYPE];
+MemoryRegion g_regions[NUM_OF_REGION_TYPE];
 
 static uint64 pop_physical_page() {
 	uint64 page = *g_physical_pages_current;
@@ -29,37 +34,80 @@ static void* get_region_start_address(REGION_TYPE region_type) {
 	case MEMORY_MANAGEMENT:
 		return MEMORY_MANAGEMENT_START_ADDRESS;
 	case MODULES:
-		return MODULES_MANAGEMENT_START_ADDRESS;
+		return MODULES_START_ADDRESS;
 	case KHEAP:
-		return KHEAP_MANAGEMENT_START_ADDRESS;
+		return KHEAP_START_ADDRESS;
 	default:
 		ASSERT(FALSE);
+		return NULL;
 	}
+}
+
+static uint32 get_region_bitmap_size(REGION_TYPE region_type) {
+	switch (region_type) {
+	case MEMORY_MANAGEMENT:
+		return (NUM_OF_REGION_TYPE*REGION_BITMAP_MAX_SIZE) >> 15;
+	case MODULES:
+		return MODULES_BITMAP_SIZE;
+	case KHEAP:
+		return KHEAP_BITMAP_SIZE;
+	default:
+		ASSERT(FALSE);
+		return 0;
+	}
+}
+
+
+static void add_physical_page(MemoryRegion* region, void* v_address) {
+	uint32 pde_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9);
+	uint32 ppe_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9 + 9);
+	if (region->PPE_use_count[ppe_offset] == 0) {
+		*PPE(v_address) = pop_physical_page();
+	}
+	if (region->PPE_use_count[pde_offset] == 0) {
+		*PDE(v_address) = pop_physical_page();
+	}
+	*PTE(v_address) = pop_physical_page();
+	region->PPE_use_count[ppe_offset]++;
+	region->PPE_use_count[pde_offset]++;
 }
 
 static void init_regions() {
 	uint8* memory_management_region_start_address = get_region_start_address(MEMORY_MANAGEMENT);
-	*PXE(memory_management_region_start_address) = pop_physical_page(); // TODO: zero the pages
-	*PPE(memory_management_region_start_address) = pop_physical_page();
-	*PDE(memory_management_region_start_address) = pop_physical_page();
-	*PTE(memory_management_region_start_address) = pop_physical_page();
 
-	MemoryRegion* memory_management_region = (MemoryRegion*)memory_management_region_start_address;
-	g_regions[MEMORY_MANAGEMENT] = memory_management_region;
 
-	ASSERT(sizeof(MemoryRegion) + memory_management_region->bitmap_size <= 0x1000);
+	for (uint32 i = MEMORY_MANAGEMENT; i < NUM_OF_REGION_TYPE; i++) {
+		g_regions[i].free_pages_bitmap = memory_management_region_start_address + REGION_BITMAP_MAX_SIZE;
+		g_regions[i].bitmap_size = get_region_bitmap_size(i);
+		g_regions[i].start = get_region_start_address(i);
+		// TODO: is this needed? or the loader already zeros this?
+		for (uint32 j = 0; j < sizeof(g_regions[i].PPE_use_count); j++) {
+			g_regions[i].PPE_use_count[j] = 0;
+		}
 
-	memory_management_region->start = memory_management_region;
-	memory_management_region->bitmap_size = (NUM_OF_REGION_TYPE*REGION_MAXIMUM_SIZE) >> 15;
-	for (uint32 i = 0; i < memory_management_region->bitmap_size; i++) {
-		memory_management_region->free_pages_bitmap[i] = 0xFF;
-	}
+		for (uint32 j = 0; j < sizeof(g_regions[i].PDE_use_count); j++) {
+			g_regions[i].PDE_use_count[j] = 0;
+		}
 
-	for (uint32 i = MEMORY_MANAGEMENT+1; i < NUM_OF_REGION_TYPE; i++) {
-		MemoryRegion* region = (MemoryRegion*)(memory_management_region_start_address + REGION_MAXIMUM_SIZE*i);
-		region->bitmap_size = 0;
-		region->start = get_region_start_address(i);
-		g_regions[i] = region;
+		// TODO: zero the pages
+		for (uint64* pxe = PXE(g_regions[i].start); pxe <= PXE(g_regions[i].start + REGION_BITMAP_MAX_SIZE * 8 * 0x1000); pxe++) {
+			if (*pxe == 0) {
+				*pxe = pop_physical_page();
+			}
+		}
+
+		if (i == MEMORY_MANAGEMENT) {
+			add_physical_page(&g_regions[MEMORY_MANAGEMENT], memory_management_region_start_address);
+			ASSERT(g_regions[MEMORY_MANAGEMENT].bitmap_size <= 0x1000);
+			for (uint32 i = 0; i < g_regions[MEMORY_MANAGEMENT].bitmap_size; i++) {
+				g_regions[MEMORY_MANAGEMENT].free_pages_bitmap[i] = 0xFF;
+			}
+		}
+		else {
+			for (uint32 i = 0; i < g_regions[i].bitmap_size; i++) {
+				g_regions[MEMORY_MANAGEMENT].free_pages_bitmap[i] = 0x00;
+			}
+		}
 	}
 }
 
