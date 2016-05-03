@@ -47,7 +47,7 @@ QResult init_FAT32(BootLoaderAllocator *allocator, uint32 BPB_sector, FAT32Desc 
 }
 
 static int32 get_next_cluster(FAT32Desc *fat32_desc, int32 cluster){
-	return fat32_desc->FAT[cluster-2]; // 2 is the first data cluster.
+	return fat32_desc->FAT[cluster]; // 2 is the first data cluster.
 }
 
 static inline int32 name_to_cname(char *name, int32 namelen, char *cname){
