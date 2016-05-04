@@ -30,3 +30,57 @@ void _puts(ScreenHandle * scr, char * str) {
 	_write(scr, str);
 	_newline(scr);
 }
+
+void _printf(ScreenHandle * scr, char * fmt, uint64 param1, uint64 param2, uint64 param3, uint64 param4) {
+	uint64 params[4] = { param1, param2, param3, param4 };
+	int param_idx = 0;
+	uint64 param;
+	char num_arr[21]; // max uint64 base10 size + null.
+	int num_arr_idx = 0;
+	int base = 0;
+	char one_char[2];
+	one_char[1] = '\x00';
+	while (*fmt != '\x00') {
+		if (*fmt == '%') {
+			fmt++;
+			if (*fmt == 'd') {
+				base = 10;
+			} 
+			else if (*fmt == 'x') {
+				base = 16;
+			} else if (*fmt == 's') {
+				_write(scr, (char *)params[param_idx]);
+				param_idx++;
+				continue;
+			} else {
+				fmt--;
+			}
+			if (base) { // handle %x, %d:
+				param = params[param_idx];
+				param_idx++;
+				num_arr_idx = 20; // start from the end
+				num_arr[num_arr_idx] = '\x00';
+				num_arr_idx--;
+				do {
+					int digit = param % base;
+					if (digit < 10) {
+						num_arr[num_arr_idx] = '0' + digit;
+					}
+					else {
+						num_arr[num_arr_idx] = 'A' - 10 + digit;
+					}
+					num_arr_idx--;
+					param /= base;
+				} while (param != 0);
+				_write(scr, &num_arr[num_arr_idx + 1]);
+				fmt++;
+				continue;
+			}
+		}
+		// regular
+		one_char[0] = *fmt;
+		_write(scr, &one_char[0]);
+		fmt++;
+	}
+	return;
+}

@@ -2,11 +2,6 @@
 #include "../screen/screen.h"
 #include "../Common/Qube.h"
 
-QResult qkr_main(KernelGlobalData * kgd) {
-	
-}
-
-
 void kernel_main(KernelGlobalData * kgd) {
 	// This is the main kernel function.
 	// The function should not return.
@@ -19,3 +14,10 @@ void kernel_main(KernelGlobalData * kgd) {
 
 	while (TRUE);
 }
+
+
+QResult qkr_main(KernelGlobalData * kgd) {
+	kernel_main(kgd);
+}
+
+

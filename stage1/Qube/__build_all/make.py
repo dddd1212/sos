@@ -4,6 +4,7 @@ import sys
 
 
 def mount():
+    #os.system("md mount")    
     file("diskpartscript","wb").write(
 r"""select vdisk file="%s\disk.vhd"
 attach vdisk
@@ -62,7 +63,8 @@ if sys.argv[1] in ('build','rebuild'):
 
 	### Compile bootloader ####
 	os.chdir(BOOTLOADER_DIR)
-	ret = os.system("make all")
+	if False: # We use dependecies instead
+		ret = os.system("make all")
 	this_time = str(os.path.getmtime(BOOTLOADER_OUT))
 	if last_compile_times.has_key("bootloader"):
 		last_time = last_compile_times["bootloader"]

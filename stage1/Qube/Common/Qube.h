@@ -16,6 +16,8 @@ typedef uint64			 size_t;
 typedef int32 BOOL;
 
 
+#define ULLONG_MAX 0xffffffffffffffff
+
 // TODO: Do with it something
 #define ASSERT
 
@@ -29,7 +31,7 @@ typedef int32 QResult;
 
 #define PAGE_SIZE 0x1000
 #define NUM_OF_PAGES(bytes) ((bytes + PAGE_SIZE-1)/PAGE_SIZE)
-#define ALIGN_UP(addr) ((addr + PAGES_SIZE-1)/PAGE_SIZE*PAGE_SIZE)
+#define ALIGN_UP(addr) (((uint64)addr + PAGE_SIZE-1)/PAGE_SIZE*PAGE_SIZE)
 
 #define MAX_LOADED_MODULES 0x100
 ///// We need to split this file to couple of files...
