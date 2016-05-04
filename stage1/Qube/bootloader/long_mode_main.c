@@ -29,8 +29,8 @@ void _start() {
 	char boot_txt_file_name[] = { 'B','O','O','T','.','T','X','T','\x00' };
 	unsigned int boot_txt_file_size;
 
-	int32 alloc_bytes = sizeof(KernelGlobalData) + // the kgd will be the first in the memory
-		sizeof(ModulesList); // The modules list will be just after the kgd.
+	int32 alloc_bytes = ALIGN_UP(sizeof(KernelGlobalData)) + // the kgd will be the first in the memory
+		ALIGN_UP(sizeof(ModulesList)); // The modules list will be just after the kgd.
 	KernelGlobalData * kgd = NULL;
 	void * modules_addr = NULL;
 	void * ret = NULL;
@@ -71,22 +71,23 @@ void _start() {
 	num_of_lines = line;
 
 	// get alloc size:
-	// CR: dont we want to alloc each module on page boundary? looks like the next code assume this, and it should be "alloc_bytes += PAGES_ROUND_UP(temp)" or something.
+	// CR Dror: dont we want to alloc each module on page boundary? looks like the next code assume this, and it should be "alloc_bytes += PAGES_ROUND_UP(temp)" or something.
+	// CR-COMPLETE Gilad.
 	for (line = 0; line < num_of_lines; line++) {
 		temp = get_file_size(&hd_desc, boot_modules[line].file_name);
 		boot_modules[line].file_pages = NUM_OF_PAGES(temp);
 		if (temp == -1) STAGE0_suicide(0x4000 + line); // error reading the file.
-		alloc_bytes += temp;
+		alloc_bytes += boot_modules[line].file_pages * PAGE_SIZE;
 	}
 
 	// Commit the wanted pages for the files:
 	// CR: there is one nonvolatile alloc for kgd + modules-list + modules-data, but isn't the module-data should be volatile?
 	kgd = (KernelGlobalData *) mem_alloc(&allocator, alloc_bytes, FALSE);
 	// CR: ret set to NULL...
-	if (kgd == NULL || ret == NULL) {
+	if (kgd == NULL) {
 		STAGE0_suicide(0x5000);
 	}
-	memset((char *)kgd, 0, sizeof(KernelGlobalData) + sizeof(ModulesList));
+	memset((char *)kgd, 0, ALIGN_UP(sizeof(KernelGlobalData)) + ALIGN_UP(sizeof(ModulesList)));
 
 	// map the first MB of pysical memory, and store pointer of it in kgd.
 	kgd->first_MB = map_first_MB(&allocator);
@@ -102,10 +103,10 @@ void _start() {
 	}
 
 	// init the KernelGLobalData and the modules array.
-	kgd->modules = (ModulesList *)(kgd + 1); // points after the kgd.
+	kgd->modules = ALIGN_UP((ModulesList *)(kgd + 1)); // points after the kgd.
 
 											 // point to the start of the modules files
-	modules_addr = (void*)(kgd->modules + 1); // points after the modules.
+	modules_addr = ALIGN_UP((void*)(kgd->modules + 1)); // points after the modules.
 
 											  // Now we can read the boot-modules to the memory:
 	for (line = 0; line < num_of_lines; line++) {
@@ -135,7 +136,7 @@ void _start() {
 }
 
 void STAGE0_suicide(int error) {
-	int * s = 0;
+	int * s = (int*)0xffffffffffffffff;
 	*s = 0;
 }
 
