@@ -34,7 +34,12 @@ int32 init_allocator(BootLoaderAllocator *allocator){
 
 	*(PXE(NONVOLATILE_VIRTUAL_START)) = FIRST_FREE_PHYSICAL | 3;
 	*(PPE(NONVOLATILE_VIRTUAL_START)) = (FIRST_FREE_PHYSICAL + 0x1000) | 3;
-	
+	// zero the new ptes page:
+	for (int j = 0; j < (0x1000 / 8);j++) {
+		*(PDE(NONVOLATILE_VIRTUAL_START)+j) = 0;
+	}
+
+
 	*(PPE(PHYISICAL_PAGES_LIST)) = (FIRST_FREE_PHYSICAL + 0x2000) | 3; // use same PXE
 	*(PDE(PHYISICAL_PAGES_LIST)) = (FIRST_FREE_PHYSICAL + 0x3000) | 3; // use same PXE
 	*(PTE(PHYISICAL_PAGES_LIST)) = (FIRST_FREE_PHYSICAL + 0x4000) | 3; // use same PXE
@@ -147,7 +152,7 @@ void* mem_alloc_ex(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile,
 
 	uint32 num_of_pages = (size + 0xFFF) >> 12;
 	for (int i = 0; i < num_of_pages; i++) {
-		if ((next_virtual & 0x1fffff) == 0) { // need new PDE
+		if (PDE(next_virtual) == 0) { // need new PDE
 			uint64* pte = PTE(next_virtual);
 			// The physical addresses to store PTEs are always from the list.
 			*PTE(pte) = (*next_physical)|3; // this is the pde
