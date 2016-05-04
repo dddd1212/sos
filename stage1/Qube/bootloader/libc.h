@@ -7,4 +7,6 @@ int memcmp(char * src, char * dst, int count);
 int strcmp(char * srt, char * dst);
 void strcpy(char * dst, char * src);
 int strlen(char * str);
+unsigned long long strtoull(const char *str, char **endptr, int base);
+
 #endif // __BOOTLOADER_LIBC_H__

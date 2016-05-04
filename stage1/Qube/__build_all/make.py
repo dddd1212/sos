@@ -4,7 +4,8 @@ import sys
 
 
 def mount():
-    #os.system("md mount")    file("diskpartscript","wb").write(
+    #os.system("md mount")    
+    file("diskpartscript","wb").write(
 r"""select vdisk file="%s\disk.vhd"
 attach vdisk
 select partition=1
