@@ -201,6 +201,7 @@ void* virtual_commit(BootLoaderAllocator* allocator, uint32 size, BOOL isVolatil
 
 int32 alloc_committed(BootLoaderAllocator* allocator, uint32 size, void *addr){
 	uint64 tempaddr;
+	if ((uint64)addr % PAGE_SIZE != 0) return QFail;
 	if (((uint64)addr) >= NONVOLATILE_VIRTUAL_START) {
 		tempaddr = allocator->next_virtual_nonvolatile;
 		allocator->next_virtual_nonvolatile = (uint64)addr;

@@ -42,8 +42,14 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 		// Iterate over the program header tables:
 		for (j = 0, ph = (struct Elf64ProgramHeader*)(((char *)boot_module->file_data) + boot_module->file_data->e_phoff); j < boot_module->file_data->e_phnum; j++, ph++) {
 			DBG_PRINTF1("    Load segment #%d", j); ENTER;
-			ret = alloc_committed(boot_loader_allocator, ph->p_memsz, (void*)(module_base - reserved_start + ph->p_vaddr));
+			uint64 seg_start = (uint64)(module_base - reserved_start + ph->p_vaddr);
+			// Now align the start to page:
+			int pad_size = (seg_start%PAGE_SIZE);
+			ret = alloc_committed(boot_loader_allocator, ph->p_memsz + pad_size, (void*)(seg_start - pad_size));
 			if (ret != QSuccess) return 0x2000;
+			if (pad_size) {
+				memset((char*)(module_base - reserved_start + ph->p_vaddr - pad_size), 0, pad_size);
+			}
 			memcpy((char*)(module_base - reserved_start + ph->p_vaddr), ((char*)boot_module->file_data) + ph->offset, ph->p_filesz);
 			// CR: Ha?
 			// CR ANSWER - GILAD: what? by the RFC the assert should pass.
