@@ -158,8 +158,9 @@ void* mem_alloc_ex(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile,
 			*PTE(pte) = (*next_physical)|3; // this is the pde
 			next_physical++;
 			// zero the new ptes page:
+			uint64* pte_c = (uint64*)(((uint64)pte) & 0xFFFFFFFFFFFFF000);
 			for (int j = 0; j < (0x1000 / 8);j++) {
-				pte[j] = 0;
+				pte_c[j] = 0;
 			}
 		}
 		if (specific_phys_addr == -1) { // Take physical address from the list
