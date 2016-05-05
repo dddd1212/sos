@@ -152,7 +152,7 @@ void* mem_alloc_ex(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile,
 
 	uint32 num_of_pages = (size + 0xFFF) >> 12;
 	for (int i = 0; i < num_of_pages; i++) {
-		if (PDE(next_virtual) == 0) { // need new PDE
+		if (*PDE(next_virtual) == 0) { // need new PDE
 			uint64* pte = PTE(next_virtual);
 			// The physical addresses to store PTEs are always from the list.
 			*PTE(pte) = (*next_physical)|3; // this is the pde
