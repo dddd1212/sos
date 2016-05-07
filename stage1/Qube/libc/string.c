@@ -1,5 +1,5 @@
 #include "string.h"
-/*
+
 char * strcpy(char * dst, const char * src) {
 	char * ret = dst;
 	while (*src) {
@@ -63,7 +63,8 @@ size_t strlen(const char * str) {
 
 void * memset(void *dst, int chr, size_t count) {
 	char * ret = dst;
-	for (int i = 0; i < count; i++, dst++) *dst = chr;
+	char * cdst = (char*)dst;
+	for (int i = 0; i < count; i++, cdst++) *cdst = chr;
 	return ret;
 }
 
@@ -85,4 +86,3 @@ int memcmp(const void * src, const void * dst, size_t count) {
 
 
 
-*/

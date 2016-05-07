@@ -2,6 +2,7 @@
 #define __STRING_H__
 
 #include "../Common/Qube.h"
+#include "exports.h"
 // Implement here functions from this list, if you need to.
 // In case of warning when compile to 32bit, try change the definition of size_t to uint32.
 // To check if function is built-in, change the definition and see if you get a warning.

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bootloader", "bootloader\bootloader.vcxproj", "{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}"
 EndProject
@@ -9,9 +9,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kernel", "kernel\kernel.vcx
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bootchain_modules", "bootchain_modules", "{4CD07A00-2CC9-4FFD-B832-BD4628226710}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "module1", "module1\module1.vcxproj", "{DD3B77F3-92FD-43E9-8109-4D9AB1E1EF39}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "module1", "kernel_modules\module1\module1.vcxproj", "{DD3B77F3-92FD-43E9-8109-4D9AB1E1EF39}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "module2", "module2\module2.vcxproj", "{CBAC4CBF-714F-4C4E-9703-56F0A625BA38}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "module2", "kernel_modules\module2\module2.vcxproj", "{CBAC4CBF-714F-4C4E-9703-56F0A625BA38}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "Common\Common.vcxproj", "{4918C222-B355-4D65-8E1E-B9FA37883364}"
 EndProject
@@ -20,6 +20,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "__build_all", "__build_all\
 		{59204A33-9FE8-4C94-896A-89764F860BFD} = {59204A33-9FE8-4C94-896A-89764F860BFD}
 		{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4} = {5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}
 		{43200A7A-8FF2-4465-8340-49E4C87475C6} = {43200A7A-8FF2-4465-8340-49E4C87475C6}
+		{19301BB9-882D-4019-AB17-C51858CEFEA6} = {19301BB9-882D-4019-AB17-C51858CEFEA6}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "_static_files", "_static_files\_static_files.vcxproj", "{7BEB6AB7-2237-4836-9F31-2431DC1A2AB4}"
@@ -32,7 +33,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MemoryManager", "MemoryMana
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libc", "libc\libc.vcxproj", "{19301BB9-882D-4019-AB17-C51858CEFEA6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gdb_debugger", "gdb_debugger\gdb_debugger.vcxproj", "{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qkr_acpi", "qkr_acpi\qkr_acpi.vcxproj", "{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -128,14 +129,14 @@ Global
 		{19301BB9-882D-4019-AB17-C51858CEFEA6}.Release|x64.Build.0 = Release|x64
 		{19301BB9-882D-4019-AB17-C51858CEFEA6}.Release|x86.ActiveCfg = Release|Win32
 		{19301BB9-882D-4019-AB17-C51858CEFEA6}.Release|x86.Build.0 = Release|Win32
-		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Debug|x64.ActiveCfg = Debug|x64
-		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Debug|x64.Build.0 = Debug|x64
-		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Debug|x86.ActiveCfg = Debug|Win32
-		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Debug|x86.Build.0 = Debug|Win32
-		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Release|x64.ActiveCfg = Release|x64
-		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Release|x64.Build.0 = Release|x64
-		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Release|x86.ActiveCfg = Release|Win32
-		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Release|x86.Build.0 = Release|Win32
+		{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}.Debug|x64.ActiveCfg = Debug|x64
+		{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}.Debug|x64.Build.0 = Debug|x64
+		{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}.Debug|x86.ActiveCfg = Debug|Win32
+		{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}.Debug|x86.Build.0 = Debug|Win32
+		{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}.Release|x64.ActiveCfg = Release|x64
+		{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}.Release|x64.Build.0 = Release|x64
+		{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}.Release|x86.ActiveCfg = Release|Win32
+		{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

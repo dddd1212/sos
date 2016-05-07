@@ -11,4 +11,4 @@ all: module1
 
 clean:
 	rm -f screen.o
-	rm -f screen.qmo
+	rm -f $(OUT_DIR)/screen.qkr

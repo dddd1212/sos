@@ -27,7 +27,7 @@ QResult screen_write_string(char * str, BOOL newline)
 void _scroll_if_need() {
 	while (g_screen.cur_screen_ptr >= g_screen.end_screen_ptr) { // Screen overflow! scroll one raw down.
 		memcpy((char *)g_screen.start_screen_ptr, (char *)(g_screen.start_screen_ptr + COLS), COLS * (ROWS - 1) * sizeof(*g_screen.start_screen_ptr));
-		memset((char *)g_screen.end_screen_ptr - COLS, 0, COLS); // delete the last row.
+		memset((char *)(g_screen.start_screen_ptr - COLS), 0, COLS * sizeof(*g_screen.start_screen_ptr)); // delete the last row.
 		g_screen.cur_screen_ptr -= COLS; // One raw up.
 	}
 	return;

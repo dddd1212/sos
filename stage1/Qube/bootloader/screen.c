@@ -13,6 +13,7 @@ void _write(ScreenHandle * scr, char * str) {
 	while (*str != '\x00') {
 		if (scr->cur_screen_ptr >= scr->end_screen_ptr) { // Screen overflow! scroll one raw down.
 			memcpy((char *) scr->start_screen_ptr, (char *) (scr->start_screen_ptr + COLS), COLS * (RAWS - 1) * sizeof(*scr->start_screen_ptr));
+			memset((char *)scr->end_screen_ptr - COLS, 0, COLS); // delete the last row.
 			scr->cur_screen_ptr -= COLS; // One raw up.
 		}
 		*scr->cur_screen_ptr = COLOR | *str;
@@ -23,6 +24,11 @@ void _write(ScreenHandle * scr, char * str) {
 }
 void _newline(ScreenHandle * scr) {
 	scr->cur_screen_ptr += COLS - ((scr->cur_screen_ptr - scr->start_screen_ptr) % COLS);
+	if (scr->cur_screen_ptr >= scr->end_screen_ptr) { // Screen overflow! scroll one raw down.
+		memcpy((char *)scr->start_screen_ptr, (char *)(scr->start_screen_ptr + COLS), COLS * (RAWS - 1) * sizeof(*scr->start_screen_ptr));
+		memset((char *)(scr->end_screen_ptr - COLS), 0, COLS * sizeof(*scr->start_screen_ptr)); // delete the last row.
+		scr->cur_screen_ptr -= COLS; // One raw up.
+	}
 }
 
 // Don't call this function implicit:
@@ -51,6 +57,7 @@ void _printf(ScreenHandle * scr, char * fmt, uint64 param1, uint64 param2, uint6
 			} else if (*fmt == 's') {
 				_write(scr, (char *)params[param_idx]);
 				param_idx++;
+				fmt++;
 				continue;
 			} else {
 				fmt--;

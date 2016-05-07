@@ -18,6 +18,8 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 	uint32 ret;
 	int ret2;
 	char string_strtab[] = { '.','s','t','r','t','a','b','\x00' };
+	char string_symtab[] = { '.','s','y','m','t','a','b','\x00' };
+	char string_dynstr[] = { '.','d','y','n','s','t','r','\x00' };
 	char export_prefix[] = { 'E','X','P','_' };
 	char entry_point_prefix[] = { 'E','N','P','_' };
 	Elf64_Xword size;
@@ -60,11 +62,11 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 		}	
 
 		// Get string table ptr:
-		char * string_table = ((char*)boot_module->file_data) + ((struct Elf64SectionHeader *)(((char*)boot_module->file_data) + boot_module->file_data->e_shoff))[boot_module->file_data->e_shstrndx].s_offset;
+		char * string_table = (char *) find_section_by_name(boot_module, string_strtab, &size);
 		DBG_PRINTF1("    file string table address: 0x%x", string_table); ENTER;
 		// Handle exports:
 		struct Elf64Symbol * symbol_entry;
-		struct Elf64Symbol * symbol_table = (struct Elf64Symbol *) find_section_by_name(boot_module, string_strtab, &size);
+		struct Elf64Symbol * symbol_table = (struct Elf64Symbol *) find_section_by_name(boot_module, string_symtab, &size);
 		DBG_PRINTF1("    symbol table address: 0x%x", symbol_table); ENTER;
 		if (symbol_table == NULL) return 0x2800;
 		for (symbol_entry = symbol_table; (char *)symbol_entry < ((char *)symbol_table) + size; symbol_entry++) {
@@ -97,12 +99,16 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 		struct Elf64RelaStruct * rela_table = (struct Elf64RelaStruct *) find_section_by_type(boot_module, SHT_RELA, &size);
 		size = size /= sizeof(struct Elf64RelaStruct); // num of structs.
 		struct Elf64RelaStruct * rela;
-		if (!rela) continue; // No imports to this module.
+		if (!rela_table) continue; // No imports to this module.
 		if (count_sections_by_type(boot_module, SHT_RELA) > 1) return 0x5000; // Not supported more then one rela section.
 		for (rela = rela_table; rela < rela_table + size; rela++) {
 			if (rela->r_type != 7) return 0x6000;
 			dynsym = dynsym_table + rela->r_index;
-			dynstr = ((char*)boot_module) + (sh + dynsym->sym_shndx)->s_offset;
+			if (dynsym->sym_shndx != 0) {
+				return 0x5001; // Not supporting sym_shndx not zero.
+			}
+			//dynstr = ((char*)boot_module) + (sh + dynsym->sym_shndx)->s_offset;
+			dynstr = (char *)find_section_by_name(boot_module, string_dynstr, &size);
 			Elf64_Addr symbol_addr = find_symbol(kgd, dynstr + dynsym->sym_name);
 			DBG_PRINTF2("    search symbol '%s' result is 0x%x", dynstr + dynsym->sym_name, symbol_addr); ENTER;
 			if (symbol_addr == NULL) return 0x7000;
