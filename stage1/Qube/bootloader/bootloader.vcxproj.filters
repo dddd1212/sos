@@ -35,6 +35,9 @@
     <ClCompile Include="screen.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\qkr_acpi\acpi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="long_mode.h">
@@ -56,6 +59,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="screen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\qkr_acpi\acpi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

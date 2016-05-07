@@ -1,4 +1,5 @@
 #include "mem.h"
+#include "screen.h"
 #define PTE(x) ((uint64*)(0xFFFFF68000000000 + (((((uint64)x) & 0x0000FFFFFFFFFFFF)>>12)<<3)))
 #define PDE(x) PTE(PTE(x))
 #define PPE(x) PTE(PDE(x))
@@ -74,7 +75,7 @@ int32 init_allocator(BootLoaderAllocator *allocator){
 	allocator->next_physical_nonvolatile = allocator->physical_pages_start + 5 + NONVOLATILE_PHYSICAL_USED;
 
 	uint64 last_addr = NONVOLATILE_PHYSICAL_END;
-	for (i = 0; entries[i].base != 0xFFFFFFFFFFFFFFFF; i++) {
+	for (i = 0; entries[i].base != 0xFFFFFFFFFFFFFFFF; i++) { 
 		if (entries[i].type != 1) {
 			continue;
 		}

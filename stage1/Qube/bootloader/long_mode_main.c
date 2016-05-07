@@ -5,6 +5,7 @@
 #include "loader.h"
 #include "libc.h"
 #include "screen.h"
+//#include "../qkr_acpi/acpi.h"
 // This file initialize the very first things in the kernel:
 // 1. init the KernelGlobalData struct.
 //    a. Init the symbols table. (The symbols table will be right after 
@@ -58,7 +59,9 @@ void _start() {
 	INIT_SCREEN(&scr, kgd->first_MB);
 	kgd->boot_info->scr = &scr;
 	PUTS(&scr, "Screen init complete successfuly!");
+	//acpi_test(&scr, kgd);
 	
+
 	void * modules_addr = NULL;
 	void * ret = NULL;
 	int32 i, temp, line, num_of_lines;
@@ -147,6 +150,7 @@ void _start() {
 
 	// Should not reach here!
 	STAGE0_suicide(0xffffffff);
+	
 }
 
 void STAGE0_suicide(int error) {

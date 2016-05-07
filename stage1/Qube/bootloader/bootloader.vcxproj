@@ -118,6 +118,7 @@
     </BuildLog>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\qkr_acpi\acpi.c" />
     <ClCompile Include="fat32.c" />
     <ClCompile Include="libc.c" />
     <ClCompile Include="loader.c" />
@@ -128,6 +129,7 @@
     <ClCompile Include="hd.c">
       <FileType>CppHeader</FileType>
     </ClCompile>
+    <ClInclude Include="..\qkr_acpi\acpi.h" />
     <ClInclude Include="fat32.h" />
     <ClInclude Include="hd.h" />
     <ClInclude Include="libc.h" />
