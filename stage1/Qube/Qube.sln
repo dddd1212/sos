@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bootloader", "bootloader\bootloader.vcxproj", "{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}"
 EndProject
@@ -34,6 +34,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libc", "libc\libc.vcxproj", "{19301BB9-882D-4019-AB17-C51858CEFEA6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gdb_debugger", "gdb_debugger\gdb_debugger.vcxproj", "{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4} = {5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}
+		{19301BB9-882D-4019-AB17-C51858CEFEA6} = {19301BB9-882D-4019-AB17-C51858CEFEA6}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qkr_acpi", "qkr_acpi\qkr_acpi.vcxproj", "{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}"
 EndProject

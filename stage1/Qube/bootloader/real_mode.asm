@@ -8,7 +8,7 @@ real_mode:
     . = real_mode + 90 # space for file system
 Boot:
     mov ah,0x02    # read sectors into memory
-    mov al,0x30    # number of sectors to read (40)
+    mov al,0x30    # number of sectors to read (48)
     #mov dl,0x80    # drive number
 	mov ch,0    # cylinder number
     mov dh,2    # head number
