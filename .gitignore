@@ -10,3 +10,9 @@
 /stage1/tools/createhd
 /stage1/tools/nasm
 /bochs-code-12917-trunk.zip
+/stage1/output
+*.o
+*.so
+*.elf
+*.qkr
+*.vhd
