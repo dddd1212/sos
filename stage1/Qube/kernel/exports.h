@@ -3,4 +3,4 @@
 #include "../common/auto_exports.h"
 
 EXPORT(qkr_main);
-EXPORT(kernel_main);
+

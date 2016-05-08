@@ -4,7 +4,7 @@ LD = x86_64-elf-ld.exe
 OUT_DIR = ../_output/system
 kernel:
 	python ../common/exports.py
-	$(CC) -c *.c -fpic -fvisibility=hidden -o kernel.o
+	$(CC) -c *.c -fpic -fvisibility=hidden -include exports.h -g -o kernel.o
 	$(LD) -fpic -fvisibility=hidden -shared kernel.o -o $(OUT_DIR)/kernel.qkr
 
 all: kernel

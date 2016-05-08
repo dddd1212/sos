@@ -26,7 +26,6 @@ int strlen(char * str) {
 	int i;
 	for (i = 0; *str != '\x00'; str++, i++);
 	return i;
-
 }
 
 void strcpy(char * dst, char * src) {

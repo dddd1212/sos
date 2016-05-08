@@ -2,6 +2,8 @@
 #include "../Common/Qube.h"
 #include "screen.h"
 #include "../libc/string.h"
+
+Screen g_screen;
 QResult qkr_main(KernelGlobalData * kgd) {
 	return screen_init(kgd->first_MB);
 }
@@ -35,6 +37,7 @@ void _scroll_if_need() {
 
 QResult screen_write_buffer(char * buf, int size, BOOL newline)
 {
+	Screen * screen = &g_screen;
 	for (int i = 0; i < size ; i++) {
 		_scroll_if_need();
 		if (*buf == '\r') {
@@ -47,7 +50,7 @@ QResult screen_write_buffer(char * buf, int size, BOOL newline)
 			g_screen.cur_screen_ptr += (4 - (g_screen.cur_screen_ptr - g_screen.start_screen_ptr)) % TAB_SIZE;
 			_scroll_if_need();
 		} else {
-			*g_screen.cur_screen_ptr = g_screen.color | *buf;
+			*g_screen.cur_screen_ptr = (g_screen.color<<8) | *buf;
 			g_screen.cur_screen_ptr++;
 		}
 		buf++;
@@ -67,7 +70,7 @@ QResult screen_new_line()
 
 QResult screen_clear()
 {
-	memset((void *)g_screen.start_screen_ptr, '\x00', ROWS*COLS);
+	memset((void *)g_screen.start_screen_ptr, '\x00', ROWS*COLS*sizeof(*g_screen.start_screen_ptr));
 	g_screen.cur_screen_ptr = g_screen.start_screen_ptr;	
 	return QSuccess;
 }

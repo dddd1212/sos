@@ -7,7 +7,7 @@ struct STAGE0BootModule {
 	char * file_name; // pointer to the module file name
 	unsigned int file_pages; // num of pages the file need.
 	struct Elf64Header * file_data; // data of the eff file.
-	void * module_base; // pointer to the loaded module.
+	char * module_base; // pointer to the loaded module.
 	EntryPoint entry_point; // module entry point
 };
 
@@ -136,6 +136,8 @@ Elf64_Addr find_symbol(KernelGlobalData * kgd, char * sym_name);
 int add_to_symbol_table(KernelGlobalData * kgd, char * sym_name, Elf64_Addr sym_addr);
 
 
+// Dummy function that does nothing. Will remove when you compile Release and optimization is on. The function used by gdb to add auto symbols when library is loaded.
+void hack_for_gdb(void * module, void * entry);
 #endif // __LOADER_H__
 
 

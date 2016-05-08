@@ -8,7 +8,7 @@ real_mode:
     . = real_mode + 90 # space for file system
 Boot:
     mov ah,0x02    # read sectors into memory
-    mov al,0x30    # number of sectors to read (48)
+    mov al,0x50    # number of sectors to read (48)
     #mov dl,0x80    # drive number
 	mov ch,0    # cylinder number
     mov dh,2    # head number
@@ -117,7 +117,7 @@ prot_mode:
     
 	mov eax, 0x7003
     mov ebx, 0x22038
-	mov ecx, 7 # num of pages to map
+	mov ecx, 20 # num of pages to map
 map_boot_pages:
     mov [ebx],eax # set the PTE entry of code.
 	add eax, 0x1000

@@ -1,8 +1,8 @@
 #ifndef __SCREEN_H__
 #define __SCREEN_H__
-#include "exports.h"
-#include "../Common/Qube.h"
 
+#include "../Common/Qube.h"
+#include "exports.h"
 typedef enum {
 	BLACK = 0,
 	BLUE = 1,
@@ -34,7 +34,7 @@ typedef struct {
 	char color;
 } Screen;
 
-static Screen g_screen;
+
 QResult screen_set_color(Color foreground, Color background);
 QResult screen_write_string(char * str, BOOL newline);
 QResult screen_write_buffer(char * buf, int size, BOOL newline);

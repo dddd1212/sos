@@ -5,6 +5,10 @@
 #include "loader.h"
 #include "libc.h"
 #include "screen.h"
+
+void hack_for_gdb(void * module, void * entry) {
+	return;
+}
 // kgd - pointer to KernelGlobalData\
 // boot_modules - ptr to array of STAGE0BootModules
 // num_of_modules - boot_modules entries
@@ -26,6 +30,7 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 	// First - load the segments, handle exports, and reloacations
 	
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
+	
 		DBG_PRINTF1("Load the segments, handle exports and relocations of module %d", i); ENTER;
 		// Calc the size of virtual memory we need to reserve:
 		// Iterate over the program header tables:
@@ -38,6 +43,8 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 		DBG_PRINTF1("    virtual memory size that we need to reserve: 0x%x", reserved_end - reserved_start); ENTER;
 		// Reserve the memory for the module:
 		module_base = (Elf64_Addr) virtual_commit(boot_loader_allocator, reserved_end - reserved_start, FALSE);
+		boot_module->module_base = (char*)module_base;
+		hack_for_gdb((void*)module_base, (void*)boot_module->file_data->e_entry);
 		DBG_PRINTF1("    module_base: 0x%x", module_base); ENTER;
 		if (module_base == NULL) return 0x1000;
 		// Load the program headers to the memory:
@@ -108,16 +115,23 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 				return 0x5001; // Not supporting sym_shndx not zero.
 			}
 			//dynstr = ((char*)boot_module) + (sh + dynsym->sym_shndx)->s_offset;
-			dynstr = (char *)find_section_by_name(boot_module, string_dynstr, &size);
+			dynstr = (char *)find_section_by_name(boot_module, string_dynstr, NULL);
 			Elf64_Addr symbol_addr = find_symbol(kgd, dynstr + dynsym->sym_name);
 			DBG_PRINTF2("    search symbol '%s' result is 0x%x", dynstr + dynsym->sym_name, symbol_addr); ENTER;
 			if (symbol_addr == NULL) return 0x7000;
-			*((Elf64_Addr *)(module_base + rela->r_addr)) = symbol_addr;
+			*((Elf64_Addr *)(boot_module->module_base + rela->r_addr)) = symbol_addr;
 		}
 	}
-
+	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
+		DBG_PRINTF2("Symbol start to module %d: 0x%x", i, boot_module->module_base + boot_module->file_data->e_entry); ENTER;
+	}
 	// Finally, call to the entry points:
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
+		
+		if (!boot_module->entry_point) {
+			DBG_PRINTF1("No entry point to module %d", i); ENTER;
+			continue;
+		}
 		DBG_PRINTF1("Call entry point of module %d", i); ENTER;
 		if (ret2 = boot_module->entry_point(kgd) != 0) return i*0x10000000 + ret2;
 	}
@@ -148,11 +162,11 @@ void * find_section_by_name(struct STAGE0BootModule * boot_modules, char * name,
 	for (int i = 0; i < sn; i++, sh++) {
 		
 		if (strcmp(symtab + sh->s_name,name) == 0) {
-			*size_out = sh->s_size;
+			if (size_out) *size_out = sh->s_size;
 			return (void *)(((char *)boot_modules->file_data) + sh->s_offset);
 		}
 	}
-	*size_out = 0;
+	if (size_out) *size_out = 0;
 	return NULL;
 }
 // The function returns the number of sections data with type 'type'.

@@ -4,7 +4,7 @@ LD = x86_64-elf-ld.exe
 OUT_DIR = ../_output/system
 libc:
 	python ../common/exports.py
-	$(CC) -c *.c -fpic -fvisibility=hidden -o libc.o
+	$(CC) -c *.c -fpic -fvisibility=hidden -include exports.h -g -o libc.o
 	$(LD) -fpic -fvisibility=hidden -shared libc.o -o $(OUT_DIR)/libc.qkr
 
 all: libc
