@@ -33,6 +33,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MemoryManager", "MemoryMana
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libc", "libc\libc.vcxproj", "{19301BB9-882D-4019-AB17-C51858CEFEA6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gdb_debugger", "gdb_debugger\gdb_debugger.vcxproj", "{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qkr_acpi", "qkr_acpi\qkr_acpi.vcxproj", "{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}"
 EndProject
 Global
@@ -129,6 +131,14 @@ Global
 		{19301BB9-882D-4019-AB17-C51858CEFEA6}.Release|x64.Build.0 = Release|x64
 		{19301BB9-882D-4019-AB17-C51858CEFEA6}.Release|x86.ActiveCfg = Release|Win32
 		{19301BB9-882D-4019-AB17-C51858CEFEA6}.Release|x86.Build.0 = Release|Win32
+		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Debug|x64.ActiveCfg = Debug|x64
+		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Debug|x64.Build.0 = Debug|x64
+		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Debug|x86.ActiveCfg = Debug|Win32
+		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Debug|x86.Build.0 = Debug|Win32
+		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Release|x64.ActiveCfg = Release|x64
+		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Release|x64.Build.0 = Release|x64
+		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Release|x86.ActiveCfg = Release|Win32
+		{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}.Release|x86.Build.0 = Release|Win32
 		{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}.Debug|x64.ActiveCfg = Debug|x64
 		{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}.Debug|x64.Build.0 = Debug|x64
 		{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}.Debug|x86.ActiveCfg = Debug|Win32
