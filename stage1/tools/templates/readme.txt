@@ -1,0 +1,1 @@
+copy to Documents\Visual Studio 2015\Templates\ProjectTemplates
