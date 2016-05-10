@@ -85,7 +85,6 @@
     <ClCompile Include="screen.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="exports.h" />
     <ClInclude Include="screen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

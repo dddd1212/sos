@@ -77,10 +77,6 @@
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="exports.py" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="auto_exports.h" />
     <ClInclude Include="intrinsics.h" />
     <ClInclude Include="Qube.h" />
   </ItemGroup>

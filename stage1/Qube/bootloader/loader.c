@@ -21,16 +21,17 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 	Elf64_Addr module_base;
 	uint32 ret;
 	int ret2;
-	char string_strtab[] = { '.','s','t','r','t','a','b','\x00' };
-	char string_symtab[] = { '.','s','y','m','t','a','b','\x00' };
-	char string_dynstr[] = { '.','d','y','n','s','t','r','\x00' };
-	char export_prefix[] = { 'E','X','P','_' };
-	char entry_point_prefix[] = { 'E','N','P','_' };
+	//char string_strtab[] = {".strtab" };
+	char string_dynsym[] = {".dynsym" };
+	char string_dynstr[] = {".dynstr" };
+	char string_rela_plt[] = { ".rela.plt" };
+	char string_rela_dyn[] = { ".rela.dyn" };
+	char entry_point_name[] = { "qkr_main" };
+
 	Elf64_Xword size;
 	// First - load the segments, handle exports, and reloacations
-	
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
-	
+		boot_module->symbols_start_index = kgd->bootloader_symbols.index;
 		DBG_PRINTF1("Load the segments, handle exports and relocations of module %d", i); ENTER;
 		// Calc the size of virtual memory we need to reserve:
 		// Iterate over the program header tables:
@@ -45,8 +46,11 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 		module_base = (Elf64_Addr) virtual_commit(boot_loader_allocator, reserved_end - reserved_start, FALSE);
 		boot_module->module_base = (char*)module_base;
 		hack_for_gdb((void*)module_base, (void*)boot_module->file_data->e_entry);
-		DBG_PRINTF1("    module_base: 0x%x", module_base); ENTER;
-		if (module_base == NULL) return 0x1000;
+		DBG_PRINTF1("    Module_base: 0x%x", module_base); ENTER;
+		if (module_base == NULL) {
+			DBG_PRINTF("    ERROR: Module_base is null!"); ENTER;
+			return 0x1000;
+		}
 		// Load the program headers to the memory:
 		// Iterate over the program header tables:
 		for (j = 0, ph = (struct Elf64ProgramHeader*)(((char *)boot_module->file_data) + boot_module->file_data->e_phoff); j < boot_module->file_data->e_phnum; j++, ph++) {
@@ -55,7 +59,10 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 			// Now align the start to page:
 			int pad_size = (seg_start%PAGE_SIZE);
 			ret = alloc_committed(boot_loader_allocator, ph->p_memsz + pad_size, (void*)(seg_start - pad_size));
-			if (ret != QSuccess) return 0x2000;
+			if (ret != QSuccess) {
+				DBG_PRINTF("    ERROR: alloc failed!"); ENTER;
+				return 0x2000;
+			}
 			if (pad_size) {
 				memset((char*)(module_base - reserved_start + ph->p_vaddr - pad_size), 0, pad_size);
 			}
@@ -69,57 +76,79 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 		}	
 
 		// Get string table ptr:
-		char * string_table = (char *) find_section_by_name(boot_module, string_strtab, &size);
+		char * string_table = (char *) find_section_by_name(boot_module, string_dynstr, &size);
 		DBG_PRINTF1("    file string table address: 0x%x", string_table); ENTER;
 		// Handle exports:
 		struct Elf64Symbol * symbol_entry;
-		struct Elf64Symbol * symbol_table = (struct Elf64Symbol *) find_section_by_name(boot_module, string_symtab, &size);
+		struct Elf64Symbol * symbol_table = (struct Elf64Symbol *) find_section_by_name(boot_module, string_dynsym, &size);
 		DBG_PRINTF1("    symbol table address: 0x%x", symbol_table); ENTER;
-		if (symbol_table == NULL) return 0x2800;
+		if (symbol_table == NULL) {
+			DBG_PRINTF("    ERROR: could no found dynsym section!"); ENTER;
+			return 0x2800;
+		}
 		for (symbol_entry = symbol_table; (char *)symbol_entry < ((char *)symbol_table) + size; symbol_entry++) {
-			if (memcmp(string_table + symbol_entry->sym_name, entry_point_prefix, sizeof(entry_point_prefix)) == 0) {
+			if (memcmp(string_table + symbol_entry->sym_name, entry_point_name, sizeof(entry_point_name)) == 0) {
 				if (boot_module->entry_point) {
+					DBG_PRINTF("    ERROR: too many entry points!"); ENTER;
 					return 0x2500; // to many entry points!
 				}
 				boot_module->entry_point = (EntryPoint) module_base + symbol_entry->sym_value;
 				DBG_PRINTF1("    Found entry point: 0x%x", boot_module->entry_point); ENTER;
 			}
-			if (memcmp(string_table + symbol_entry->sym_name, export_prefix, sizeof(export_prefix))) continue; // skip non export symbol
-			if (symbol_entry->sym_info >> 4 == 1) continue; // it is STB_GLOBAL - means that is import and not an export.
+			if (symbol_entry->sym_info_bind != STB_GLOBAL ||
+				symbol_entry->sym_info_type == STT_NOTYPE ||
+				symbol_entry->sym_shndx == 0) continue; // skip non export symbol
 			DBG_PRINTF2("    Found symbol: '%s' at address 0x%x", string_table + symbol_entry->sym_name, module_base + symbol_entry->sym_value); ENTER;
 			ret2 = add_to_symbol_table(kgd, string_table + symbol_entry->sym_name, module_base + symbol_entry->sym_value);
-			if (ret2 != 0) return 0x3000 + ret2;
+			if (ret2 != 0) {
+				DBG_PRINTF("    ERROR: error while adding to symbol table!"); ENTER;
+				return 0x3000 + ret2;
+			}
 		}
 
-		// Handle relocations:
+		// Handle rel sections:
 		// There is nothing to do if there is no rel section
-		if (find_section_by_type(boot_module, SHT_REL, &size)) return 0x4000; // Not supported such relocations.
+		if (find_section_by_type(boot_module, SHT_REL, NULL, &size)) {
+			DBG_PRINTF("    ERROR: we not support SHT_REL sections!"); ENTER;
+			return 0x4000; // Not supported such relocations.
+		}
 	}
 
-	// Now handle the imports:
+	// Now handle the imports and the rela sections:
+	int num_of_rela_sections = 0;
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
-		DBG_PRINTF1("Handle imports of module %d", i); ENTER;
-		struct Elf64Symbol * dynsym_table = (struct Elf64Symbol *) find_section_by_type(boot_module, SHT_DYNSYM, &size);
-		struct Elf64Symbol * dynsym;
+		DBG_PRINTF1("Handle relocations (and imports) of module %d", i); ENTER;
+		int start_index = 0;
 		struct Elf64SectionHeader * sh = (struct Elf64SectionHeader *) (((char *)boot_module) + boot_module->file_data->e_shoff);
-		char * dynstr;
-		struct Elf64RelaStruct * rela_table = (struct Elf64RelaStruct *) find_section_by_type(boot_module, SHT_RELA, &size);
-		size = size /= sizeof(struct Elf64RelaStruct); // num of structs.
-		struct Elf64RelaStruct * rela;
-		if (!rela_table) continue; // No imports to this module.
-		if (count_sections_by_type(boot_module, SHT_RELA) > 1) return 0x5000; // Not supported more then one rela section.
-		for (rela = rela_table; rela < rela_table + size; rela++) {
-			if (rela->r_type != 7) return 0x6000;
-			dynsym = dynsym_table + rela->r_index;
-			if (dynsym->sym_shndx != 0) {
-				return 0x5001; // Not supporting sym_shndx not zero.
+		struct Elf64Symbol * dynsym_table = (struct Elf64Symbol *) find_section_by_type(boot_module, SHT_DYNSYM, NULL, &size);
+		struct Elf64Symbol * dynsym;
+		struct Elf64RelaStruct * rela_table;
+		char * dynstr = (char *)find_section_by_name(boot_module, string_dynstr, NULL);
+		while (1) { // Iterate over SHT_RELA sections:
+			rela_table = (struct Elf64RelaStruct *) find_section_by_type(boot_module, SHT_RELA, &start_index, &size);
+			if (!rela_table) break; // finish iterate.
+			size = size /= sizeof(struct Elf64RelaStruct); // num of structs.
+			struct Elf64RelaStruct * rela;
+			for (rela = rela_table; rela < rela_table + size; rela++) {
+				if (rela->r_type != R_AMD64_GLOB_DAT && rela->r_type != R_AMD64_JUMP_SLOT) {
+					DBG_PRINTF1("    ERROR: unsupported rela->r_type (=%d)!", rela->r_type); ENTER;
+					return 0x6000;
+				}
+				dynsym = dynsym_table + rela->r_index;
+				Elf64_Addr symbol_addr = NULL;
+				if (dynsym->sym_shndx == 0) { // We should find the symbol in the global symbols table.
+					symbol_addr = find_symbol(kgd, dynstr + dynsym->sym_name);
+					DBG_PRINTF2("    search symbol result: *%s = 0x%x", dynstr + dynsym->sym_name, symbol_addr); ENTER;
+				} else { // The symbol is local and found in the dynsym section:
+					symbol_addr = (Elf64_Addr)boot_module->module_base + dynsym->sym_value;
+					DBG_PRINTF2("    handle rela: *%s = 0x%x", dynstr + dynsym->sym_name, symbol_addr); ENTER;
+				}
+				if (symbol_addr == NULL) {
+					DBG_PRINTF1("    ERROR: could not resolve symbol! (%s)", dynstr + dynsym->sym_name); ENTER;
+					return 0x7000;
+				}
+				*((Elf64_Addr *)(boot_module->module_base + rela->r_addr)) = symbol_addr;
 			}
-			//dynstr = ((char*)boot_module) + (sh + dynsym->sym_shndx)->s_offset;
-			dynstr = (char *)find_section_by_name(boot_module, string_dynstr, NULL);
-			Elf64_Addr symbol_addr = find_symbol(kgd, dynstr + dynsym->sym_name);
-			DBG_PRINTF2("    search symbol '%s' result is 0x%x", dynstr + dynsym->sym_name, symbol_addr); ENTER;
-			if (symbol_addr == NULL) return 0x7000;
-			*((Elf64_Addr *)(boot_module->module_base + rela->r_addr)) = symbol_addr;
 		}
 	}
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
@@ -133,22 +162,32 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 			continue;
 		}
 		DBG_PRINTF1("Call entry point of module %d", i); ENTER;
-		if (ret2 = boot_module->entry_point(kgd) != 0) return i*0x10000000 + ret2;
+		if (ret2 = boot_module->entry_point(kgd) != 0) {
+			DBG_PRINTF("    ERROR: entry point return non zero!"); ENTER;
+			return i * 0x10000000 + ret2;
+		}
 	}
 	// should not reach here!
-	return 0;
+	DBG_PRINTF("ERROR: should not reach here!"); ENTER;
+	return 0x123123;
 }
 // The function returns pointer to the first section data with type 'type'. the size of the section will be in size_out.
+// The function starts looking from the section index '*start_index'. if start_index is null, then starts looking from 0.
+// When returning not NULL, start_index will be fill with the found section index+1.
 // Return NULL if not found. size_out in that case will be set to 0.
-void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type, Elf64_Xword * size_out) {
+void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type, int * start_index, Elf64_Xword * size_out) {
 	int sn = boot_modules->file_data->e_shnum;
 	struct Elf64SectionHeader * sh = (struct Elf64SectionHeader *) (((char*)boot_modules->file_data) + boot_modules->file_data->e_shoff);
-	for (int i = 0; i < sn; i++, sh++) {
+	int i = 0;
+	if (start_index) i = *start_index;
+	for (; i < sn; i++, sh++) {
 		if (sh->s_type == type) {
 			*size_out = sh->s_size;
+			*start_index = i + 1;
 			return (void *)(((char *)boot_modules->file_data) + sh->s_offset);
 		}
 	}
+	*start_index = 0;
 	*size_out = 0;
 	return NULL;
 }
@@ -169,6 +208,7 @@ void * find_section_by_name(struct STAGE0BootModule * boot_modules, char * name,
 	if (size_out) *size_out = 0;
 	return NULL;
 }
+/*
 // The function returns the number of sections data with type 'type'.
 int count_sections_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type) {
 	int sn = boot_modules->file_data->e_shnum;
@@ -179,7 +219,7 @@ int count_sections_by_type(struct STAGE0BootModule * boot_modules, s_type64_e ty
 	}
 	return ret;
 }
-
+*/
 /// Symbol table functions:
 // return: 0 - success
 //         1 - failure
