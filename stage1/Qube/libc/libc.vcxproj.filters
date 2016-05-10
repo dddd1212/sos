@@ -29,16 +29,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="exports.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="libc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="string.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="exports_auto_gen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

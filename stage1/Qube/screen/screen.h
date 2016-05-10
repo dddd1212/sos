@@ -2,7 +2,7 @@
 #define __SCREEN_H__
 
 #include "../Common/Qube.h"
-#include "exports.h"
+
 typedef enum {
 	BLACK = 0,
 	BLUE = 1,
@@ -35,15 +35,15 @@ typedef struct {
 } Screen;
 
 
-QResult screen_set_color(Color foreground, Color background);
-QResult screen_write_string(char * str, BOOL newline);
-QResult screen_write_buffer(char * buf, int size, BOOL newline);
-QResult screen_new_line();
-QResult screen_clear();
-QResult screen_locate(int x, int y);
-
-QResult screen_init(void * first_MB_ptr);
-
+EXPORT QResult screen_set_color(Color foreground, Color background);
+EXPORT QResult screen_write_string(char * str, BOOL newline);
+EXPORT QResult screen_write_buffer(char * buf, int size, BOOL newline);
+EXPORT QResult screen_new_line();
+EXPORT QResult screen_clear();
+EXPORT QResult screen_locate(int x, int y);
+	   
+EXPORT QResult screen_init(void * first_MB_ptr);
+EXPORT QResult qkr_main(KernelGlobalData * kgd);
 
 
 

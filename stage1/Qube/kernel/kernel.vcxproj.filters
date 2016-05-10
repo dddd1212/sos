@@ -21,12 +21,6 @@
     <ClInclude Include="kernel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="exports.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="exports_auto_gen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="makefile">

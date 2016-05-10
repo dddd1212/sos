@@ -3,9 +3,8 @@ AS = x86_64-elf-as.exe
 LD = x86_64-elf-ld.exe
 OUT_DIR = ../_output/system
 module1:
-	python ../common/exports.py
-	$(CC) -c *.c -fpic -fvisibility=hidden -include exports.h -g -o screen.o
-	$(LD) -fpic -fvisibility=hidden -shared screen.o -o $(OUT_DIR)/screen.qkr
+	$(CC) -c *.c -fvisibility=hidden -fpic -g -o screen.o
+	$(LD) -fpic -shared screen.o -o $(OUT_DIR)/screen.qkr
 
 all: module1
 

@@ -85,6 +85,10 @@ typedef struct {
 // TODO: Change kgd to PEB
 QResult qkr_main(KernelGlobalData * kgd);
 
+
+#define EXPORT __attribute__ ((visibility ("default")))
+//#define EXPORT __declspec((dllexport))
+
 #include "intrinsics.h"
 
 

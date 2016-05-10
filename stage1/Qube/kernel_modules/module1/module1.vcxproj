@@ -87,8 +87,6 @@
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="exports.h" />
-    <ClInclude Include="imports.h" />
     <ClInclude Include="module1_funcs.h" />
   </ItemGroup>
   <ItemGroup>

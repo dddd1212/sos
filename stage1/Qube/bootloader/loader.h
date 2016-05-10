@@ -9,6 +9,7 @@ struct STAGE0BootModule {
 	struct Elf64Header * file_data; // data of the eff file.
 	char * module_base; // pointer to the loaded module.
 	EntryPoint entry_point; // module entry point
+	int symbols_start_index;
 };
 
 #define Elf64_Off uint64
@@ -100,6 +101,10 @@ struct Elf64RelaStruct {
 	Elf64_Word r_index;
 	Elf64_Addr pad;
 };
+typedef enum {
+	R_AMD64_GLOB_DAT = 6,
+	R_AMD64_JUMP_SLOT = 7,
+} RelocationType;
 struct Elf64Header {
 	char e_ident[16];
 	uint16 e_type;
@@ -119,19 +124,30 @@ struct Elf64Header {
 
 struct Elf64Symbol {
 	uint32 sym_name; // offset from string table.
-	char sym_info;
+	union {
+		char sym_info;
+		struct {
+			char sym_info_type : 4;
+			char sym_info_bind : 4;
+		};
+	};
 	unsigned char sym_other;
 	Elf64_Half sym_shndx;
 	Elf64_Addr sym_value;
 	Elf64_Xword sym_size;
 };
 
+#define STB_LOCAL 0x0
+#define STB_GLOBAL 0x1
+#define STT_NOTYPE 0x0
+
+
 
 
 int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule * boot_modules, BootLoaderAllocator * boot_loader_allocator, int num_of_modules);
-int count_sections_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type);
+//int count_sections_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type);
 void * find_section_by_name(struct STAGE0BootModule * boot_modules, char * name, Elf64_Xword * size_out);
-void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type, Elf64_Xword * size_out);
+void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e type, int * start_index, Elf64_Xword * size_out);
 Elf64_Addr find_symbol(KernelGlobalData * kgd, char * sym_name);
 int add_to_symbol_table(KernelGlobalData * kgd, char * sym_name, Elf64_Addr sym_addr);
 

@@ -122,8 +122,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="exports.h" />
-    <ClInclude Include="exports_auto_gen.h" />
     <ClInclude Include="kernel.h" />
   </ItemGroup>
   <ItemGroup>
