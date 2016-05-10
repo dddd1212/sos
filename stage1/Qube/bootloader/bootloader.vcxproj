@@ -52,6 +52,8 @@
     <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>make cleen</NMakeCleanCommandLine>
     <IntDir>../_output/bootloader/inter</IntDir>
+    <NMakeOutput>
+    </NMakeOutput>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='BootLoader|Win32'">
     <ClCompile>
