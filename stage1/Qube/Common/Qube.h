@@ -1,5 +1,8 @@
 #ifndef __QUBE_H__
 #define __QUBE_H__
+
+#define DEBUG
+
 // C general defines:
 typedef char			 int8;
 typedef unsigned char	 uint8;

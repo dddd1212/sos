@@ -6,7 +6,10 @@
 #include "libc.h"
 #include "screen.h"
 
-void hack_for_gdb(void * module, void * entry) {
+void hack_for_gdb(char * module_file_name, Elf64_Addr entry) {
+	return;
+}
+void hack_for_gdb2() { 
 	return;
 }
 // kgd - pointer to KernelGlobalData\
@@ -45,7 +48,6 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 		// Reserve the memory for the module:
 		module_base = (Elf64_Addr) virtual_commit(boot_loader_allocator, reserved_end - reserved_start, FALSE);
 		boot_module->module_base = (char*)module_base;
-		hack_for_gdb((void*)module_base, (void*)boot_module->file_data->e_entry);
 		DBG_PRINTF1("    Module_base: 0x%x", module_base); ENTER;
 		if (module_base == NULL) {
 			DBG_PRINTF("    ERROR: Module_base is null!"); ENTER;
@@ -151,9 +153,15 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 			}
 		}
 	}
+#ifdef DEBUG
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
-		DBG_PRINTF2("Symbol start to module %d: 0x%x", i, boot_module->module_base + boot_module->file_data->e_entry); ENTER;
+		char * module_name = boot_module->file_name;
+		Elf64_Addr addr_to_gdb = (Elf64_Addr)boot_module->module_base + boot_module->file_data->e_entry;
+		hack_for_gdb(module_name, addr_to_gdb);
+		DBG_PRINTF2("Symbol start to module %s: 0x%x", module_name, addr_to_gdb); ENTER;
 	}
+#endif
+	hack_for_gdb2();
 	// Finally, call to the entry points:
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
 		
