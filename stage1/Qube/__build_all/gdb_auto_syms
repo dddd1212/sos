@@ -1,0 +1,11 @@
+break hack_for_gdb
+commands
+	silent
+	#set confirm off
+	eval "add-symbol-file ../_output/system/%s 0x%lx", module_file_name, entry
+	#print 1
+	#c
+end
+
+#set breakpoint pending on
+#b kernel_main
