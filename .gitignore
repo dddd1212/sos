@@ -49,3 +49,5 @@
 /stage1/Qube/__build_all/diskpartscript
 /stage1/Qube/__build_all/last_compile_times.txt
 /stage1/Qube/__build_all/log.txt
+/stage1/Qube/_output/bootloader/boot.bin
+*.qmo
