@@ -51,3 +51,4 @@
 /stage1/Qube/__build_all/log.txt
 /stage1/Qube/_output/bootloader/boot.bin
 *.qmo
+/stage1/Qube/_output
