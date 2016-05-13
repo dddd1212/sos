@@ -7,6 +7,20 @@
 static inline int8 __in8(uint16 port) __attribute__((always_inline));
 static inline void __out8(uint16 port, uint8 data) __attribute__((always_inline));
 static inline void __insw(uint16 port, uint32 count, void *addr) __attribute__((always_inline));
+static inline bool __qube_sync_bool_compare_and_swap(void *p, int old_val, int new_val) __attribute__((always_inline));
+static inline void __qube_mm_pause() __attribute__((always_inline));
+static inline void __qube_memory_barrier() __attribute__((always_inline));
+
+static inline void __qube_memory_barrier() {
+	asm volatile (""); // acts as a memory barrier.
+}
+static inline void __qube_mm_pause() {
+	_mm_pause();
+}
+
+static inline bool __qube_sync_bool_compare_and_swap(volatile int *p, int old_val, int new_val) {
+	return __sync_bool_compare_and_swap(p, old_val, new_val);
+}
 
 static inline int8 __in8(uint16 port){
 	int8 res;
