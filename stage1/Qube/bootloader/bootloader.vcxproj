@@ -125,7 +125,7 @@
     <ClCompile Include="libc.c" />
     <ClCompile Include="loader.c" />
     <ClCompile Include="long_mode_main.c" />
-    <ClCompile Include="screen.c" />
+    <ClCompile Include="bootscreen.c" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hd.c">
