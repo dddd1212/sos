@@ -22,19 +22,13 @@ typedef struct {
 } Qbject;
 
 
-//QbjectContainer
+//QbjectNode
 typedef Qbject* (*QbjectOpenFunction)(QbjectContent container, char* path, ACCESS access);
 
 typedef struct {
 	// same as Qbject
-	QbjectType type;
-	QbjectContent content;
-	QbjectReadFunction read_func;
-	QbjectWriteFunction write_func;
-	
-	// additional fields for containers
 	QbjectOpenFunction open;
-} QbjectContainer;
+} QbjectNode;
 
 Qbject* OpenQbject(char* path, ACCESS access);
 

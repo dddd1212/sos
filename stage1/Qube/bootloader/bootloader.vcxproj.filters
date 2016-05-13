@@ -32,10 +32,10 @@
     <ClCompile Include="libc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="screen.c">
+    <ClCompile Include="..\qkr_acpi\acpi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\qkr_acpi\acpi.c">
+    <ClCompile Include="bootscreen.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
