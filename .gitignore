@@ -52,3 +52,5 @@
 /stage1/Qube/_output/bootloader/boot.bin
 *.qmo
 /stage1/Qube/_output
+/stage1/Qube/__build_all/__build_all.vcxproj.user
+/stage1/Qube/.vs/config/applicationhost.config
