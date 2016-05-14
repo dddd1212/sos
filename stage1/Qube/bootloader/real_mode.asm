@@ -1,5 +1,4 @@
 .set NUM_OF_BOOT_PAGES, 9 # not including first two sectors!
-
 .intel_syntax noprefix#
 # org 0x7C00 # boot sector address
 .text
@@ -38,16 +37,10 @@ Boot:
     mov al,2+8*NUM_OF_BOOT_PAGES    # number of sectors to read (80 = 10 pages)
     mov bx, offset Main    # address to load to
     int 0x13    # call the interrupt routine
-
-    #
     jmp Main
-    #
-
-PreviousLabel:
 
 PadOutWithZeroesSectorOne:
     . = real_mode + (0x200 - 2)
-
 BootSectorSignature:
     .word 0xAA55
 
@@ -83,16 +76,9 @@ phy_pages_loop:
 	stosd
 	stosd
 
-
-    xor edx,edx # edx = 0
-    mov dx,ds   # get the data segment
-    shl edx,4   # shift it left a nibble
-    add [GlobalDescriptorTable+2],edx # GDT's base addr = edx
-
-    lgdt [GlobalDescriptorTable] # load the GDT  
+    lgdt [GlobalDescriptorTable] # load the GDT
     mov eax,cr0 # eax = machine status word (MSW)
     or al,1     # set the protection enable bit of the MSW to 1
-
     cli         # disable interrupts
     mov cr0,eax # start protected mode    
     jmp 0x8:prot_mode # this will change cs to 0x8 and actually make it works in protected mode ( We cant access directly to cs.
@@ -107,9 +93,6 @@ prot_mode:
         mov ss,bx   # fs = the 2nd GDT descriptor, a 4 GB data seg
         mov es,bx   # fs = the 2nd GDT descriptor, a 4 GB data seg
         mov gs,bx   # fs = the 2nd GDT descriptor, a 4 GB data seg
-        #mov cs,bx   # fs = the 2nd GDT descriptor, a 4 GB data seg
-        # TODO: more segments??
-        
     #
     # zero the root PXE page.
     #
@@ -167,6 +150,12 @@ map_boot_pages:
     jmp 8:mode64 # 8 is the code selector
 .code64
 mode64:
+	mov ebx,0x10 # the size of a GDT descriptor is 8 bytes
+    mov fs,bx
+    mov ds,bx
+    mov ss,bx
+    mov es,bx
+    mov gs,bx
 
     # map the stack. (maximum of 4 pages)
     mov rax, 0xFFFFF68000000000 # 4 pages of stack, starting at 0
@@ -210,10 +199,6 @@ DATA_DESC:
     .byte 0b11001111   # granularity
     .byte 0            # base high
 
-gdtr:
-    .word 24          # length of GDT
-    .long NULL_DESC   # base of GDT
-
 GlobalDescriptorTableEnd:
 
 GDT64:                           # Global Descriptor Table (64-bit).
@@ -241,10 +226,6 @@ GDT64:                           # Global Descriptor Table (64-bit).
 GDT64_Pointer:                    # The GDT-pointer.
     .word GDT64_Pointer - GDT64 - 1             # Limit.
     .quad GDT64                     # Base.
-    GDT64_PointerAtKernelSpace:
-    .word GDT64_Pointer - GDT64 - 1             # Limit.
-    .long GDT64 - real_mode + 0xC00 # Base.
-	.long 0xFFFF8000				# 0xFFFF800000000000 + GDT64 - real_mode + 0xC00 
     
 #===========================================
                                 
