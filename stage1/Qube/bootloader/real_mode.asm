@@ -1,3 +1,5 @@
+.set NUM_OF_BOOT_PAGES, 9 # not including first two sectors!
+
 .intel_syntax noprefix#
 # org 0x7C00 # boot sector address
 .text
@@ -27,13 +29,13 @@ Boot:
 	mov ch,al    # cylinder number
 	shr ax,2
 	and al,0xC0
-    mov cl,bh    # starting sector number. we need sector number 2+128 (because the MBR part), so we need sector 4 in head 2.
+    mov cl,bh    # starting sector number.
 
 	or cl,al
     mov dh,dl    # head number
     mov dl,bl    # drive number
     mov ah,0x02    # read sectors into memory
-    mov al,0x50    # number of sectors to read (48)
+    mov al,2+8*NUM_OF_BOOT_PAGES    # number of sectors to read (80 = 10 pages)
     mov bx, offset Main    # address to load to
     int 0x13    # call the interrupt routine
 
@@ -139,7 +141,7 @@ prot_mode:
     
 	mov eax, 0x7003
     mov ebx, 0x22038
-	mov ecx, 20 # num of pages to map
+	mov ecx, NUM_OF_BOOT_PAGES+1 # num of pages to map
 map_boot_pages:
     mov [ebx],eax # set the PTE entry of code.
 	add eax, 0x1000
