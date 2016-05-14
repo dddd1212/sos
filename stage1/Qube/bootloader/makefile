@@ -6,7 +6,7 @@ OUT_DIR = ../_output/bootloader
 INTER_DIR = ../_output/bootloader/inter
 
 boot: *.c *.h real_mode.asm
-	$(AS) real_mode.asm -o $(INTER_DIR)/real_mode.o
+	$(AS) real_mode.asm -g -o $(INTER_DIR)/real_mode.o
 	$(CC) *.c -T linker.ld -g -o $(OUT_DIR)/boot.elf -ffreestanding -nostdlib -mno-red-zone -fno-exceptions -fno-asynchronous-unwind-tables -lgcc
 	$(OBJCOPY) -O binary $(OUT_DIR)/boot.elf $(OUT_DIR)/boot.bin
 all: boot

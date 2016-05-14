@@ -7,14 +7,36 @@ real_mode:
     jmp Boot
     . = real_mode + 90 # space for file system
 Boot:
+	mov bl,dl # BL: DriveNum
+	mov ah,0x08
+	int 0x13 # DH: number of heads - 1.
+	mov bh,dh # BH: NumOfHeads
+	and ecx,0x3f # ECX: sectors per track
+	xor edx,edx
+	mov eax,[0x7c00+28]
+	inc eax
+	div ecx # EAX=LBA/(SectorsPerTrack), EDX=SectorNumber-1
+	inc edx
+
+	mov cl,bh # CL: NumOfHeads
+	mov bh,dl # BL: DriveNum, BH: SectorNumber
+
+	xor edx,edx
+	div ecx # now: bh=SectorNumber, EDX=HeadNumber, EAX=CylinderNumber
+
+	mov ch,al    # cylinder number
+	shr ax,2
+	and al,0xC0
+    mov cl,bh    # starting sector number. we need sector number 2+128 (because the MBR part), so we need sector 4 in head 2.
+
+	or cl,al
+    mov dh,dl    # head number
+    mov dl,bl    # drive number
     mov ah,0x02    # read sectors into memory
     mov al,0x50    # number of sectors to read (48)
-    #mov dl,0x80    # drive number
-	mov ch,0    # cylinder number
-    mov dh,2    # head number
-    mov cl,4    # starting sector number. we need sector number 2+128 (because the MBR part), so we need sector 4 in head 2.
     mov bx, offset Main    # address to load to
     int 0x13    # call the interrupt routine
+
     #
     jmp Main
     #
