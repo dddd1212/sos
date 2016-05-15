@@ -79,6 +79,7 @@
   <ItemGroup>
     <ClInclude Include="intrinsics.h" />
     <ClInclude Include="Qube.h" />
+    <ClInclude Include="spin_lock.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

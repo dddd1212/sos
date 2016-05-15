@@ -24,5 +24,8 @@
     <ClInclude Include="intrinsics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="spin_lock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
