@@ -201,29 +201,29 @@ DATA_DESC:
 
 GlobalDescriptorTableEnd:
 
-GDT64:                           # Global Descriptor Table (64-bit).
-    #.set GDT64Null, $ - GDT64         # The null descriptor.
+GDT64:								# Global Descriptor Table (64-bit).
+    #.set GDT64Null, $ - GDT64      # The null descriptor.
     .word 0                         # Limit (low).
     .word 0                         # Base (low).
     .byte 0                         # Base (middle)
     .byte 0                         # Access.
     .byte 0                         # Granularity.
     .byte 0                         # Base (high).
-    #.set GDT64Code, $ - GDT64         # The code descriptor.
-    .word 0xFFFF                    # Limit (low).
+    #.set GDT64Code, $ - GDT64      # The code descriptor.
+    .word 0						    # Limit (low).
     .word 0                         # Base (low).
     .byte 0                         # Base (middle)
     .byte 0b10011010                # Access (exec/read).
     .byte 0b00100000                # Granularity.
     .byte 0                         # Base (high).
-    #.set GDT64Data, $ - GDT64         # The data descriptor.
-    .word 0xFFFF                    # Limit (low).
+    #.set GDT64Data, $ - GDT64      # The data descriptor.
+    .word 0							# Limit (low).
     .word 0                         # Base (low).
     .byte 0                         # Base (middle)
     .byte 0b10010010                # Access (read/write).
     .byte 0b00000000                # Granularity.
     .byte 0                         # Base (high).
-GDT64_Pointer:                    # The GDT-pointer.
+GDT64_Pointer:						# The GDT-pointer.
     .word GDT64_Pointer - GDT64 - 1             # Limit.
     .quad GDT64                     # Base.
     

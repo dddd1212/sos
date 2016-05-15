@@ -88,5 +88,14 @@ static inline void __insw(uint16 port, uint32 count, void *addr){
 	);
 }
 
-
+static inline void __lgdt(void* addr) {
+	__asm__(
+		".intel_syntax noprefix;"
+		"lgdt [%0];"
+		".att_syntax;"
+		:
+		: "r"(addr)
+	);
+	return;
+}
 #endif

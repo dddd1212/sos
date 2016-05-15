@@ -69,6 +69,7 @@
   <ItemGroup>
     <Text Include="Readme\readme.html" />
     <Text Include="Readme\stylesheet.css" />
+    <None Include=".gdbinit" />
     <None Include="bochsrc_gdb.bxrc" />
     <None Include="make.py" />
     <None Include="qube_gdb.bat" />

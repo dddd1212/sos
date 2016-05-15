@@ -54,6 +54,7 @@
     <IntDir>../_output/bootloader/inter</IntDir>
     <NMakeOutput>
     </NMakeOutput>
+    <NMakePreprocessorDefinitions>VS_EDITOR</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='BootLoader|Win32'">
     <ClCompile>
