@@ -92,6 +92,31 @@ QResult qkr_main(KernelGlobalData * kgd);
 #define EXPORT __attribute__ ((visibility ("default")))
 //#define EXPORT __declspec((dllexport))
 
+
+
+
+typedef int volatile * SpinLock;
+
+void inline spin_init(SpinLock p) {
+	*p = 0;
+}
+
+void inline spin_lock(SpinLock p)
+{
+	while (!__qube_sync_bool_compare_and_swap(p, 0, 1))
+	{
+		while (*p) __qube_mm_pause();
+	}
+}
+
+void inline spin_unlock(SpinLock p)
+{
+	__qube_memory_barrier();
+	*p = 0;
+}
+
+
+
 #include "intrinsics.h"
 
 
