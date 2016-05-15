@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="build">
+      <UniqueIdentifier>{645ea24f-bc86-49f9-a2e3-8a712822ed4e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />
@@ -20,6 +23,9 @@
   <ItemGroup>
     <ClCompile Include="memory_manager.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Makefile">
+      <Filter>build</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

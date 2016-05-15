@@ -34,6 +34,9 @@
     <None Include="bochsrc_gdb.bxrc">
       <Filter>gdb_files</Filter>
     </None>
+    <None Include=".gdbinit">
+      <Filter>gdb_files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme\readme.html">

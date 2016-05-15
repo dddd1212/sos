@@ -1,6 +1,6 @@
 #include "hd.h"
 #include "fat32.h"
-#define __attribute__(x)
+
 typedef struct{
 	char name[11];
 	int8 attr;

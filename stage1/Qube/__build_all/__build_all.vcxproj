@@ -81,6 +81,7 @@
     <NMakeBuildCommandLine>python make.py build</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>python make.py rebuild</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>python make.py clean</NMakeCleanCommandLine>
+    <NMakePreprocessorDefinitions>VS_EDITOR</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>

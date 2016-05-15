@@ -1,5 +1,10 @@
 #ifndef __QUBE_H__
 #define __QUBE_H__
+
+#ifdef VS_EDITOR
+#define __attribute__(x)
+#endif
+
 // C general defines:
 typedef char			 int8;
 typedef unsigned char	 uint8;

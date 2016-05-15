@@ -6,17 +6,24 @@
 #define PXE(x) PTE(PPE(x))
 
 //addresses must start on PPE start area
-#define MEMORY_MANAGEMENT_START_ADDRESS 0xffffc00000000000
-#define MODULES_START_ADDRESS 0xffffd00000000000
-#define KHEAP_START_ADDRESS 0xffffe00000000000
+#define MEMORY_MANAGEMENT_START_ADDRESS (0xffffc00000000000)
+#define MODULES_START_ADDRESS (0xffffd00000000000)
+#define KHEAP_START_ADDRESS (0xffffe00000000000)
 
-#define MODULES_BITMAP_SIZE 0x100
-#define KHEAP_BITMAP_SIZE 0x100
+#define MODULES_BITMAP_SIZE (0x100)
+#define KHEAP_BITMAP_SIZE (0x100)
 
 uint64 *g_physical_pages_current;
 uint64 *g_physical_pages_end;
 uint64 *g_physical_pages_start;
 MemoryRegion g_regions[NUM_OF_REGION_TYPE];
+X64_MEMORY_DESCRIPTOR g_memory_descriptors[3] = {
+	{0},
+	{0,0,0,10,1,0,1,0,0,1,0,0,0},
+	{0,0,0,2 ,1,0,1,0,0,0,0,0,0}
+};
+
+X64_MEMORY_DESCRIPTOR_GDTR g_gdtr = { sizeof(g_memory_descriptors),g_memory_descriptors };
 
 static uint64 pop_physical_page() {
 	uint64 page = *g_physical_pages_current;
@@ -46,11 +53,11 @@ void set_bit(uint8* stream, uint32 bit_num, BOOL value) {
 static void* get_region_start_address(KernelGlobalData* kgd, REGION_TYPE region_type) {
 	switch (region_type) {
 	case MEMORY_MANAGEMENT:
-		return MEMORY_MANAGEMENT_START_ADDRESS;
+		return (void*) MEMORY_MANAGEMENT_START_ADDRESS;
 	case MODULES:
 		return kgd->boot_info->nonvolatile_virtual_start;
 	case KHEAP:
-		return KHEAP_START_ADDRESS;
+		return (void*) KHEAP_START_ADDRESS;
 	default:
 		ASSERT(FALSE);
 		return NULL;
@@ -100,7 +107,7 @@ static void set_bitmap(KernelGlobalData* kgd, REGION_TYPE region_type, MemoryReg
 		return;
 	default:
 		ASSERT(FALSE);
-		return 0;
+		return;
 	}
 }
 
@@ -136,7 +143,7 @@ static void init_regions(KernelGlobalData* kgd) {
 		}
 
 		// TODO: zero the pages
-		for (uint64* pxe = PXE(g_regions[i].start); pxe <= PXE(g_regions[i].start + REGION_BITMAP_MAX_SIZE * 8 * 0x1000); pxe++) {
+		for (uint64* pxe = PXE(g_regions[i].start); pxe <= PXE(((uint8*)(g_regions[i].start)) + (uint64)REGION_BITMAP_MAX_SIZE * 8 * 0x1000); pxe++) {
 			if (*pxe == 0) {
 				*pxe = pop_physical_page();
 			}
@@ -149,11 +156,12 @@ static void init_regions(KernelGlobalData* kgd) {
 			g_regions[MEMORY_MANAGEMENT].free_pages_bitmap[i] = 0x00;
 		}
 
-		set_bitmap(kgd, i, g_regions[i].free_pages_bitmap);
+		set_bitmap(kgd, i, &g_regions[i]);
 	}
 }
 
 void init_memory_manager(KernelGlobalData* kgd) {
+	__lgdt(&g_gdtr);
 	g_physical_pages_current = kgd->boot_info->physical_pages_current;
 	g_physical_pages_end = kgd->boot_info->physical_pages_end;
 	g_physical_pages_start = kgd->boot_info->physical_pages_start;
@@ -202,6 +210,10 @@ void assign_committed(void* addr, uint32 size) {
 	}
 }
 void unassign_committed(void* addr, uint32 size) {
+	// TODO
+	return;
+}
+void free_pages(void* addr) {
 	// TODO
 	return;
 }
