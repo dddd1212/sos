@@ -94,6 +94,9 @@
     <None Include="make.py" />
     <None Include="run.py" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="gdb_auto_syms" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

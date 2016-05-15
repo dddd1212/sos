@@ -1,7 +1,7 @@
 #ifndef MEM_H
 #define MEM_H
 
-#define DEBUG
+
 
 #define BPB_ADDR 0x0000000000007C00
 

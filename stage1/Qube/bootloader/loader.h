@@ -153,7 +153,8 @@ int add_to_symbol_table(KernelGlobalData * kgd, char * sym_name, Elf64_Addr sym_
 
 
 // Dummy function that does nothing. Will remove when you compile Release and optimization is on. The function used by gdb to add auto symbols when library is loaded.
-void hack_for_gdb(void * module, void * entry);
+void hack_for_gdb(char * module_file_name, Elf64_Addr entry);
+void hack_for_gdb2();
 #endif // __LOADER_H__
 
 

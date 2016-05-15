@@ -34,4 +34,9 @@
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="gdb_auto_syms">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>
