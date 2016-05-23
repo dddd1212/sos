@@ -99,11 +99,13 @@ struct Elf64RelaStruct {
 	Elf64_Addr r_addr;
 	Elf64_Word r_type;
 	Elf64_Word r_index;
-	Elf64_Addr pad;
+	Elf64_Addr r_addend;
 };
 typedef enum {
+	R_AMD64_64 = 1,
 	R_AMD64_GLOB_DAT = 6,
 	R_AMD64_JUMP_SLOT = 7,
+	R_AMD64_RELATIVE,
 } RelocationType;
 struct Elf64Header {
 	char e_ident[16];

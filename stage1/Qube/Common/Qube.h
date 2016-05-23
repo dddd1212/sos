@@ -97,6 +97,12 @@ QResult qkr_main(KernelGlobalData * kgd);
 #define EXPORT __attribute__ ((visibility ("default")))
 //#define EXPORT __declspec((dllexport))
 
+/// Defines related to the GDT that must be coherent with the code in real_mode.asm:
+#define KERNEL_CODE_SEGMENT 0x8
+#define KERNEL_DATA_SEGMENT 0x10
+#define USER_DATA_SEGMENT 0x18
+
+
 #include "intrinsics.h"
 
 

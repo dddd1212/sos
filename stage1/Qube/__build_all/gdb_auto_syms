@@ -4,8 +4,8 @@ commands
 	#set confirm off
 	eval "add-symbol-file ../_output/system/%s 0x%lx", module_file_name, entry
 	#print 1
-	#c
+	c
 end
 
-#set breakpoint pending on
-#b kernel_main
+set breakpoint pending on
+b init_interrupts
