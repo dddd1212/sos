@@ -93,6 +93,7 @@ void _start() {
 		line++;
 		while ((boot_txt_data[i] != '\n') && (boot_txt_data[i] != '\x00')) i++;
 		if (boot_txt_data[i] == '\x00') { // last line and it ends with no \n
+			DBG_PRINTF2("module %d name: %s...", line - 1, boot_modules[line - 1].file_name); ENTER;
 			break;
 		}
 		boot_txt_data[i] = '\x00';

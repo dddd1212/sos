@@ -132,13 +132,17 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 			size = size /= sizeof(struct Elf64RelaStruct); // num of structs.
 			struct Elf64RelaStruct * rela;
 			for (rela = rela_table; rela < rela_table + size; rela++) {
-				if (rela->r_type != R_AMD64_GLOB_DAT && rela->r_type != R_AMD64_JUMP_SLOT) {
+				if (rela->r_type != R_AMD64_GLOB_DAT && rela->r_type != R_AMD64_JUMP_SLOT && rela->r_type != R_AMD64_64 && rela->r_type != R_AMD64_RELATIVE) {
 					DBG_PRINTF1("    ERROR: unsupported rela->r_type (=%d)!", rela->r_type); ENTER;
 					return 0x6000;
 				}
-				dynsym = dynsym_table + rela->r_index;
+				dynsym = dynsym_table + rela->r_index;	
+				
 				Elf64_Addr symbol_addr = NULL;
-				if (dynsym->sym_shndx == 0) { // We should find the symbol in the global symbols table.
+				if (rela->r_type == R_AMD64_RELATIVE) { // The symbol is relative. we should not search it anyware.
+					symbol_addr = (uint64)boot_module->module_base + rela->r_addend;
+					DBG_PRINTF2("    handle relative rela: *0x%x = 0x%x", boot_module->module_base + rela->r_addr, symbol_addr); ENTER;
+				} else if (dynsym->sym_shndx == 0) { // We should find the symbol in the global symbols table.
 					symbol_addr = find_symbol(kgd, dynstr + dynsym->sym_name);
 					DBG_PRINTF2("    search symbol result: *%s = 0x%x", dynstr + dynsym->sym_name, symbol_addr); ENTER;
 				} else { // The symbol is local and found in the dynsym section:
@@ -149,7 +153,11 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 					DBG_PRINTF1("    ERROR: could not resolve symbol! (%s)", dynstr + dynsym->sym_name); ENTER;
 					return 0x7000;
 				}
-				*((Elf64_Addr *)(boot_module->module_base + rela->r_addr)) = symbol_addr;
+				if (rela->r_type == R_AMD64_64) {
+					*((Elf64_Addr *)(boot_module->module_base + rela->r_addr)) += symbol_addr;
+				} else {
+					*((Elf64_Addr *)(boot_module->module_base + rela->r_addr)) = symbol_addr;
+				}
 			}
 		}
 	}

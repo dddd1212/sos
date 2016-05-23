@@ -11,9 +11,9 @@ void kernel_main(KernelGlobalData * kgd) {
 	screen_write_string("COOL! The loader works, the screen works, and the bootloader done successfully!", TRUE);
 	screen_set_color(B_CYAN, BLACK);
 	screen_write_string("We actually can start to initialize the kernel!", TRUE);
-	char * a = 0xffffffffffffffff;
-	*a= 1;
-	while (TRUE);
+	//char * a = 0xffffffffffffffff;
+	//*a= 1;
+	//while (TRUE);
 }
 
 

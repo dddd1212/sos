@@ -1,7 +1,7 @@
 # This file generate the file isr.S that contains 256 entries for the IDT.
 
 TEMPLATE = """
-.globl   isr_wrapper{interrupt_number}
+.local   isr_wrapper{interrupt_number}
 .align   4
 
 isr_wrapper{interrupt_number}:
@@ -15,6 +15,7 @@ isr_wrapper{interrupt_number}:
 ptrs = """
 	.data
 	.global isrs_list
+	isrs_list:
 """
 
 entry_points = ""

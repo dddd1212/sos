@@ -53,5 +53,18 @@ typedef struct {
 } InterruptDescriptor;
 
 void handle_interrupts(ProcessorContext * regs);
-// declare the IDT
+// declare the IDT. implements in interrupts.c
 extern InterruptDescriptor IDT[0x100];
+typedef struct __attribute__((packed)){
+	uint16 limit;
+	uint64 base;
+} LIDT;
+typedef enum {
+	DESC_TYPE_INTERRUPT = 14,
+	DESC_TYPE_TRAP = 15,
+} DescType;
+
+// implements in isrs.S
+extern uint64 isrs_list[0x100] asm("isrs_list");
+
+#define SYSTEM_CALL_VECTOR 0x51 // 'Q'

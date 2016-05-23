@@ -1,6 +1,10 @@
 #include "interrupts.h"
-//#include "../Common/Qube.h"
+#include "../Common/Qube.h"
 #include "../Common/intrinsics.h"
+#ifdef DEBUG
+#include "../screen/screen.h"
+#endif
+
 BOOL disable_old_PIC();
 BOOL init_IDTs();
 BOOL init_APIC();
@@ -8,8 +12,9 @@ BOOL enable_APIC();
 
 BOOL init_APIC();
 BOOL is_APIC_exist();
-
-void disable_APIC();
+BOOL enable_interrupts();
+BOOL init_IDT(uint8 vector, uint8 dpl, DescType type, uint64 handler_addr);
+//void disable_APIC();
 
 #define APIC_REG_BASE 0xfee00000
 
@@ -43,6 +48,10 @@ BOOL init_interrupts() {
 
 QResult qkr_main(KernelGlobalData * kgd) {
 	init_interrupts();
+	__int(0x23);
+	int i;
+	i += 1;
+	return i;
 }
 
 BOOL is_APIC_exist() {
@@ -70,12 +79,55 @@ BOOL disable_old_PIC() {
 	__out8(0x21, 0xff);
 }
 
+BOOL init_IDT(uint8 vector, uint8 dpl, DescType type, uint64 handler_addr) {
+	IDT[vector].dpl = dpl; // 0 or 3
+	IDT[vector].ist = 0; // We not use this mechanism.
+	IDT[vector].offset1 = handler_addr & 0xffff;
+	IDT[vector].offset2 = (handler_addr >> 16) & 0xffff;
+	IDT[vector].offset3 = (handler_addr >> 32);
+	IDT[vector].present = 1; // The handlers always present in the memory.
+	IDT[vector].reserved = 0;
+	IDT[vector].selector = KERNEL_DATA_SEGMENT; // Interrupts always runs in kernel mode.
+	IDT[vector].type = type; // interrupt or trap
+	IDT[vector].zero = 0;
+	IDT[vector].zeros = 0;
+	return TRUE;
+}
+
 BOOL init_IDTs() {
-	return 0;
+	// Init all of the vectors to be interrupts:
+	for (int i = 0; i < 0x100; i++) {
+		if (i == SYSTEM_CALL_VECTOR) {
+			init_IDT(i, 3, DESC_TYPE_INTERRUPT, isrs_list[i]); // User allow to use system call, so the dpl is 3.
+		} else {
+			init_IDT(i, 0, DESC_TYPE_INTERRUPT, isrs_list[i]);
+		}
+	}
+	LIDT lidt;
+	lidt.base = (uint64)(&(IDT[0]));
+	lidt.limit = sizeof(IDT);
+	__lidt((void*)&lidt);
+	return TRUE;
 }
 
 
 // This function handle all of the interrupts.
 void handle_interrupts(ProcessorContext * regs) {
-	
+#ifdef DEBUG
+	screen_write_string("Interrupt called!", TRUE);
+#endif
+	return;
+}
+
+
+BOOL init_APIC() {
+	return TRUE;
+}
+
+BOOL enable_APIC() {
+	return TRUE;
+}
+
+BOOL enable_interrupts() {
+	__sti();
 }

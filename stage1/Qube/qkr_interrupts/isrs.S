@@ -61,7 +61,7 @@ isr_asm:
 	add 0x98, %rsp   // restore %rsp
 	ret //
 
-.globl   isr_wrapper0
+.local   isr_wrapper0
 .align   4
 
 isr_wrapper0:
@@ -72,7 +72,7 @@ isr_wrapper0:
     iret //
 
 
-.globl   isr_wrapper1
+.local   isr_wrapper1
 .align   4
 
 isr_wrapper1:
@@ -83,7 +83,7 @@ isr_wrapper1:
     iret //
 
 
-.globl   isr_wrapper2
+.local   isr_wrapper2
 .align   4
 
 isr_wrapper2:
@@ -94,7 +94,7 @@ isr_wrapper2:
     iret //
 
 
-.globl   isr_wrapper3
+.local   isr_wrapper3
 .align   4
 
 isr_wrapper3:
@@ -105,7 +105,7 @@ isr_wrapper3:
     iret //
 
 
-.globl   isr_wrapper4
+.local   isr_wrapper4
 .align   4
 
 isr_wrapper4:
@@ -116,7 +116,7 @@ isr_wrapper4:
     iret //
 
 
-.globl   isr_wrapper5
+.local   isr_wrapper5
 .align   4
 
 isr_wrapper5:
@@ -127,7 +127,7 @@ isr_wrapper5:
     iret //
 
 
-.globl   isr_wrapper6
+.local   isr_wrapper6
 .align   4
 
 isr_wrapper6:
@@ -138,7 +138,7 @@ isr_wrapper6:
     iret //
 
 
-.globl   isr_wrapper7
+.local   isr_wrapper7
 .align   4
 
 isr_wrapper7:
@@ -149,7 +149,7 @@ isr_wrapper7:
     iret //
 
 
-.globl   isr_wrapper8
+.local   isr_wrapper8
 .align   4
 
 isr_wrapper8:
@@ -160,7 +160,7 @@ isr_wrapper8:
     iret //
 
 
-.globl   isr_wrapper9
+.local   isr_wrapper9
 .align   4
 
 isr_wrapper9:
@@ -171,7 +171,7 @@ isr_wrapper9:
     iret //
 
 
-.globl   isr_wrapper10
+.local   isr_wrapper10
 .align   4
 
 isr_wrapper10:
@@ -182,7 +182,7 @@ isr_wrapper10:
     iret //
 
 
-.globl   isr_wrapper11
+.local   isr_wrapper11
 .align   4
 
 isr_wrapper11:
@@ -193,7 +193,7 @@ isr_wrapper11:
     iret //
 
 
-.globl   isr_wrapper12
+.local   isr_wrapper12
 .align   4
 
 isr_wrapper12:
@@ -204,7 +204,7 @@ isr_wrapper12:
     iret //
 
 
-.globl   isr_wrapper13
+.local   isr_wrapper13
 .align   4
 
 isr_wrapper13:
@@ -215,7 +215,7 @@ isr_wrapper13:
     iret //
 
 
-.globl   isr_wrapper14
+.local   isr_wrapper14
 .align   4
 
 isr_wrapper14:
@@ -226,7 +226,7 @@ isr_wrapper14:
     iret //
 
 
-.globl   isr_wrapper15
+.local   isr_wrapper15
 .align   4
 
 isr_wrapper15:
@@ -237,7 +237,7 @@ isr_wrapper15:
     iret //
 
 
-.globl   isr_wrapper16
+.local   isr_wrapper16
 .align   4
 
 isr_wrapper16:
@@ -248,7 +248,7 @@ isr_wrapper16:
     iret //
 
 
-.globl   isr_wrapper17
+.local   isr_wrapper17
 .align   4
 
 isr_wrapper17:
@@ -259,7 +259,7 @@ isr_wrapper17:
     iret //
 
 
-.globl   isr_wrapper18
+.local   isr_wrapper18
 .align   4
 
 isr_wrapper18:
@@ -270,7 +270,7 @@ isr_wrapper18:
     iret //
 
 
-.globl   isr_wrapper19
+.local   isr_wrapper19
 .align   4
 
 isr_wrapper19:
@@ -281,7 +281,7 @@ isr_wrapper19:
     iret //
 
 
-.globl   isr_wrapper20
+.local   isr_wrapper20
 .align   4
 
 isr_wrapper20:
@@ -292,7 +292,7 @@ isr_wrapper20:
     iret //
 
 
-.globl   isr_wrapper21
+.local   isr_wrapper21
 .align   4
 
 isr_wrapper21:
@@ -303,7 +303,7 @@ isr_wrapper21:
     iret //
 
 
-.globl   isr_wrapper22
+.local   isr_wrapper22
 .align   4
 
 isr_wrapper22:
@@ -314,7 +314,7 @@ isr_wrapper22:
     iret //
 
 
-.globl   isr_wrapper23
+.local   isr_wrapper23
 .align   4
 
 isr_wrapper23:
@@ -325,7 +325,7 @@ isr_wrapper23:
     iret //
 
 
-.globl   isr_wrapper24
+.local   isr_wrapper24
 .align   4
 
 isr_wrapper24:
@@ -336,7 +336,7 @@ isr_wrapper24:
     iret //
 
 
-.globl   isr_wrapper25
+.local   isr_wrapper25
 .align   4
 
 isr_wrapper25:
@@ -347,7 +347,7 @@ isr_wrapper25:
     iret //
 
 
-.globl   isr_wrapper26
+.local   isr_wrapper26
 .align   4
 
 isr_wrapper26:
@@ -358,7 +358,7 @@ isr_wrapper26:
     iret //
 
 
-.globl   isr_wrapper27
+.local   isr_wrapper27
 .align   4
 
 isr_wrapper27:
@@ -369,7 +369,7 @@ isr_wrapper27:
     iret //
 
 
-.globl   isr_wrapper28
+.local   isr_wrapper28
 .align   4
 
 isr_wrapper28:
@@ -380,7 +380,7 @@ isr_wrapper28:
     iret //
 
 
-.globl   isr_wrapper29
+.local   isr_wrapper29
 .align   4
 
 isr_wrapper29:
@@ -391,7 +391,7 @@ isr_wrapper29:
     iret //
 
 
-.globl   isr_wrapper30
+.local   isr_wrapper30
 .align   4
 
 isr_wrapper30:
@@ -402,7 +402,7 @@ isr_wrapper30:
     iret //
 
 
-.globl   isr_wrapper31
+.local   isr_wrapper31
 .align   4
 
 isr_wrapper31:
@@ -413,7 +413,7 @@ isr_wrapper31:
     iret //
 
 
-.globl   isr_wrapper32
+.local   isr_wrapper32
 .align   4
 
 isr_wrapper32:
@@ -424,7 +424,7 @@ isr_wrapper32:
     iret //
 
 
-.globl   isr_wrapper33
+.local   isr_wrapper33
 .align   4
 
 isr_wrapper33:
@@ -435,7 +435,7 @@ isr_wrapper33:
     iret //
 
 
-.globl   isr_wrapper34
+.local   isr_wrapper34
 .align   4
 
 isr_wrapper34:
@@ -446,7 +446,7 @@ isr_wrapper34:
     iret //
 
 
-.globl   isr_wrapper35
+.local   isr_wrapper35
 .align   4
 
 isr_wrapper35:
@@ -457,7 +457,7 @@ isr_wrapper35:
     iret //
 
 
-.globl   isr_wrapper36
+.local   isr_wrapper36
 .align   4
 
 isr_wrapper36:
@@ -468,7 +468,7 @@ isr_wrapper36:
     iret //
 
 
-.globl   isr_wrapper37
+.local   isr_wrapper37
 .align   4
 
 isr_wrapper37:
@@ -479,7 +479,7 @@ isr_wrapper37:
     iret //
 
 
-.globl   isr_wrapper38
+.local   isr_wrapper38
 .align   4
 
 isr_wrapper38:
@@ -490,7 +490,7 @@ isr_wrapper38:
     iret //
 
 
-.globl   isr_wrapper39
+.local   isr_wrapper39
 .align   4
 
 isr_wrapper39:
@@ -501,7 +501,7 @@ isr_wrapper39:
     iret //
 
 
-.globl   isr_wrapper40
+.local   isr_wrapper40
 .align   4
 
 isr_wrapper40:
@@ -512,7 +512,7 @@ isr_wrapper40:
     iret //
 
 
-.globl   isr_wrapper41
+.local   isr_wrapper41
 .align   4
 
 isr_wrapper41:
@@ -523,7 +523,7 @@ isr_wrapper41:
     iret //
 
 
-.globl   isr_wrapper42
+.local   isr_wrapper42
 .align   4
 
 isr_wrapper42:
@@ -534,7 +534,7 @@ isr_wrapper42:
     iret //
 
 
-.globl   isr_wrapper43
+.local   isr_wrapper43
 .align   4
 
 isr_wrapper43:
@@ -545,7 +545,7 @@ isr_wrapper43:
     iret //
 
 
-.globl   isr_wrapper44
+.local   isr_wrapper44
 .align   4
 
 isr_wrapper44:
@@ -556,7 +556,7 @@ isr_wrapper44:
     iret //
 
 
-.globl   isr_wrapper45
+.local   isr_wrapper45
 .align   4
 
 isr_wrapper45:
@@ -567,7 +567,7 @@ isr_wrapper45:
     iret //
 
 
-.globl   isr_wrapper46
+.local   isr_wrapper46
 .align   4
 
 isr_wrapper46:
@@ -578,7 +578,7 @@ isr_wrapper46:
     iret //
 
 
-.globl   isr_wrapper47
+.local   isr_wrapper47
 .align   4
 
 isr_wrapper47:
@@ -589,7 +589,7 @@ isr_wrapper47:
     iret //
 
 
-.globl   isr_wrapper48
+.local   isr_wrapper48
 .align   4
 
 isr_wrapper48:
@@ -600,7 +600,7 @@ isr_wrapper48:
     iret //
 
 
-.globl   isr_wrapper49
+.local   isr_wrapper49
 .align   4
 
 isr_wrapper49:
@@ -611,7 +611,7 @@ isr_wrapper49:
     iret //
 
 
-.globl   isr_wrapper50
+.local   isr_wrapper50
 .align   4
 
 isr_wrapper50:
@@ -622,7 +622,7 @@ isr_wrapper50:
     iret //
 
 
-.globl   isr_wrapper51
+.local   isr_wrapper51
 .align   4
 
 isr_wrapper51:
@@ -633,7 +633,7 @@ isr_wrapper51:
     iret //
 
 
-.globl   isr_wrapper52
+.local   isr_wrapper52
 .align   4
 
 isr_wrapper52:
@@ -644,7 +644,7 @@ isr_wrapper52:
     iret //
 
 
-.globl   isr_wrapper53
+.local   isr_wrapper53
 .align   4
 
 isr_wrapper53:
@@ -655,7 +655,7 @@ isr_wrapper53:
     iret //
 
 
-.globl   isr_wrapper54
+.local   isr_wrapper54
 .align   4
 
 isr_wrapper54:
@@ -666,7 +666,7 @@ isr_wrapper54:
     iret //
 
 
-.globl   isr_wrapper55
+.local   isr_wrapper55
 .align   4
 
 isr_wrapper55:
@@ -677,7 +677,7 @@ isr_wrapper55:
     iret //
 
 
-.globl   isr_wrapper56
+.local   isr_wrapper56
 .align   4
 
 isr_wrapper56:
@@ -688,7 +688,7 @@ isr_wrapper56:
     iret //
 
 
-.globl   isr_wrapper57
+.local   isr_wrapper57
 .align   4
 
 isr_wrapper57:
@@ -699,7 +699,7 @@ isr_wrapper57:
     iret //
 
 
-.globl   isr_wrapper58
+.local   isr_wrapper58
 .align   4
 
 isr_wrapper58:
@@ -710,7 +710,7 @@ isr_wrapper58:
     iret //
 
 
-.globl   isr_wrapper59
+.local   isr_wrapper59
 .align   4
 
 isr_wrapper59:
@@ -721,7 +721,7 @@ isr_wrapper59:
     iret //
 
 
-.globl   isr_wrapper60
+.local   isr_wrapper60
 .align   4
 
 isr_wrapper60:
@@ -732,7 +732,7 @@ isr_wrapper60:
     iret //
 
 
-.globl   isr_wrapper61
+.local   isr_wrapper61
 .align   4
 
 isr_wrapper61:
@@ -743,7 +743,7 @@ isr_wrapper61:
     iret //
 
 
-.globl   isr_wrapper62
+.local   isr_wrapper62
 .align   4
 
 isr_wrapper62:
@@ -754,7 +754,7 @@ isr_wrapper62:
     iret //
 
 
-.globl   isr_wrapper63
+.local   isr_wrapper63
 .align   4
 
 isr_wrapper63:
@@ -765,7 +765,7 @@ isr_wrapper63:
     iret //
 
 
-.globl   isr_wrapper64
+.local   isr_wrapper64
 .align   4
 
 isr_wrapper64:
@@ -776,7 +776,7 @@ isr_wrapper64:
     iret //
 
 
-.globl   isr_wrapper65
+.local   isr_wrapper65
 .align   4
 
 isr_wrapper65:
@@ -787,7 +787,7 @@ isr_wrapper65:
     iret //
 
 
-.globl   isr_wrapper66
+.local   isr_wrapper66
 .align   4
 
 isr_wrapper66:
@@ -798,7 +798,7 @@ isr_wrapper66:
     iret //
 
 
-.globl   isr_wrapper67
+.local   isr_wrapper67
 .align   4
 
 isr_wrapper67:
@@ -809,7 +809,7 @@ isr_wrapper67:
     iret //
 
 
-.globl   isr_wrapper68
+.local   isr_wrapper68
 .align   4
 
 isr_wrapper68:
@@ -820,7 +820,7 @@ isr_wrapper68:
     iret //
 
 
-.globl   isr_wrapper69
+.local   isr_wrapper69
 .align   4
 
 isr_wrapper69:
@@ -831,7 +831,7 @@ isr_wrapper69:
     iret //
 
 
-.globl   isr_wrapper70
+.local   isr_wrapper70
 .align   4
 
 isr_wrapper70:
@@ -842,7 +842,7 @@ isr_wrapper70:
     iret //
 
 
-.globl   isr_wrapper71
+.local   isr_wrapper71
 .align   4
 
 isr_wrapper71:
@@ -853,7 +853,7 @@ isr_wrapper71:
     iret //
 
 
-.globl   isr_wrapper72
+.local   isr_wrapper72
 .align   4
 
 isr_wrapper72:
@@ -864,7 +864,7 @@ isr_wrapper72:
     iret //
 
 
-.globl   isr_wrapper73
+.local   isr_wrapper73
 .align   4
 
 isr_wrapper73:
@@ -875,7 +875,7 @@ isr_wrapper73:
     iret //
 
 
-.globl   isr_wrapper74
+.local   isr_wrapper74
 .align   4
 
 isr_wrapper74:
@@ -886,7 +886,7 @@ isr_wrapper74:
     iret //
 
 
-.globl   isr_wrapper75
+.local   isr_wrapper75
 .align   4
 
 isr_wrapper75:
@@ -897,7 +897,7 @@ isr_wrapper75:
     iret //
 
 
-.globl   isr_wrapper76
+.local   isr_wrapper76
 .align   4
 
 isr_wrapper76:
@@ -908,7 +908,7 @@ isr_wrapper76:
     iret //
 
 
-.globl   isr_wrapper77
+.local   isr_wrapper77
 .align   4
 
 isr_wrapper77:
@@ -919,7 +919,7 @@ isr_wrapper77:
     iret //
 
 
-.globl   isr_wrapper78
+.local   isr_wrapper78
 .align   4
 
 isr_wrapper78:
@@ -930,7 +930,7 @@ isr_wrapper78:
     iret //
 
 
-.globl   isr_wrapper79
+.local   isr_wrapper79
 .align   4
 
 isr_wrapper79:
@@ -941,7 +941,7 @@ isr_wrapper79:
     iret //
 
 
-.globl   isr_wrapper80
+.local   isr_wrapper80
 .align   4
 
 isr_wrapper80:
@@ -952,7 +952,7 @@ isr_wrapper80:
     iret //
 
 
-.globl   isr_wrapper81
+.local   isr_wrapper81
 .align   4
 
 isr_wrapper81:
@@ -963,7 +963,7 @@ isr_wrapper81:
     iret //
 
 
-.globl   isr_wrapper82
+.local   isr_wrapper82
 .align   4
 
 isr_wrapper82:
@@ -974,7 +974,7 @@ isr_wrapper82:
     iret //
 
 
-.globl   isr_wrapper83
+.local   isr_wrapper83
 .align   4
 
 isr_wrapper83:
@@ -985,7 +985,7 @@ isr_wrapper83:
     iret //
 
 
-.globl   isr_wrapper84
+.local   isr_wrapper84
 .align   4
 
 isr_wrapper84:
@@ -996,7 +996,7 @@ isr_wrapper84:
     iret //
 
 
-.globl   isr_wrapper85
+.local   isr_wrapper85
 .align   4
 
 isr_wrapper85:
@@ -1007,7 +1007,7 @@ isr_wrapper85:
     iret //
 
 
-.globl   isr_wrapper86
+.local   isr_wrapper86
 .align   4
 
 isr_wrapper86:
@@ -1018,7 +1018,7 @@ isr_wrapper86:
     iret //
 
 
-.globl   isr_wrapper87
+.local   isr_wrapper87
 .align   4
 
 isr_wrapper87:
@@ -1029,7 +1029,7 @@ isr_wrapper87:
     iret //
 
 
-.globl   isr_wrapper88
+.local   isr_wrapper88
 .align   4
 
 isr_wrapper88:
@@ -1040,7 +1040,7 @@ isr_wrapper88:
     iret //
 
 
-.globl   isr_wrapper89
+.local   isr_wrapper89
 .align   4
 
 isr_wrapper89:
@@ -1051,7 +1051,7 @@ isr_wrapper89:
     iret //
 
 
-.globl   isr_wrapper90
+.local   isr_wrapper90
 .align   4
 
 isr_wrapper90:
@@ -1062,7 +1062,7 @@ isr_wrapper90:
     iret //
 
 
-.globl   isr_wrapper91
+.local   isr_wrapper91
 .align   4
 
 isr_wrapper91:
@@ -1073,7 +1073,7 @@ isr_wrapper91:
     iret //
 
 
-.globl   isr_wrapper92
+.local   isr_wrapper92
 .align   4
 
 isr_wrapper92:
@@ -1084,7 +1084,7 @@ isr_wrapper92:
     iret //
 
 
-.globl   isr_wrapper93
+.local   isr_wrapper93
 .align   4
 
 isr_wrapper93:
@@ -1095,7 +1095,7 @@ isr_wrapper93:
     iret //
 
 
-.globl   isr_wrapper94
+.local   isr_wrapper94
 .align   4
 
 isr_wrapper94:
@@ -1106,7 +1106,7 @@ isr_wrapper94:
     iret //
 
 
-.globl   isr_wrapper95
+.local   isr_wrapper95
 .align   4
 
 isr_wrapper95:
@@ -1117,7 +1117,7 @@ isr_wrapper95:
     iret //
 
 
-.globl   isr_wrapper96
+.local   isr_wrapper96
 .align   4
 
 isr_wrapper96:
@@ -1128,7 +1128,7 @@ isr_wrapper96:
     iret //
 
 
-.globl   isr_wrapper97
+.local   isr_wrapper97
 .align   4
 
 isr_wrapper97:
@@ -1139,7 +1139,7 @@ isr_wrapper97:
     iret //
 
 
-.globl   isr_wrapper98
+.local   isr_wrapper98
 .align   4
 
 isr_wrapper98:
@@ -1150,7 +1150,7 @@ isr_wrapper98:
     iret //
 
 
-.globl   isr_wrapper99
+.local   isr_wrapper99
 .align   4
 
 isr_wrapper99:
@@ -1161,7 +1161,7 @@ isr_wrapper99:
     iret //
 
 
-.globl   isr_wrapper100
+.local   isr_wrapper100
 .align   4
 
 isr_wrapper100:
@@ -1172,7 +1172,7 @@ isr_wrapper100:
     iret //
 
 
-.globl   isr_wrapper101
+.local   isr_wrapper101
 .align   4
 
 isr_wrapper101:
@@ -1183,7 +1183,7 @@ isr_wrapper101:
     iret //
 
 
-.globl   isr_wrapper102
+.local   isr_wrapper102
 .align   4
 
 isr_wrapper102:
@@ -1194,7 +1194,7 @@ isr_wrapper102:
     iret //
 
 
-.globl   isr_wrapper103
+.local   isr_wrapper103
 .align   4
 
 isr_wrapper103:
@@ -1205,7 +1205,7 @@ isr_wrapper103:
     iret //
 
 
-.globl   isr_wrapper104
+.local   isr_wrapper104
 .align   4
 
 isr_wrapper104:
@@ -1216,7 +1216,7 @@ isr_wrapper104:
     iret //
 
 
-.globl   isr_wrapper105
+.local   isr_wrapper105
 .align   4
 
 isr_wrapper105:
@@ -1227,7 +1227,7 @@ isr_wrapper105:
     iret //
 
 
-.globl   isr_wrapper106
+.local   isr_wrapper106
 .align   4
 
 isr_wrapper106:
@@ -1238,7 +1238,7 @@ isr_wrapper106:
     iret //
 
 
-.globl   isr_wrapper107
+.local   isr_wrapper107
 .align   4
 
 isr_wrapper107:
@@ -1249,7 +1249,7 @@ isr_wrapper107:
     iret //
 
 
-.globl   isr_wrapper108
+.local   isr_wrapper108
 .align   4
 
 isr_wrapper108:
@@ -1260,7 +1260,7 @@ isr_wrapper108:
     iret //
 
 
-.globl   isr_wrapper109
+.local   isr_wrapper109
 .align   4
 
 isr_wrapper109:
@@ -1271,7 +1271,7 @@ isr_wrapper109:
     iret //
 
 
-.globl   isr_wrapper110
+.local   isr_wrapper110
 .align   4
 
 isr_wrapper110:
@@ -1282,7 +1282,7 @@ isr_wrapper110:
     iret //
 
 
-.globl   isr_wrapper111
+.local   isr_wrapper111
 .align   4
 
 isr_wrapper111:
@@ -1293,7 +1293,7 @@ isr_wrapper111:
     iret //
 
 
-.globl   isr_wrapper112
+.local   isr_wrapper112
 .align   4
 
 isr_wrapper112:
@@ -1304,7 +1304,7 @@ isr_wrapper112:
     iret //
 
 
-.globl   isr_wrapper113
+.local   isr_wrapper113
 .align   4
 
 isr_wrapper113:
@@ -1315,7 +1315,7 @@ isr_wrapper113:
     iret //
 
 
-.globl   isr_wrapper114
+.local   isr_wrapper114
 .align   4
 
 isr_wrapper114:
@@ -1326,7 +1326,7 @@ isr_wrapper114:
     iret //
 
 
-.globl   isr_wrapper115
+.local   isr_wrapper115
 .align   4
 
 isr_wrapper115:
@@ -1337,7 +1337,7 @@ isr_wrapper115:
     iret //
 
 
-.globl   isr_wrapper116
+.local   isr_wrapper116
 .align   4
 
 isr_wrapper116:
@@ -1348,7 +1348,7 @@ isr_wrapper116:
     iret //
 
 
-.globl   isr_wrapper117
+.local   isr_wrapper117
 .align   4
 
 isr_wrapper117:
@@ -1359,7 +1359,7 @@ isr_wrapper117:
     iret //
 
 
-.globl   isr_wrapper118
+.local   isr_wrapper118
 .align   4
 
 isr_wrapper118:
@@ -1370,7 +1370,7 @@ isr_wrapper118:
     iret //
 
 
-.globl   isr_wrapper119
+.local   isr_wrapper119
 .align   4
 
 isr_wrapper119:
@@ -1381,7 +1381,7 @@ isr_wrapper119:
     iret //
 
 
-.globl   isr_wrapper120
+.local   isr_wrapper120
 .align   4
 
 isr_wrapper120:
@@ -1392,7 +1392,7 @@ isr_wrapper120:
     iret //
 
 
-.globl   isr_wrapper121
+.local   isr_wrapper121
 .align   4
 
 isr_wrapper121:
@@ -1403,7 +1403,7 @@ isr_wrapper121:
     iret //
 
 
-.globl   isr_wrapper122
+.local   isr_wrapper122
 .align   4
 
 isr_wrapper122:
@@ -1414,7 +1414,7 @@ isr_wrapper122:
     iret //
 
 
-.globl   isr_wrapper123
+.local   isr_wrapper123
 .align   4
 
 isr_wrapper123:
@@ -1425,7 +1425,7 @@ isr_wrapper123:
     iret //
 
 
-.globl   isr_wrapper124
+.local   isr_wrapper124
 .align   4
 
 isr_wrapper124:
@@ -1436,7 +1436,7 @@ isr_wrapper124:
     iret //
 
 
-.globl   isr_wrapper125
+.local   isr_wrapper125
 .align   4
 
 isr_wrapper125:
@@ -1447,7 +1447,7 @@ isr_wrapper125:
     iret //
 
 
-.globl   isr_wrapper126
+.local   isr_wrapper126
 .align   4
 
 isr_wrapper126:
@@ -1458,7 +1458,7 @@ isr_wrapper126:
     iret //
 
 
-.globl   isr_wrapper127
+.local   isr_wrapper127
 .align   4
 
 isr_wrapper127:
@@ -1469,7 +1469,7 @@ isr_wrapper127:
     iret //
 
 
-.globl   isr_wrapper128
+.local   isr_wrapper128
 .align   4
 
 isr_wrapper128:
@@ -1480,7 +1480,7 @@ isr_wrapper128:
     iret //
 
 
-.globl   isr_wrapper129
+.local   isr_wrapper129
 .align   4
 
 isr_wrapper129:
@@ -1491,7 +1491,7 @@ isr_wrapper129:
     iret //
 
 
-.globl   isr_wrapper130
+.local   isr_wrapper130
 .align   4
 
 isr_wrapper130:
@@ -1502,7 +1502,7 @@ isr_wrapper130:
     iret //
 
 
-.globl   isr_wrapper131
+.local   isr_wrapper131
 .align   4
 
 isr_wrapper131:
@@ -1513,7 +1513,7 @@ isr_wrapper131:
     iret //
 
 
-.globl   isr_wrapper132
+.local   isr_wrapper132
 .align   4
 
 isr_wrapper132:
@@ -1524,7 +1524,7 @@ isr_wrapper132:
     iret //
 
 
-.globl   isr_wrapper133
+.local   isr_wrapper133
 .align   4
 
 isr_wrapper133:
@@ -1535,7 +1535,7 @@ isr_wrapper133:
     iret //
 
 
-.globl   isr_wrapper134
+.local   isr_wrapper134
 .align   4
 
 isr_wrapper134:
@@ -1546,7 +1546,7 @@ isr_wrapper134:
     iret //
 
 
-.globl   isr_wrapper135
+.local   isr_wrapper135
 .align   4
 
 isr_wrapper135:
@@ -1557,7 +1557,7 @@ isr_wrapper135:
     iret //
 
 
-.globl   isr_wrapper136
+.local   isr_wrapper136
 .align   4
 
 isr_wrapper136:
@@ -1568,7 +1568,7 @@ isr_wrapper136:
     iret //
 
 
-.globl   isr_wrapper137
+.local   isr_wrapper137
 .align   4
 
 isr_wrapper137:
@@ -1579,7 +1579,7 @@ isr_wrapper137:
     iret //
 
 
-.globl   isr_wrapper138
+.local   isr_wrapper138
 .align   4
 
 isr_wrapper138:
@@ -1590,7 +1590,7 @@ isr_wrapper138:
     iret //
 
 
-.globl   isr_wrapper139
+.local   isr_wrapper139
 .align   4
 
 isr_wrapper139:
@@ -1601,7 +1601,7 @@ isr_wrapper139:
     iret //
 
 
-.globl   isr_wrapper140
+.local   isr_wrapper140
 .align   4
 
 isr_wrapper140:
@@ -1612,7 +1612,7 @@ isr_wrapper140:
     iret //
 
 
-.globl   isr_wrapper141
+.local   isr_wrapper141
 .align   4
 
 isr_wrapper141:
@@ -1623,7 +1623,7 @@ isr_wrapper141:
     iret //
 
 
-.globl   isr_wrapper142
+.local   isr_wrapper142
 .align   4
 
 isr_wrapper142:
@@ -1634,7 +1634,7 @@ isr_wrapper142:
     iret //
 
 
-.globl   isr_wrapper143
+.local   isr_wrapper143
 .align   4
 
 isr_wrapper143:
@@ -1645,7 +1645,7 @@ isr_wrapper143:
     iret //
 
 
-.globl   isr_wrapper144
+.local   isr_wrapper144
 .align   4
 
 isr_wrapper144:
@@ -1656,7 +1656,7 @@ isr_wrapper144:
     iret //
 
 
-.globl   isr_wrapper145
+.local   isr_wrapper145
 .align   4
 
 isr_wrapper145:
@@ -1667,7 +1667,7 @@ isr_wrapper145:
     iret //
 
 
-.globl   isr_wrapper146
+.local   isr_wrapper146
 .align   4
 
 isr_wrapper146:
@@ -1678,7 +1678,7 @@ isr_wrapper146:
     iret //
 
 
-.globl   isr_wrapper147
+.local   isr_wrapper147
 .align   4
 
 isr_wrapper147:
@@ -1689,7 +1689,7 @@ isr_wrapper147:
     iret //
 
 
-.globl   isr_wrapper148
+.local   isr_wrapper148
 .align   4
 
 isr_wrapper148:
@@ -1700,7 +1700,7 @@ isr_wrapper148:
     iret //
 
 
-.globl   isr_wrapper149
+.local   isr_wrapper149
 .align   4
 
 isr_wrapper149:
@@ -1711,7 +1711,7 @@ isr_wrapper149:
     iret //
 
 
-.globl   isr_wrapper150
+.local   isr_wrapper150
 .align   4
 
 isr_wrapper150:
@@ -1722,7 +1722,7 @@ isr_wrapper150:
     iret //
 
 
-.globl   isr_wrapper151
+.local   isr_wrapper151
 .align   4
 
 isr_wrapper151:
@@ -1733,7 +1733,7 @@ isr_wrapper151:
     iret //
 
 
-.globl   isr_wrapper152
+.local   isr_wrapper152
 .align   4
 
 isr_wrapper152:
@@ -1744,7 +1744,7 @@ isr_wrapper152:
     iret //
 
 
-.globl   isr_wrapper153
+.local   isr_wrapper153
 .align   4
 
 isr_wrapper153:
@@ -1755,7 +1755,7 @@ isr_wrapper153:
     iret //
 
 
-.globl   isr_wrapper154
+.local   isr_wrapper154
 .align   4
 
 isr_wrapper154:
@@ -1766,7 +1766,7 @@ isr_wrapper154:
     iret //
 
 
-.globl   isr_wrapper155
+.local   isr_wrapper155
 .align   4
 
 isr_wrapper155:
@@ -1777,7 +1777,7 @@ isr_wrapper155:
     iret //
 
 
-.globl   isr_wrapper156
+.local   isr_wrapper156
 .align   4
 
 isr_wrapper156:
@@ -1788,7 +1788,7 @@ isr_wrapper156:
     iret //
 
 
-.globl   isr_wrapper157
+.local   isr_wrapper157
 .align   4
 
 isr_wrapper157:
@@ -1799,7 +1799,7 @@ isr_wrapper157:
     iret //
 
 
-.globl   isr_wrapper158
+.local   isr_wrapper158
 .align   4
 
 isr_wrapper158:
@@ -1810,7 +1810,7 @@ isr_wrapper158:
     iret //
 
 
-.globl   isr_wrapper159
+.local   isr_wrapper159
 .align   4
 
 isr_wrapper159:
@@ -1821,7 +1821,7 @@ isr_wrapper159:
     iret //
 
 
-.globl   isr_wrapper160
+.local   isr_wrapper160
 .align   4
 
 isr_wrapper160:
@@ -1832,7 +1832,7 @@ isr_wrapper160:
     iret //
 
 
-.globl   isr_wrapper161
+.local   isr_wrapper161
 .align   4
 
 isr_wrapper161:
@@ -1843,7 +1843,7 @@ isr_wrapper161:
     iret //
 
 
-.globl   isr_wrapper162
+.local   isr_wrapper162
 .align   4
 
 isr_wrapper162:
@@ -1854,7 +1854,7 @@ isr_wrapper162:
     iret //
 
 
-.globl   isr_wrapper163
+.local   isr_wrapper163
 .align   4
 
 isr_wrapper163:
@@ -1865,7 +1865,7 @@ isr_wrapper163:
     iret //
 
 
-.globl   isr_wrapper164
+.local   isr_wrapper164
 .align   4
 
 isr_wrapper164:
@@ -1876,7 +1876,7 @@ isr_wrapper164:
     iret //
 
 
-.globl   isr_wrapper165
+.local   isr_wrapper165
 .align   4
 
 isr_wrapper165:
@@ -1887,7 +1887,7 @@ isr_wrapper165:
     iret //
 
 
-.globl   isr_wrapper166
+.local   isr_wrapper166
 .align   4
 
 isr_wrapper166:
@@ -1898,7 +1898,7 @@ isr_wrapper166:
     iret //
 
 
-.globl   isr_wrapper167
+.local   isr_wrapper167
 .align   4
 
 isr_wrapper167:
@@ -1909,7 +1909,7 @@ isr_wrapper167:
     iret //
 
 
-.globl   isr_wrapper168
+.local   isr_wrapper168
 .align   4
 
 isr_wrapper168:
@@ -1920,7 +1920,7 @@ isr_wrapper168:
     iret //
 
 
-.globl   isr_wrapper169
+.local   isr_wrapper169
 .align   4
 
 isr_wrapper169:
@@ -1931,7 +1931,7 @@ isr_wrapper169:
     iret //
 
 
-.globl   isr_wrapper170
+.local   isr_wrapper170
 .align   4
 
 isr_wrapper170:
@@ -1942,7 +1942,7 @@ isr_wrapper170:
     iret //
 
 
-.globl   isr_wrapper171
+.local   isr_wrapper171
 .align   4
 
 isr_wrapper171:
@@ -1953,7 +1953,7 @@ isr_wrapper171:
     iret //
 
 
-.globl   isr_wrapper172
+.local   isr_wrapper172
 .align   4
 
 isr_wrapper172:
@@ -1964,7 +1964,7 @@ isr_wrapper172:
     iret //
 
 
-.globl   isr_wrapper173
+.local   isr_wrapper173
 .align   4
 
 isr_wrapper173:
@@ -1975,7 +1975,7 @@ isr_wrapper173:
     iret //
 
 
-.globl   isr_wrapper174
+.local   isr_wrapper174
 .align   4
 
 isr_wrapper174:
@@ -1986,7 +1986,7 @@ isr_wrapper174:
     iret //
 
 
-.globl   isr_wrapper175
+.local   isr_wrapper175
 .align   4
 
 isr_wrapper175:
@@ -1997,7 +1997,7 @@ isr_wrapper175:
     iret //
 
 
-.globl   isr_wrapper176
+.local   isr_wrapper176
 .align   4
 
 isr_wrapper176:
@@ -2008,7 +2008,7 @@ isr_wrapper176:
     iret //
 
 
-.globl   isr_wrapper177
+.local   isr_wrapper177
 .align   4
 
 isr_wrapper177:
@@ -2019,7 +2019,7 @@ isr_wrapper177:
     iret //
 
 
-.globl   isr_wrapper178
+.local   isr_wrapper178
 .align   4
 
 isr_wrapper178:
@@ -2030,7 +2030,7 @@ isr_wrapper178:
     iret //
 
 
-.globl   isr_wrapper179
+.local   isr_wrapper179
 .align   4
 
 isr_wrapper179:
@@ -2041,7 +2041,7 @@ isr_wrapper179:
     iret //
 
 
-.globl   isr_wrapper180
+.local   isr_wrapper180
 .align   4
 
 isr_wrapper180:
@@ -2052,7 +2052,7 @@ isr_wrapper180:
     iret //
 
 
-.globl   isr_wrapper181
+.local   isr_wrapper181
 .align   4
 
 isr_wrapper181:
@@ -2063,7 +2063,7 @@ isr_wrapper181:
     iret //
 
 
-.globl   isr_wrapper182
+.local   isr_wrapper182
 .align   4
 
 isr_wrapper182:
@@ -2074,7 +2074,7 @@ isr_wrapper182:
     iret //
 
 
-.globl   isr_wrapper183
+.local   isr_wrapper183
 .align   4
 
 isr_wrapper183:
@@ -2085,7 +2085,7 @@ isr_wrapper183:
     iret //
 
 
-.globl   isr_wrapper184
+.local   isr_wrapper184
 .align   4
 
 isr_wrapper184:
@@ -2096,7 +2096,7 @@ isr_wrapper184:
     iret //
 
 
-.globl   isr_wrapper185
+.local   isr_wrapper185
 .align   4
 
 isr_wrapper185:
@@ -2107,7 +2107,7 @@ isr_wrapper185:
     iret //
 
 
-.globl   isr_wrapper186
+.local   isr_wrapper186
 .align   4
 
 isr_wrapper186:
@@ -2118,7 +2118,7 @@ isr_wrapper186:
     iret //
 
 
-.globl   isr_wrapper187
+.local   isr_wrapper187
 .align   4
 
 isr_wrapper187:
@@ -2129,7 +2129,7 @@ isr_wrapper187:
     iret //
 
 
-.globl   isr_wrapper188
+.local   isr_wrapper188
 .align   4
 
 isr_wrapper188:
@@ -2140,7 +2140,7 @@ isr_wrapper188:
     iret //
 
 
-.globl   isr_wrapper189
+.local   isr_wrapper189
 .align   4
 
 isr_wrapper189:
@@ -2151,7 +2151,7 @@ isr_wrapper189:
     iret //
 
 
-.globl   isr_wrapper190
+.local   isr_wrapper190
 .align   4
 
 isr_wrapper190:
@@ -2162,7 +2162,7 @@ isr_wrapper190:
     iret //
 
 
-.globl   isr_wrapper191
+.local   isr_wrapper191
 .align   4
 
 isr_wrapper191:
@@ -2173,7 +2173,7 @@ isr_wrapper191:
     iret //
 
 
-.globl   isr_wrapper192
+.local   isr_wrapper192
 .align   4
 
 isr_wrapper192:
@@ -2184,7 +2184,7 @@ isr_wrapper192:
     iret //
 
 
-.globl   isr_wrapper193
+.local   isr_wrapper193
 .align   4
 
 isr_wrapper193:
@@ -2195,7 +2195,7 @@ isr_wrapper193:
     iret //
 
 
-.globl   isr_wrapper194
+.local   isr_wrapper194
 .align   4
 
 isr_wrapper194:
@@ -2206,7 +2206,7 @@ isr_wrapper194:
     iret //
 
 
-.globl   isr_wrapper195
+.local   isr_wrapper195
 .align   4
 
 isr_wrapper195:
@@ -2217,7 +2217,7 @@ isr_wrapper195:
     iret //
 
 
-.globl   isr_wrapper196
+.local   isr_wrapper196
 .align   4
 
 isr_wrapper196:
@@ -2228,7 +2228,7 @@ isr_wrapper196:
     iret //
 
 
-.globl   isr_wrapper197
+.local   isr_wrapper197
 .align   4
 
 isr_wrapper197:
@@ -2239,7 +2239,7 @@ isr_wrapper197:
     iret //
 
 
-.globl   isr_wrapper198
+.local   isr_wrapper198
 .align   4
 
 isr_wrapper198:
@@ -2250,7 +2250,7 @@ isr_wrapper198:
     iret //
 
 
-.globl   isr_wrapper199
+.local   isr_wrapper199
 .align   4
 
 isr_wrapper199:
@@ -2261,7 +2261,7 @@ isr_wrapper199:
     iret //
 
 
-.globl   isr_wrapper200
+.local   isr_wrapper200
 .align   4
 
 isr_wrapper200:
@@ -2272,7 +2272,7 @@ isr_wrapper200:
     iret //
 
 
-.globl   isr_wrapper201
+.local   isr_wrapper201
 .align   4
 
 isr_wrapper201:
@@ -2283,7 +2283,7 @@ isr_wrapper201:
     iret //
 
 
-.globl   isr_wrapper202
+.local   isr_wrapper202
 .align   4
 
 isr_wrapper202:
@@ -2294,7 +2294,7 @@ isr_wrapper202:
     iret //
 
 
-.globl   isr_wrapper203
+.local   isr_wrapper203
 .align   4
 
 isr_wrapper203:
@@ -2305,7 +2305,7 @@ isr_wrapper203:
     iret //
 
 
-.globl   isr_wrapper204
+.local   isr_wrapper204
 .align   4
 
 isr_wrapper204:
@@ -2316,7 +2316,7 @@ isr_wrapper204:
     iret //
 
 
-.globl   isr_wrapper205
+.local   isr_wrapper205
 .align   4
 
 isr_wrapper205:
@@ -2327,7 +2327,7 @@ isr_wrapper205:
     iret //
 
 
-.globl   isr_wrapper206
+.local   isr_wrapper206
 .align   4
 
 isr_wrapper206:
@@ -2338,7 +2338,7 @@ isr_wrapper206:
     iret //
 
 
-.globl   isr_wrapper207
+.local   isr_wrapper207
 .align   4
 
 isr_wrapper207:
@@ -2349,7 +2349,7 @@ isr_wrapper207:
     iret //
 
 
-.globl   isr_wrapper208
+.local   isr_wrapper208
 .align   4
 
 isr_wrapper208:
@@ -2360,7 +2360,7 @@ isr_wrapper208:
     iret //
 
 
-.globl   isr_wrapper209
+.local   isr_wrapper209
 .align   4
 
 isr_wrapper209:
@@ -2371,7 +2371,7 @@ isr_wrapper209:
     iret //
 
 
-.globl   isr_wrapper210
+.local   isr_wrapper210
 .align   4
 
 isr_wrapper210:
@@ -2382,7 +2382,7 @@ isr_wrapper210:
     iret //
 
 
-.globl   isr_wrapper211
+.local   isr_wrapper211
 .align   4
 
 isr_wrapper211:
@@ -2393,7 +2393,7 @@ isr_wrapper211:
     iret //
 
 
-.globl   isr_wrapper212
+.local   isr_wrapper212
 .align   4
 
 isr_wrapper212:
@@ -2404,7 +2404,7 @@ isr_wrapper212:
     iret //
 
 
-.globl   isr_wrapper213
+.local   isr_wrapper213
 .align   4
 
 isr_wrapper213:
@@ -2415,7 +2415,7 @@ isr_wrapper213:
     iret //
 
 
-.globl   isr_wrapper214
+.local   isr_wrapper214
 .align   4
 
 isr_wrapper214:
@@ -2426,7 +2426,7 @@ isr_wrapper214:
     iret //
 
 
-.globl   isr_wrapper215
+.local   isr_wrapper215
 .align   4
 
 isr_wrapper215:
@@ -2437,7 +2437,7 @@ isr_wrapper215:
     iret //
 
 
-.globl   isr_wrapper216
+.local   isr_wrapper216
 .align   4
 
 isr_wrapper216:
@@ -2448,7 +2448,7 @@ isr_wrapper216:
     iret //
 
 
-.globl   isr_wrapper217
+.local   isr_wrapper217
 .align   4
 
 isr_wrapper217:
@@ -2459,7 +2459,7 @@ isr_wrapper217:
     iret //
 
 
-.globl   isr_wrapper218
+.local   isr_wrapper218
 .align   4
 
 isr_wrapper218:
@@ -2470,7 +2470,7 @@ isr_wrapper218:
     iret //
 
 
-.globl   isr_wrapper219
+.local   isr_wrapper219
 .align   4
 
 isr_wrapper219:
@@ -2481,7 +2481,7 @@ isr_wrapper219:
     iret //
 
 
-.globl   isr_wrapper220
+.local   isr_wrapper220
 .align   4
 
 isr_wrapper220:
@@ -2492,7 +2492,7 @@ isr_wrapper220:
     iret //
 
 
-.globl   isr_wrapper221
+.local   isr_wrapper221
 .align   4
 
 isr_wrapper221:
@@ -2503,7 +2503,7 @@ isr_wrapper221:
     iret //
 
 
-.globl   isr_wrapper222
+.local   isr_wrapper222
 .align   4
 
 isr_wrapper222:
@@ -2514,7 +2514,7 @@ isr_wrapper222:
     iret //
 
 
-.globl   isr_wrapper223
+.local   isr_wrapper223
 .align   4
 
 isr_wrapper223:
@@ -2525,7 +2525,7 @@ isr_wrapper223:
     iret //
 
 
-.globl   isr_wrapper224
+.local   isr_wrapper224
 .align   4
 
 isr_wrapper224:
@@ -2536,7 +2536,7 @@ isr_wrapper224:
     iret //
 
 
-.globl   isr_wrapper225
+.local   isr_wrapper225
 .align   4
 
 isr_wrapper225:
@@ -2547,7 +2547,7 @@ isr_wrapper225:
     iret //
 
 
-.globl   isr_wrapper226
+.local   isr_wrapper226
 .align   4
 
 isr_wrapper226:
@@ -2558,7 +2558,7 @@ isr_wrapper226:
     iret //
 
 
-.globl   isr_wrapper227
+.local   isr_wrapper227
 .align   4
 
 isr_wrapper227:
@@ -2569,7 +2569,7 @@ isr_wrapper227:
     iret //
 
 
-.globl   isr_wrapper228
+.local   isr_wrapper228
 .align   4
 
 isr_wrapper228:
@@ -2580,7 +2580,7 @@ isr_wrapper228:
     iret //
 
 
-.globl   isr_wrapper229
+.local   isr_wrapper229
 .align   4
 
 isr_wrapper229:
@@ -2591,7 +2591,7 @@ isr_wrapper229:
     iret //
 
 
-.globl   isr_wrapper230
+.local   isr_wrapper230
 .align   4
 
 isr_wrapper230:
@@ -2602,7 +2602,7 @@ isr_wrapper230:
     iret //
 
 
-.globl   isr_wrapper231
+.local   isr_wrapper231
 .align   4
 
 isr_wrapper231:
@@ -2613,7 +2613,7 @@ isr_wrapper231:
     iret //
 
 
-.globl   isr_wrapper232
+.local   isr_wrapper232
 .align   4
 
 isr_wrapper232:
@@ -2624,7 +2624,7 @@ isr_wrapper232:
     iret //
 
 
-.globl   isr_wrapper233
+.local   isr_wrapper233
 .align   4
 
 isr_wrapper233:
@@ -2635,7 +2635,7 @@ isr_wrapper233:
     iret //
 
 
-.globl   isr_wrapper234
+.local   isr_wrapper234
 .align   4
 
 isr_wrapper234:
@@ -2646,7 +2646,7 @@ isr_wrapper234:
     iret //
 
 
-.globl   isr_wrapper235
+.local   isr_wrapper235
 .align   4
 
 isr_wrapper235:
@@ -2657,7 +2657,7 @@ isr_wrapper235:
     iret //
 
 
-.globl   isr_wrapper236
+.local   isr_wrapper236
 .align   4
 
 isr_wrapper236:
@@ -2668,7 +2668,7 @@ isr_wrapper236:
     iret //
 
 
-.globl   isr_wrapper237
+.local   isr_wrapper237
 .align   4
 
 isr_wrapper237:
@@ -2679,7 +2679,7 @@ isr_wrapper237:
     iret //
 
 
-.globl   isr_wrapper238
+.local   isr_wrapper238
 .align   4
 
 isr_wrapper238:
@@ -2690,7 +2690,7 @@ isr_wrapper238:
     iret //
 
 
-.globl   isr_wrapper239
+.local   isr_wrapper239
 .align   4
 
 isr_wrapper239:
@@ -2701,7 +2701,7 @@ isr_wrapper239:
     iret //
 
 
-.globl   isr_wrapper240
+.local   isr_wrapper240
 .align   4
 
 isr_wrapper240:
@@ -2712,7 +2712,7 @@ isr_wrapper240:
     iret //
 
 
-.globl   isr_wrapper241
+.local   isr_wrapper241
 .align   4
 
 isr_wrapper241:
@@ -2723,7 +2723,7 @@ isr_wrapper241:
     iret //
 
 
-.globl   isr_wrapper242
+.local   isr_wrapper242
 .align   4
 
 isr_wrapper242:
@@ -2734,7 +2734,7 @@ isr_wrapper242:
     iret //
 
 
-.globl   isr_wrapper243
+.local   isr_wrapper243
 .align   4
 
 isr_wrapper243:
@@ -2745,7 +2745,7 @@ isr_wrapper243:
     iret //
 
 
-.globl   isr_wrapper244
+.local   isr_wrapper244
 .align   4
 
 isr_wrapper244:
@@ -2756,7 +2756,7 @@ isr_wrapper244:
     iret //
 
 
-.globl   isr_wrapper245
+.local   isr_wrapper245
 .align   4
 
 isr_wrapper245:
@@ -2767,7 +2767,7 @@ isr_wrapper245:
     iret //
 
 
-.globl   isr_wrapper246
+.local   isr_wrapper246
 .align   4
 
 isr_wrapper246:
@@ -2778,7 +2778,7 @@ isr_wrapper246:
     iret //
 
 
-.globl   isr_wrapper247
+.local   isr_wrapper247
 .align   4
 
 isr_wrapper247:
@@ -2789,7 +2789,7 @@ isr_wrapper247:
     iret //
 
 
-.globl   isr_wrapper248
+.local   isr_wrapper248
 .align   4
 
 isr_wrapper248:
@@ -2800,7 +2800,7 @@ isr_wrapper248:
     iret //
 
 
-.globl   isr_wrapper249
+.local   isr_wrapper249
 .align   4
 
 isr_wrapper249:
@@ -2811,7 +2811,7 @@ isr_wrapper249:
     iret //
 
 
-.globl   isr_wrapper250
+.local   isr_wrapper250
 .align   4
 
 isr_wrapper250:
@@ -2822,7 +2822,7 @@ isr_wrapper250:
     iret //
 
 
-.globl   isr_wrapper251
+.local   isr_wrapper251
 .align   4
 
 isr_wrapper251:
@@ -2833,7 +2833,7 @@ isr_wrapper251:
     iret //
 
 
-.globl   isr_wrapper252
+.local   isr_wrapper252
 .align   4
 
 isr_wrapper252:
@@ -2844,7 +2844,7 @@ isr_wrapper252:
     iret //
 
 
-.globl   isr_wrapper253
+.local   isr_wrapper253
 .align   4
 
 isr_wrapper253:
@@ -2855,7 +2855,7 @@ isr_wrapper253:
     iret //
 
 
-.globl   isr_wrapper254
+.local   isr_wrapper254
 .align   4
 
 isr_wrapper254:
@@ -2866,7 +2866,7 @@ isr_wrapper254:
     iret //
 
 
-.globl   isr_wrapper255
+.local   isr_wrapper255
 .align   4
 
 isr_wrapper255:
@@ -2879,6 +2879,7 @@ isr_wrapper255:
 
 	.data
 	.global isrs_list
+	isrs_list:
 .quad isr_wrapper0
 	.quad isr_wrapper1
 	.quad isr_wrapper2
