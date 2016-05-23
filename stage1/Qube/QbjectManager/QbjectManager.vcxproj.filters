@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="build">
+      <UniqueIdentifier>{1a43f9c5-e47d-4646-a0a7-5773fcab7898}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />
@@ -25,6 +28,9 @@
   <ItemGroup>
     <ClCompile Include="Qbject.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Makefile">
+      <Filter>build</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
