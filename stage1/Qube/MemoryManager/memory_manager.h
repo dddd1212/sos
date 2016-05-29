@@ -46,4 +46,6 @@ void* commit_pages(REGION_TYPE region, uint32 size);
 void assign_committed(void* addr, uint32 size);
 void unassign_committed(void* addr, uint32 size);
 void free_pages(void* addr);
+void* kalloc(uint32 size);
+void kfree(void* addr);
 #endif

@@ -209,11 +209,21 @@ void assign_committed(void* addr, uint32 size) {
 		add_physical_page(region, cur);
 	}
 }
+
 void unassign_committed(void* addr, uint32 size) {
 	// TODO
 	return;
 }
+
 void free_pages(void* addr) {
 	// TODO
+	return;
+}
+
+void* kalloc(uint32 size) {
+	return NULL;
+}
+
+void kfree(void* addr) {
 	return;
 }
