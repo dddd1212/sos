@@ -22,6 +22,7 @@ try:
 	os.system('start "" %s -x gdbinit'%DEBUGGER_PATH)
 	os.system('start "" "C:\\Program Files (x86)\\Bochs-2.6.8\\bochs_gdb.exe" -q -f vhd_disk_gdb.bxrc')
 	
+	
 except:
 	print "Exception..."
 	import traceback

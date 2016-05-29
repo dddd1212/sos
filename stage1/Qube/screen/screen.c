@@ -80,3 +80,61 @@ QResult screen_locate(int x, int y)
 	g_screen.cur_screen_ptr = g_screen.start_screen_ptr + COLS * x + y;
 	return QSuccess; 
 }
+
+// TODO: This is temporary. we need to remove this function.
+void screen_printf(char * fmt, uint64 param1, uint64 param2, uint64 param3, uint64 param4) {
+	uint64 params[4] = { param1, param2, param3, param4 };
+	int param_idx = 0;
+	uint64 param;
+	char num_arr[21]; // max uint64 base10 size + null.
+	int num_arr_idx = 0;
+	int base = 0;
+	char one_char[2];
+	one_char[1] = '\x00';
+	while (*fmt != '\x00') {
+		if (*fmt == '%') {
+			fmt++;
+			if (*fmt == 'd') {
+				base = 10;
+			}
+			else if (*fmt == 'x') {
+				base = 16;
+			}
+			else if (*fmt == 's') {
+				screen_write_string((char *)params[param_idx], FALSE);
+				param_idx++;
+				fmt++;
+				continue;
+			}
+			else {
+				fmt--;
+			}
+			if (base) { // handle %x, %d:
+				param = params[param_idx];
+				param_idx++;
+				num_arr_idx = 20; // start from the end
+				num_arr[num_arr_idx] = '\x00';
+				num_arr_idx--;
+				do {
+					int digit = param % base;
+					if (digit < 10) {
+						num_arr[num_arr_idx] = '0' + digit;
+					}
+					else {
+						num_arr[num_arr_idx] = 'A' - 10 + digit;
+					}
+					num_arr_idx--;
+					param /= base;
+				} while (param != 0);
+				screen_write_string(&num_arr[num_arr_idx + 1], FALSE);
+				fmt++;
+				continue;
+			}
+		}
+		// regular
+		one_char[0] = *fmt;
+		screen_write_string(&one_char[0], FALSE);
+		fmt++;
+	}
+	return;
+}

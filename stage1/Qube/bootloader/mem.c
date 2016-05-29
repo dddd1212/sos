@@ -223,3 +223,4 @@ void * map_first_MB(BootLoaderAllocator *allocator) {
 	// map 1MB non volotile memory from the start of the physical memory (0).
 	return mem_alloc_ex(allocator, 1024 * 1024, FALSE, 0);
 }
+

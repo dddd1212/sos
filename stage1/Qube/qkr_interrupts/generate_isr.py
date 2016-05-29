@@ -9,7 +9,7 @@ isr_wrapper{interrupt_number}:
 	push ${interrupt_number} //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 """
 ptrs = """
@@ -21,7 +21,7 @@ ptrs = """
 entry_points = ""
 for i in xrange(0x100):
 	error_code = ""
-	if i not in (8,10,11,12,13,14,17):
+	if i not in (8, 10,11,12,13,14,17):
 		error_code = "push $0 // push dummy error code"
 	entry_points += TEMPLATE.format(interrupt_number = i, push_dummy_error_code = error_code)
 	ptrs += """.quad isr_wrapper%d
@@ -30,7 +30,7 @@ for i in xrange(0x100):
 REST_OF_FILE = """
 isr_asm:
 	// manual push registers:
-	sub 0x98, %rsp   // make room for the manual-pushed registers.
+	sub $0x98, %rsp   // make room for the manual-pushed registers.
 	movq	%r15, 0x90(%rsp)//
 	movq	%r14, 0x88(%rsp)//
 	movq	%r13, 0x80(%rsp)//
@@ -57,10 +57,12 @@ isr_asm:
     movq	%rax, 0x00(%rsp)//
 
 	// Call the C handle routine
-	push %rsp // move the Registers struct as parameter.
+	//push %rsp // move the Registers struct as parameter.
+	movq    %rsp, %rdi // move the Registers struct as parameter.
+	add $8, %rdi
 	cld // /* C code following the sysV ABI requires DF to be clear on function entry */
 	call handle_interrupts // C routine
-	add $8, %rsp//
+	//add $8, %rsp//
 	
 	// Manual pop the registers:
 	movq	0x00(%rsp), %rax//
@@ -87,7 +89,7 @@ isr_asm:
 	movq	0x80(%rsp), %r13 //
 	movq	0x88(%rsp), %r14 //
 	movq	0x90(%rsp), %r15 //
-	add 0x98, %rsp   // restore %rsp
+	add $0x98, %rsp   // restore %rsp
 	ret //
 """
 

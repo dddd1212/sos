@@ -3,6 +3,12 @@
 #include "../Common/Qube.h"
 #define REGION_BITMAP_MAX_SIZE 0x100000
 
+#define PTE(x) ((uint64*)(0xFFFFF68000000000 + (((((uint64)x) & 0x0000FFFFFFFFFFFF)>>12)<<3)))
+#define PDE(x) PTE(PTE(x))
+#define PPE(x) PTE(PDE(x))
+#define PXE(x) PTE(PPE(x))
+#define VIRTUAL_TO_PHYSICAL(virt) (((*PTE(virt))&(0xffffffffff000)) + ((uint64)virt & 0xfff))
+
 typedef struct {
 	uint16 limit_low;
 	uint16 base_low;

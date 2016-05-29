@@ -41,7 +41,7 @@ EXPORT QResult screen_write_buffer(char * buf, int size, BOOL newline);
 EXPORT QResult screen_new_line();
 EXPORT QResult screen_clear();
 EXPORT QResult screen_locate(int x, int y);
-	   
+EXPORT void screen_printf(char * fmt, uint64 param1, uint64 param2, uint64 param3, uint64 param4);
 EXPORT QResult screen_init(void * first_MB_ptr);
 EXPORT QResult qkr_main(KernelGlobalData * kgd);
 

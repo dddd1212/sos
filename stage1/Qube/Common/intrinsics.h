@@ -105,7 +105,10 @@ static inline void __cpuid(int code, uint32 * eax_out, uint32 * edx_out)
 
 static inline void __wrmsr(uint32 msr_id, uint64 msr_value)
 {
-	asm volatile ("wrmsr" : : "c" (msr_id), "A" (msr_value));
+	uint32 edx = msr_value >> 32;
+	uint32 eax = msr_value & 0xffffffff;
+	
+	asm volatile ("wrmsr" : : "c" (msr_id), "a" (eax), "d" (edx));
 }
 
 static inline uint64 __rdmsr(uint32 msr_id)

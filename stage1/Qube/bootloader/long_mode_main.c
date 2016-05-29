@@ -142,6 +142,9 @@ void _start() {
 	kgd->bootloader_symbols.names_storage = ((char *)kgd->bootloader_symbols.symbols) + sizeof(struct Symbol)*MAX_PRIMITIVE_SYMBOLS;
 	kgd->bootloader_symbols.index = 0;
 	kgd->bootloader_symbols.names_storage_index = 0;
+	
+	
+	kgd->APIC_base = mem_alloc_ex(&allocator, 0x400, FALSE, 0xfee00000);
 
 	// load the modules:
 	int ret2 = load_modules_and_run_kernel(kgd, boot_modules, &allocator, num_of_lines);

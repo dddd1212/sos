@@ -83,6 +83,7 @@ typedef struct {
 	ModulesList * modules;
 	BootInfo *boot_info;
 	void * first_MB; // pointer to the first MB of pysical memory.
+	void * APIC_base; // TODO: remove it. its temporary until Dror will implements the non-primitive memory module.
 } KernelGlobalData;
 
 typedef struct {

@@ -1,7 +1,7 @@
 
 isr_asm:
 	// manual push registers:
-	sub 0x98, %rsp   // make room for the manual-pushed registers.
+	sub $0x98, %rsp   // make room for the manual-pushed registers.
 	movq	%r15, 0x90(%rsp)//
 	movq	%r14, 0x88(%rsp)//
 	movq	%r13, 0x80(%rsp)//
@@ -28,10 +28,12 @@ isr_asm:
     movq	%rax, 0x00(%rsp)//
 
 	// Call the C handle routine
-	push %rsp // move the Registers struct as parameter.
+	//push %rsp // move the Registers struct as parameter.
+	movq    %rsp, %rdi // move the Registers struct as parameter.
+	add $8, %rdi
 	cld // /* C code following the sysV ABI requires DF to be clear on function entry */
 	call handle_interrupts // C routine
-	add $8, %rsp//
+	//add $8, %rsp//
 	
 	// Manual pop the registers:
 	movq	0x00(%rsp), %rax//
@@ -58,7 +60,7 @@ isr_asm:
 	movq	0x80(%rsp), %r13 //
 	movq	0x88(%rsp), %r14 //
 	movq	0x90(%rsp), %r15 //
-	add 0x98, %rsp   // restore %rsp
+	add $0x98, %rsp   // restore %rsp
 	ret //
 
 .local   isr_wrapper0
@@ -69,7 +71,7 @@ isr_wrapper0:
 	push $0 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper1
@@ -80,7 +82,7 @@ isr_wrapper1:
 	push $1 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper2
@@ -91,7 +93,7 @@ isr_wrapper2:
 	push $2 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper3
@@ -102,7 +104,7 @@ isr_wrapper3:
 	push $3 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper4
@@ -113,7 +115,7 @@ isr_wrapper4:
 	push $4 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper5
@@ -124,7 +126,7 @@ isr_wrapper5:
 	push $5 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper6
@@ -135,7 +137,7 @@ isr_wrapper6:
 	push $6 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper7
@@ -146,7 +148,7 @@ isr_wrapper7:
 	push $7 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper8
@@ -157,7 +159,7 @@ isr_wrapper8:
 	push $8 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper9
@@ -168,7 +170,7 @@ isr_wrapper9:
 	push $9 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper10
@@ -179,7 +181,7 @@ isr_wrapper10:
 	push $10 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper11
@@ -190,7 +192,7 @@ isr_wrapper11:
 	push $11 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper12
@@ -201,7 +203,7 @@ isr_wrapper12:
 	push $12 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper13
@@ -212,7 +214,7 @@ isr_wrapper13:
 	push $13 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper14
@@ -223,7 +225,7 @@ isr_wrapper14:
 	push $14 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper15
@@ -234,7 +236,7 @@ isr_wrapper15:
 	push $15 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper16
@@ -245,7 +247,7 @@ isr_wrapper16:
 	push $16 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper17
@@ -256,7 +258,7 @@ isr_wrapper17:
 	push $17 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper18
@@ -267,7 +269,7 @@ isr_wrapper18:
 	push $18 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper19
@@ -278,7 +280,7 @@ isr_wrapper19:
 	push $19 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper20
@@ -289,7 +291,7 @@ isr_wrapper20:
 	push $20 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper21
@@ -300,7 +302,7 @@ isr_wrapper21:
 	push $21 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper22
@@ -311,7 +313,7 @@ isr_wrapper22:
 	push $22 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper23
@@ -322,7 +324,7 @@ isr_wrapper23:
 	push $23 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper24
@@ -333,7 +335,7 @@ isr_wrapper24:
 	push $24 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper25
@@ -344,7 +346,7 @@ isr_wrapper25:
 	push $25 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper26
@@ -355,7 +357,7 @@ isr_wrapper26:
 	push $26 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper27
@@ -366,7 +368,7 @@ isr_wrapper27:
 	push $27 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper28
@@ -377,7 +379,7 @@ isr_wrapper28:
 	push $28 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper29
@@ -388,7 +390,7 @@ isr_wrapper29:
 	push $29 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper30
@@ -399,7 +401,7 @@ isr_wrapper30:
 	push $30 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper31
@@ -410,7 +412,7 @@ isr_wrapper31:
 	push $31 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper32
@@ -421,7 +423,7 @@ isr_wrapper32:
 	push $32 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper33
@@ -432,7 +434,7 @@ isr_wrapper33:
 	push $33 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper34
@@ -443,7 +445,7 @@ isr_wrapper34:
 	push $34 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper35
@@ -454,7 +456,7 @@ isr_wrapper35:
 	push $35 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper36
@@ -465,7 +467,7 @@ isr_wrapper36:
 	push $36 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper37
@@ -476,7 +478,7 @@ isr_wrapper37:
 	push $37 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper38
@@ -487,7 +489,7 @@ isr_wrapper38:
 	push $38 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper39
@@ -498,7 +500,7 @@ isr_wrapper39:
 	push $39 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper40
@@ -509,7 +511,7 @@ isr_wrapper40:
 	push $40 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper41
@@ -520,7 +522,7 @@ isr_wrapper41:
 	push $41 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper42
@@ -531,7 +533,7 @@ isr_wrapper42:
 	push $42 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper43
@@ -542,7 +544,7 @@ isr_wrapper43:
 	push $43 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper44
@@ -553,7 +555,7 @@ isr_wrapper44:
 	push $44 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper45
@@ -564,7 +566,7 @@ isr_wrapper45:
 	push $45 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper46
@@ -575,7 +577,7 @@ isr_wrapper46:
 	push $46 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper47
@@ -586,7 +588,7 @@ isr_wrapper47:
 	push $47 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper48
@@ -597,7 +599,7 @@ isr_wrapper48:
 	push $48 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper49
@@ -608,7 +610,7 @@ isr_wrapper49:
 	push $49 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper50
@@ -619,7 +621,7 @@ isr_wrapper50:
 	push $50 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper51
@@ -630,7 +632,7 @@ isr_wrapper51:
 	push $51 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper52
@@ -641,7 +643,7 @@ isr_wrapper52:
 	push $52 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper53
@@ -652,7 +654,7 @@ isr_wrapper53:
 	push $53 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper54
@@ -663,7 +665,7 @@ isr_wrapper54:
 	push $54 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper55
@@ -674,7 +676,7 @@ isr_wrapper55:
 	push $55 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper56
@@ -685,7 +687,7 @@ isr_wrapper56:
 	push $56 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper57
@@ -696,7 +698,7 @@ isr_wrapper57:
 	push $57 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper58
@@ -707,7 +709,7 @@ isr_wrapper58:
 	push $58 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper59
@@ -718,7 +720,7 @@ isr_wrapper59:
 	push $59 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper60
@@ -729,7 +731,7 @@ isr_wrapper60:
 	push $60 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper61
@@ -740,7 +742,7 @@ isr_wrapper61:
 	push $61 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper62
@@ -751,7 +753,7 @@ isr_wrapper62:
 	push $62 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper63
@@ -762,7 +764,7 @@ isr_wrapper63:
 	push $63 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper64
@@ -773,7 +775,7 @@ isr_wrapper64:
 	push $64 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper65
@@ -784,7 +786,7 @@ isr_wrapper65:
 	push $65 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper66
@@ -795,7 +797,7 @@ isr_wrapper66:
 	push $66 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper67
@@ -806,7 +808,7 @@ isr_wrapper67:
 	push $67 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper68
@@ -817,7 +819,7 @@ isr_wrapper68:
 	push $68 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper69
@@ -828,7 +830,7 @@ isr_wrapper69:
 	push $69 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper70
@@ -839,7 +841,7 @@ isr_wrapper70:
 	push $70 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper71
@@ -850,7 +852,7 @@ isr_wrapper71:
 	push $71 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper72
@@ -861,7 +863,7 @@ isr_wrapper72:
 	push $72 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper73
@@ -872,7 +874,7 @@ isr_wrapper73:
 	push $73 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper74
@@ -883,7 +885,7 @@ isr_wrapper74:
 	push $74 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper75
@@ -894,7 +896,7 @@ isr_wrapper75:
 	push $75 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper76
@@ -905,7 +907,7 @@ isr_wrapper76:
 	push $76 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper77
@@ -916,7 +918,7 @@ isr_wrapper77:
 	push $77 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper78
@@ -927,7 +929,7 @@ isr_wrapper78:
 	push $78 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper79
@@ -938,7 +940,7 @@ isr_wrapper79:
 	push $79 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper80
@@ -949,7 +951,7 @@ isr_wrapper80:
 	push $80 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper81
@@ -960,7 +962,7 @@ isr_wrapper81:
 	push $81 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper82
@@ -971,7 +973,7 @@ isr_wrapper82:
 	push $82 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper83
@@ -982,7 +984,7 @@ isr_wrapper83:
 	push $83 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper84
@@ -993,7 +995,7 @@ isr_wrapper84:
 	push $84 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper85
@@ -1004,7 +1006,7 @@ isr_wrapper85:
 	push $85 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper86
@@ -1015,7 +1017,7 @@ isr_wrapper86:
 	push $86 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper87
@@ -1026,7 +1028,7 @@ isr_wrapper87:
 	push $87 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper88
@@ -1037,7 +1039,7 @@ isr_wrapper88:
 	push $88 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper89
@@ -1048,7 +1050,7 @@ isr_wrapper89:
 	push $89 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper90
@@ -1059,7 +1061,7 @@ isr_wrapper90:
 	push $90 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper91
@@ -1070,7 +1072,7 @@ isr_wrapper91:
 	push $91 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper92
@@ -1081,7 +1083,7 @@ isr_wrapper92:
 	push $92 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper93
@@ -1092,7 +1094,7 @@ isr_wrapper93:
 	push $93 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper94
@@ -1103,7 +1105,7 @@ isr_wrapper94:
 	push $94 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper95
@@ -1114,7 +1116,7 @@ isr_wrapper95:
 	push $95 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper96
@@ -1125,7 +1127,7 @@ isr_wrapper96:
 	push $96 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper97
@@ -1136,7 +1138,7 @@ isr_wrapper97:
 	push $97 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper98
@@ -1147,7 +1149,7 @@ isr_wrapper98:
 	push $98 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper99
@@ -1158,7 +1160,7 @@ isr_wrapper99:
 	push $99 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper100
@@ -1169,7 +1171,7 @@ isr_wrapper100:
 	push $100 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper101
@@ -1180,7 +1182,7 @@ isr_wrapper101:
 	push $101 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper102
@@ -1191,7 +1193,7 @@ isr_wrapper102:
 	push $102 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper103
@@ -1202,7 +1204,7 @@ isr_wrapper103:
 	push $103 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper104
@@ -1213,7 +1215,7 @@ isr_wrapper104:
 	push $104 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper105
@@ -1224,7 +1226,7 @@ isr_wrapper105:
 	push $105 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper106
@@ -1235,7 +1237,7 @@ isr_wrapper106:
 	push $106 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper107
@@ -1246,7 +1248,7 @@ isr_wrapper107:
 	push $107 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper108
@@ -1257,7 +1259,7 @@ isr_wrapper108:
 	push $108 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper109
@@ -1268,7 +1270,7 @@ isr_wrapper109:
 	push $109 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper110
@@ -1279,7 +1281,7 @@ isr_wrapper110:
 	push $110 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper111
@@ -1290,7 +1292,7 @@ isr_wrapper111:
 	push $111 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper112
@@ -1301,7 +1303,7 @@ isr_wrapper112:
 	push $112 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper113
@@ -1312,7 +1314,7 @@ isr_wrapper113:
 	push $113 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper114
@@ -1323,7 +1325,7 @@ isr_wrapper114:
 	push $114 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper115
@@ -1334,7 +1336,7 @@ isr_wrapper115:
 	push $115 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper116
@@ -1345,7 +1347,7 @@ isr_wrapper116:
 	push $116 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper117
@@ -1356,7 +1358,7 @@ isr_wrapper117:
 	push $117 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper118
@@ -1367,7 +1369,7 @@ isr_wrapper118:
 	push $118 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper119
@@ -1378,7 +1380,7 @@ isr_wrapper119:
 	push $119 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper120
@@ -1389,7 +1391,7 @@ isr_wrapper120:
 	push $120 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper121
@@ -1400,7 +1402,7 @@ isr_wrapper121:
 	push $121 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper122
@@ -1411,7 +1413,7 @@ isr_wrapper122:
 	push $122 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper123
@@ -1422,7 +1424,7 @@ isr_wrapper123:
 	push $123 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper124
@@ -1433,7 +1435,7 @@ isr_wrapper124:
 	push $124 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper125
@@ -1444,7 +1446,7 @@ isr_wrapper125:
 	push $125 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper126
@@ -1455,7 +1457,7 @@ isr_wrapper126:
 	push $126 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper127
@@ -1466,7 +1468,7 @@ isr_wrapper127:
 	push $127 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper128
@@ -1477,7 +1479,7 @@ isr_wrapper128:
 	push $128 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper129
@@ -1488,7 +1490,7 @@ isr_wrapper129:
 	push $129 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper130
@@ -1499,7 +1501,7 @@ isr_wrapper130:
 	push $130 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper131
@@ -1510,7 +1512,7 @@ isr_wrapper131:
 	push $131 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper132
@@ -1521,7 +1523,7 @@ isr_wrapper132:
 	push $132 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper133
@@ -1532,7 +1534,7 @@ isr_wrapper133:
 	push $133 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper134
@@ -1543,7 +1545,7 @@ isr_wrapper134:
 	push $134 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper135
@@ -1554,7 +1556,7 @@ isr_wrapper135:
 	push $135 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper136
@@ -1565,7 +1567,7 @@ isr_wrapper136:
 	push $136 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper137
@@ -1576,7 +1578,7 @@ isr_wrapper137:
 	push $137 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper138
@@ -1587,7 +1589,7 @@ isr_wrapper138:
 	push $138 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper139
@@ -1598,7 +1600,7 @@ isr_wrapper139:
 	push $139 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper140
@@ -1609,7 +1611,7 @@ isr_wrapper140:
 	push $140 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper141
@@ -1620,7 +1622,7 @@ isr_wrapper141:
 	push $141 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper142
@@ -1631,7 +1633,7 @@ isr_wrapper142:
 	push $142 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper143
@@ -1642,7 +1644,7 @@ isr_wrapper143:
 	push $143 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper144
@@ -1653,7 +1655,7 @@ isr_wrapper144:
 	push $144 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper145
@@ -1664,7 +1666,7 @@ isr_wrapper145:
 	push $145 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper146
@@ -1675,7 +1677,7 @@ isr_wrapper146:
 	push $146 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper147
@@ -1686,7 +1688,7 @@ isr_wrapper147:
 	push $147 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper148
@@ -1697,7 +1699,7 @@ isr_wrapper148:
 	push $148 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper149
@@ -1708,7 +1710,7 @@ isr_wrapper149:
 	push $149 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper150
@@ -1719,7 +1721,7 @@ isr_wrapper150:
 	push $150 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper151
@@ -1730,7 +1732,7 @@ isr_wrapper151:
 	push $151 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper152
@@ -1741,7 +1743,7 @@ isr_wrapper152:
 	push $152 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper153
@@ -1752,7 +1754,7 @@ isr_wrapper153:
 	push $153 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper154
@@ -1763,7 +1765,7 @@ isr_wrapper154:
 	push $154 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper155
@@ -1774,7 +1776,7 @@ isr_wrapper155:
 	push $155 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper156
@@ -1785,7 +1787,7 @@ isr_wrapper156:
 	push $156 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper157
@@ -1796,7 +1798,7 @@ isr_wrapper157:
 	push $157 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper158
@@ -1807,7 +1809,7 @@ isr_wrapper158:
 	push $158 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper159
@@ -1818,7 +1820,7 @@ isr_wrapper159:
 	push $159 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper160
@@ -1829,7 +1831,7 @@ isr_wrapper160:
 	push $160 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper161
@@ -1840,7 +1842,7 @@ isr_wrapper161:
 	push $161 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper162
@@ -1851,7 +1853,7 @@ isr_wrapper162:
 	push $162 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper163
@@ -1862,7 +1864,7 @@ isr_wrapper163:
 	push $163 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper164
@@ -1873,7 +1875,7 @@ isr_wrapper164:
 	push $164 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper165
@@ -1884,7 +1886,7 @@ isr_wrapper165:
 	push $165 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper166
@@ -1895,7 +1897,7 @@ isr_wrapper166:
 	push $166 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper167
@@ -1906,7 +1908,7 @@ isr_wrapper167:
 	push $167 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper168
@@ -1917,7 +1919,7 @@ isr_wrapper168:
 	push $168 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper169
@@ -1928,7 +1930,7 @@ isr_wrapper169:
 	push $169 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper170
@@ -1939,7 +1941,7 @@ isr_wrapper170:
 	push $170 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper171
@@ -1950,7 +1952,7 @@ isr_wrapper171:
 	push $171 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper172
@@ -1961,7 +1963,7 @@ isr_wrapper172:
 	push $172 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper173
@@ -1972,7 +1974,7 @@ isr_wrapper173:
 	push $173 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper174
@@ -1983,7 +1985,7 @@ isr_wrapper174:
 	push $174 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper175
@@ -1994,7 +1996,7 @@ isr_wrapper175:
 	push $175 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper176
@@ -2005,7 +2007,7 @@ isr_wrapper176:
 	push $176 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper177
@@ -2016,7 +2018,7 @@ isr_wrapper177:
 	push $177 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper178
@@ -2027,7 +2029,7 @@ isr_wrapper178:
 	push $178 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper179
@@ -2038,7 +2040,7 @@ isr_wrapper179:
 	push $179 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper180
@@ -2049,7 +2051,7 @@ isr_wrapper180:
 	push $180 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper181
@@ -2060,7 +2062,7 @@ isr_wrapper181:
 	push $181 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper182
@@ -2071,7 +2073,7 @@ isr_wrapper182:
 	push $182 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper183
@@ -2082,7 +2084,7 @@ isr_wrapper183:
 	push $183 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper184
@@ -2093,7 +2095,7 @@ isr_wrapper184:
 	push $184 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper185
@@ -2104,7 +2106,7 @@ isr_wrapper185:
 	push $185 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper186
@@ -2115,7 +2117,7 @@ isr_wrapper186:
 	push $186 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper187
@@ -2126,7 +2128,7 @@ isr_wrapper187:
 	push $187 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper188
@@ -2137,7 +2139,7 @@ isr_wrapper188:
 	push $188 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper189
@@ -2148,7 +2150,7 @@ isr_wrapper189:
 	push $189 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper190
@@ -2159,7 +2161,7 @@ isr_wrapper190:
 	push $190 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper191
@@ -2170,7 +2172,7 @@ isr_wrapper191:
 	push $191 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper192
@@ -2181,7 +2183,7 @@ isr_wrapper192:
 	push $192 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper193
@@ -2192,7 +2194,7 @@ isr_wrapper193:
 	push $193 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper194
@@ -2203,7 +2205,7 @@ isr_wrapper194:
 	push $194 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper195
@@ -2214,7 +2216,7 @@ isr_wrapper195:
 	push $195 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper196
@@ -2225,7 +2227,7 @@ isr_wrapper196:
 	push $196 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper197
@@ -2236,7 +2238,7 @@ isr_wrapper197:
 	push $197 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper198
@@ -2247,7 +2249,7 @@ isr_wrapper198:
 	push $198 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper199
@@ -2258,7 +2260,7 @@ isr_wrapper199:
 	push $199 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper200
@@ -2269,7 +2271,7 @@ isr_wrapper200:
 	push $200 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper201
@@ -2280,7 +2282,7 @@ isr_wrapper201:
 	push $201 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper202
@@ -2291,7 +2293,7 @@ isr_wrapper202:
 	push $202 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper203
@@ -2302,7 +2304,7 @@ isr_wrapper203:
 	push $203 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper204
@@ -2313,7 +2315,7 @@ isr_wrapper204:
 	push $204 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper205
@@ -2324,7 +2326,7 @@ isr_wrapper205:
 	push $205 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper206
@@ -2335,7 +2337,7 @@ isr_wrapper206:
 	push $206 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper207
@@ -2346,7 +2348,7 @@ isr_wrapper207:
 	push $207 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper208
@@ -2357,7 +2359,7 @@ isr_wrapper208:
 	push $208 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper209
@@ -2368,7 +2370,7 @@ isr_wrapper209:
 	push $209 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper210
@@ -2379,7 +2381,7 @@ isr_wrapper210:
 	push $210 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper211
@@ -2390,7 +2392,7 @@ isr_wrapper211:
 	push $211 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper212
@@ -2401,7 +2403,7 @@ isr_wrapper212:
 	push $212 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper213
@@ -2412,7 +2414,7 @@ isr_wrapper213:
 	push $213 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper214
@@ -2423,7 +2425,7 @@ isr_wrapper214:
 	push $214 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper215
@@ -2434,7 +2436,7 @@ isr_wrapper215:
 	push $215 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper216
@@ -2445,7 +2447,7 @@ isr_wrapper216:
 	push $216 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper217
@@ -2456,7 +2458,7 @@ isr_wrapper217:
 	push $217 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper218
@@ -2467,7 +2469,7 @@ isr_wrapper218:
 	push $218 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper219
@@ -2478,7 +2480,7 @@ isr_wrapper219:
 	push $219 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper220
@@ -2489,7 +2491,7 @@ isr_wrapper220:
 	push $220 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper221
@@ -2500,7 +2502,7 @@ isr_wrapper221:
 	push $221 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper222
@@ -2511,7 +2513,7 @@ isr_wrapper222:
 	push $222 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper223
@@ -2522,7 +2524,7 @@ isr_wrapper223:
 	push $223 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper224
@@ -2533,7 +2535,7 @@ isr_wrapper224:
 	push $224 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper225
@@ -2544,7 +2546,7 @@ isr_wrapper225:
 	push $225 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper226
@@ -2555,7 +2557,7 @@ isr_wrapper226:
 	push $226 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper227
@@ -2566,7 +2568,7 @@ isr_wrapper227:
 	push $227 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper228
@@ -2577,7 +2579,7 @@ isr_wrapper228:
 	push $228 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper229
@@ -2588,7 +2590,7 @@ isr_wrapper229:
 	push $229 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper230
@@ -2599,7 +2601,7 @@ isr_wrapper230:
 	push $230 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper231
@@ -2610,7 +2612,7 @@ isr_wrapper231:
 	push $231 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper232
@@ -2621,7 +2623,7 @@ isr_wrapper232:
 	push $232 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper233
@@ -2632,7 +2634,7 @@ isr_wrapper233:
 	push $233 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper234
@@ -2643,7 +2645,7 @@ isr_wrapper234:
 	push $234 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper235
@@ -2654,7 +2656,7 @@ isr_wrapper235:
 	push $235 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper236
@@ -2665,7 +2667,7 @@ isr_wrapper236:
 	push $236 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper237
@@ -2676,7 +2678,7 @@ isr_wrapper237:
 	push $237 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper238
@@ -2687,7 +2689,7 @@ isr_wrapper238:
 	push $238 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper239
@@ -2698,7 +2700,7 @@ isr_wrapper239:
 	push $239 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper240
@@ -2709,7 +2711,7 @@ isr_wrapper240:
 	push $240 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper241
@@ -2720,7 +2722,7 @@ isr_wrapper241:
 	push $241 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper242
@@ -2731,7 +2733,7 @@ isr_wrapper242:
 	push $242 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper243
@@ -2742,7 +2744,7 @@ isr_wrapper243:
 	push $243 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper244
@@ -2753,7 +2755,7 @@ isr_wrapper244:
 	push $244 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper245
@@ -2764,7 +2766,7 @@ isr_wrapper245:
 	push $245 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper246
@@ -2775,7 +2777,7 @@ isr_wrapper246:
 	push $246 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper247
@@ -2786,7 +2788,7 @@ isr_wrapper247:
 	push $247 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper248
@@ -2797,7 +2799,7 @@ isr_wrapper248:
 	push $248 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper249
@@ -2808,7 +2810,7 @@ isr_wrapper249:
 	push $249 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper250
@@ -2819,7 +2821,7 @@ isr_wrapper250:
 	push $250 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper251
@@ -2830,7 +2832,7 @@ isr_wrapper251:
 	push $251 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper252
@@ -2841,7 +2843,7 @@ isr_wrapper252:
 	push $252 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper253
@@ -2852,7 +2854,7 @@ isr_wrapper253:
 	push $253 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper254
@@ -2863,7 +2865,7 @@ isr_wrapper254:
 	push $254 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 .local   isr_wrapper255
@@ -2874,7 +2876,7 @@ isr_wrapper255:
 	push $255 //
     call isr_asm //
 	add $0x10, %rsp // pop the interrupt number and the error code.
-    iret //
+    iretq //
 
 
 	.data

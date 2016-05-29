@@ -195,7 +195,10 @@ void * find_section_by_type(struct STAGE0BootModule * boot_modules, s_type64_e t
 	int sn = boot_modules->file_data->e_shnum;
 	struct Elf64SectionHeader * sh = (struct Elf64SectionHeader *) (((char*)boot_modules->file_data) + boot_modules->file_data->e_shoff);
 	int i = 0;
-	if (start_index) i = *start_index;
+	if (start_index) {
+		i = *start_index;
+		sh += i;
+	}
 	for (; i < sn; i++, sh++) {
 		if (sh->s_type == type) {
 			*size_out = sh->s_size;

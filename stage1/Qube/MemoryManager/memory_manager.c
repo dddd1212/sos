@@ -1,9 +1,6 @@
 #include "memory_manager.h"
 
-#define PTE(x) ((uint64*)(0xFFFFF68000000000 + (((((uint64)x) & 0x0000FFFFFFFFFFFF)>>12)<<3)))
-#define PDE(x) PTE(PTE(x))
-#define PPE(x) PTE(PDE(x))
-#define PXE(x) PTE(PPE(x))
+
 
 //addresses must start on PPE start area
 #define MEMORY_MANAGEMENT_START_ADDRESS (0xffffc00000000000)
@@ -217,3 +214,4 @@ void free_pages(void* addr) {
 	// TODO
 	return;
 }
+
