@@ -160,7 +160,7 @@ static void init_regions(KernelGlobalData* kgd) {
 	}
 }
 
-void init_memory_manager(KernelGlobalData* kgd) {
+void qkr_main(KernelGlobalData* kgd) {
 	__lgdt(&g_gdtr);
 	g_physical_pages_current = kgd->boot_info->physical_pages_current;
 	g_physical_pages_end = kgd->boot_info->physical_pages_end;
