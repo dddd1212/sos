@@ -111,7 +111,7 @@ static void set_bitmap(KernelGlobalData* kgd, REGION_TYPE region_type, MemoryReg
 	}
 }
 
-static void add_physical_page(MemoryRegion* region, void* v_address) {
+static void add_physical_page(MemoryRegion* region, void* v_address, uint64 specific_physical_addr) {
 	uint32 pde_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9);
 	uint32 ppe_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9 + 9);
 	if (region->PPE_use_count[ppe_offset] == 0) {
@@ -120,7 +120,12 @@ static void add_physical_page(MemoryRegion* region, void* v_address) {
 	if (region->PPE_use_count[pde_offset] == 0) {
 		*PDE(v_address) = pop_physical_page()|3;
 	}
-	*PTE(v_address) = pop_physical_page()|3;
+	if (specific_physical_addr == -1) {
+		*PTE(v_address) = pop_physical_page()|3;
+	}
+	else {
+		*PTE(v_address) = specific_physical_addr|3;
+	}
 	region->PPE_use_count[ppe_offset]++;
 	region->PPE_use_count[pde_offset]++;
 }
@@ -151,7 +156,7 @@ static void init_regions(KernelGlobalData* kgd) {
 
 		for (uint32 j = 0; j < g_regions[i].bitmap_size; j++) {
 			if (j & 0xFFF == 0) {
-				add_physical_page(&g_regions[MEMORY_MANAGEMENT], &g_regions[i].free_pages_bitmap[i]);
+				add_physical_page(&g_regions[MEMORY_MANAGEMENT], &g_regions[i].free_pages_bitmap[i],-1);
 			}
 			g_regions[MEMORY_MANAGEMENT].free_pages_bitmap[i] = 0x00;
 		}
@@ -171,7 +176,7 @@ void qkr_main(KernelGlobalData* kgd) {
 void* alloc_pages(REGION_TYPE region, uint32 size) {
 	uint8* addr = (uint8*)commit_pages(region, size);
 	for (uint8* cur = addr; cur < addr + size; cur += 0x1000) {
-		add_physical_page(&g_regions[region], cur);
+		add_physical_page(&g_regions[region], cur, -1);
 	}
 }
 
@@ -200,13 +205,17 @@ void* commit_pages(REGION_TYPE region_type, uint32 size) {
 		return (uint8*)region->start + 8 * 0x1000 * start_bit;
 	}
 }
-void assign_committed(void* addr, uint32 size) {
+
+void assign_committed(void* addr, uint32 size, uint64 specific_physical) {
 	MemoryRegion* region = &g_regions[0];
 	while (addr < region->start || addr > (void*)(((uint8*)region->start) + REGION_BITMAP_MAX_SIZE)) {
 		region++;
 	}
 	for (uint8* cur = addr; cur < ((uint8*)addr) + size; cur += 0x1000) {
-		add_physical_page(region, cur);
+		add_physical_page(region, cur, specific_physical);
+		if (specific_physical != -1) {
+			specific_physical += 0x1000;
+		}
 	}
 }
 
