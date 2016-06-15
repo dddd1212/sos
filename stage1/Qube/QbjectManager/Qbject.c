@@ -61,7 +61,7 @@ QHandle create_qbject(char * path, ACCESS access)
 	};
 
 	if (cur->create_qbject) {
-		QHandle h = cur->create_qbject(start, access, CREATE_QBJECT_FLAGS_SECOND_CHANCE); // second chance
+		h = cur->create_qbject(start, access, CREATE_QBJECT_FLAGS_SECOND_CHANCE); // second chance
 	}
 
 	spin_unlock(treelock);

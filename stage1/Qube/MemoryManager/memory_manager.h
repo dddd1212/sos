@@ -40,12 +40,10 @@ typedef struct {
 	uint16 PPE_use_count[(8*REGION_BITMAP_MAX_SIZE) / (0x200 * 0x200)];
 } MemoryRegion;
 
-EXPORT void qkr_main(KernelGlobalData* kgd);
+EXPORT QResult qkr_main(KernelGlobalData* kgd);
 EXPORT void* alloc_pages(REGION_TYPE region, uint32 size);
 EXPORT void* commit_pages(REGION_TYPE region, uint32 size);
-EXPORT void assign_committed(void* addr, uint32 size);
+EXPORT void assign_committed(void* addr, uint32 size, uint64 specific_physical);
 EXPORT void unassign_committed(void* addr, uint32 size);
 EXPORT void free_pages(void* addr);
-EXPORT void* kalloc(uint32 size);
-EXPORT void kfree(void* addr);
 #endif

@@ -54,3 +54,12 @@
 /stage1/Qube/_output
 /stage1/Qube/__build_all/__build_all.vcxproj.user
 /stage1/Qube/.vs/config/applicationhost.config
+/stage1/Qube/screen/x64/Release/screen.tlog/CL.command.1.tlog
+/stage1/Qube/screen/x64/Release/screen.tlog/unsuccessfulbuild
+/stage1/Qube/screen/x64/Release/screen.log
+/stage1/Qube/screen/x64/Release/vc140.pdb
+/stage1/Qube/libc/x64/Release/vc140.pdb
+/stage1/Qube/libc/x64/Release/libc.log
+/stage1/Qube/libc/x64/Release/libc.tlog/unsuccessfulbuild
+/stage1/Qube/libc/x64/Release/libc.tlog/CL.command.1.tlog
+/stage1/Qube/gdb_debugger/x64/Release/gdb_debugger.log

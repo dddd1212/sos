@@ -1,14 +1,14 @@
 #ifndef __SPIN_LOCK_H__
 #define __SPIN_LOCK_H__
 
-#include "intrinsics.h""
+#include "intrinsics.h"
 typedef int volatile * SpinLock;
 
 void inline spin_init(SpinLock p) {
 	*p = 0;
 }
 
-void inline spin_lock(SpinLock p)
+static inline void spin_lock(SpinLock p)
 {
 	while (!__qube_sync_bool_compare_and_swap(p, 0, 1))
 	{
@@ -16,7 +16,7 @@ void inline spin_lock(SpinLock p)
 	}
 }
 
-void inline spin_unlock(SpinLock p)
+static inline void spin_unlock(SpinLock p)
 {
 	__qube_memory_barrier();
 	*p = 0;

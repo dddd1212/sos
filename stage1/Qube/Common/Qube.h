@@ -6,6 +6,7 @@
 
 #ifdef VS_EDITOR
 #define __attribute__(x)
+#define __asm__(x)
 #endif
 
 // C general defines:

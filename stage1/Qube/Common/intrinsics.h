@@ -120,5 +120,4 @@ static inline void __sti() {
 	return;
 }
 #define __int(n) __asm__("int %0" : : "N"((n)) : "cc", "memory");
-
 #endif

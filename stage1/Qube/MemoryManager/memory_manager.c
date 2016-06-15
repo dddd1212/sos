@@ -135,7 +135,7 @@ static void init_regions(KernelGlobalData* kgd) {
 
 
 	for (uint32 i = MEMORY_MANAGEMENT; i < NUM_OF_REGION_TYPE; i++) {
-		g_regions[i].free_pages_bitmap = memory_management_region_start_address + REGION_BITMAP_MAX_SIZE;
+		g_regions[i].free_pages_bitmap = memory_management_region_start_address + i*REGION_BITMAP_MAX_SIZE;
 		g_regions[i].bitmap_size = get_region_bitmap_size(i);
 		g_regions[i].start = get_region_start_address(kgd,i);
 		// TODO: is this needed? or the loader already zeros this?
@@ -154,23 +154,21 @@ static void init_regions(KernelGlobalData* kgd) {
 			}
 		}
 
-		for (uint32 j = 0; j < g_regions[i].bitmap_size; j++) {
-			if (j & 0xFFF == 0) {
-				add_physical_page(&g_regions[MEMORY_MANAGEMENT], &g_regions[i].free_pages_bitmap[i],-1);
-			}
-			g_regions[MEMORY_MANAGEMENT].free_pages_bitmap[i] = 0x00;
+		for (uint32 j = 0; j < g_regions[i].bitmap_size; j+=PAGE_SIZE) {
+			add_physical_page(&g_regions[MEMORY_MANAGEMENT], &g_regions[i].free_pages_bitmap[j],-1);
 		}
 
 		set_bitmap(kgd, i, &g_regions[i]);
 	}
 }
 
-void qkr_main(KernelGlobalData* kgd) {
+QResult qkr_main(KernelGlobalData* kgd) {
 	__lgdt(&g_gdtr);
 	g_physical_pages_current = kgd->boot_info->physical_pages_current;
 	g_physical_pages_end = kgd->boot_info->physical_pages_end;
 	g_physical_pages_start = kgd->boot_info->physical_pages_start;
 	init_regions(kgd);
+	return QSuccess;
 }
 
 void* alloc_pages(REGION_TYPE region, uint32 size) {
@@ -226,13 +224,5 @@ void unassign_committed(void* addr, uint32 size) {
 
 void free_pages(void* addr) {
 	// TODO
-	return;
-}
-
-void* kalloc(uint32 size) {
-	return NULL;
-}
-
-void kfree(void* addr) {
 	return;
 }

@@ -1,91 +1,149 @@
+#include "../Common/Qube.h"
+#include "heap.h"
+
+//--------imported functions--------
+#include "memory_manager.h"
+#include "../Common/spin_lock.h"
+//----------------------------------
+
+#define BLOCK_SIZE (0x10)
 // Configurable values:
-#define BLOCK_SIZE (0x20)
-#define MAX_ALLOC_SIZE (PAGE_SIZE*2) // must be multiple of BLOCK_SIZE
-#define REGION_SIZE (MAX_ALLOC_SIZE * 0x1000)
+#define CLUSTER_SIZE (0x100*PAGE_SIZE) // must be: (a) power of 2. (b) multiple of PAGE_SIZE. (c) less or equal to 0x10000*BLOCK_SIZE.
+#define CLUSTERS_AREA_SIZE (0x10*CLUSTER_SIZE)
+#define MAX_ALLOC_IN_CLUSTER (PAGE_SIZE*2 - BLOCK_SIZE) // must be: (a) multiple of BLOCK_SIZE. (b) less than or equal to (CLUSTERS_AREA_SIZE-BLOCK_SIZE).
+
+//----------------------------------
+#define ALLOC_PAGES(x) alloc_pages(KHEAP, PAGE_SIZE*x)
+#define FREE_PAGES(x) free_pages(x)
+#define COMMIT_PAGES(x) commit_pages(KHEAP, PAGE_SIZE*x)
+#define ASSIGN_COMMITED(addr, num_of_pages) assign_committed(addr, 0x1000*num_of_pages)
+#define UNASSIGN_COMMITED(addr, num_of_pages) unassign_committed(addr, 0x1000*num_of_pages)
+
+#define HEAP_LOCK SpinLock
+#define INIT_LOCK(x) spin_init(x)
+#define LOCK(x) spin_lock(x)
+#define UNLOCK(x) spin_unlock(x)
+//----------------------------------
+
+
 
 // Non-config values:
-#define FREE_LIST_ARRAY_SIZE (MAX_ALLOC_SIZE/BLOCK_SIZE + 1)
+#define NUM_OF_BLOCKS(x) ((x+BLOCK_SIZE-1)/BLOCK_SIZE)
+#define FREE_LIST_ARRAY_SIZE (MAX_ALLOC_IN_CLUSTER/BLOCK_SIZE + 1)
+#define CLUSTERS_BITMAP_SIZE (((CLUSTERS_AREA_SIZE / CLUSTER_SIZE) + 7) / 8)
 
 
 // Every chunk has at least 8 bytes header with the heap cookie.
 // The whole header is maximum of BLOCK_SIZE
-struct FreeChunk {
-    int64 heap_cookie;
-    int16 is_free;
-    int16 size_in_blocks;
-    
-    int16 prev_is_free;
-    int16 prev_size_in_blocks;
-    
-    struct FreeChunk * next;
-    struct FreeChunk * prev;
+struct Chunk_;
+typedef struct Chunk_{
+    uint64 cookie;
+    uint16 is_free;
+    uint16 size_in_blocks;
+    //int16 prev_is_free;
+    uint16 prev_size_in_blocks;
+// those fields exist on free chunk only.
+    struct Chunk_ * next;
+    struct Chunk_ * prev;
+} __attribute__((packed)) Chunk;
+
+typedef struct {
+	Chunk * free_lists[FREE_LIST_ARRAY_SIZE]; // number of free_lists.
+	void* clusters_area;
+	uint64 cookie;
+	uint32 stat_num_of_big_allocs;
+	uint32 stat_total_user_alloc;
+	uint32 stat_total_mem_alloc;
+	uint32 stat_num_of_allocs;
+	uint32 stat_num_of_splits;
+	uint32 stat_num_of_block_alloc[FREE_LIST_ARRAY_SIZE];
+	uint32 stat_num_of_frees;
+	uint32 stat_num_of_block_free[FREE_LIST_ARRAY_SIZE];
+} HeapStruct;
+
+HEAP_LOCK g_heap_lock;
+HeapStruct g_heap_struct;
+uint8 clusters_bitmap[CLUSTERS_BITMAP_SIZE];
+
+QResult heap_init() {
+	INIT_LOCK(g_heap_lock);
+	void* clusters_area;
+	clusters_area = COMMIT_PAGES(NUM_OF_PAGES(CLUSTERS_AREA_SIZE));
+	if (clusters_area && ((((uint64)clusters_area)&(CLUSTER_SIZE - 1)) == 0)) {
+		// TODO: we dont realy should fail if cluster_area is not aligned to CLUSTER_SIZE.
+		g_heap_struct.clusters_area = clusters_area;
+		return QSuccess;
+	}
+	else {
+		return QFail;
+	}
 }
 
-struct HeapStruct {
-    void * region; // pointer to the first mapped region.
-    struct FreeChunk * free_lists[FREE_LIST_ARRAY_SIZE] // number of free_lists.
-    
-}
-
-static KernelGlobaldata * g_kgd;
-void * system_allocate_memory(int size) {
-    // call the system allocator
-}
-
-void system_free_memory(void * addr) {
-    // call the system allocator
-}
-
-
-
-struct HeapStruct * get_heap_struct() {
-    // If we in kernel mode, return the heap_struct from the KernelGlobalData.
-    return g_kgd->heap_struct;
-}
-
-
-int heap_init(KernelGlobalData * kgd) {
-    // For now we use the KernelGlobalData, but actually we want to use some USER-KERNEL same struct to
-    // make heap to every process.
-    ASSERT (sizeof(FreeChunk) == BLOCK_SIZE);
-    g_kgd = kgd;
-}
-
-void heap_corrupt(FreeChunk * free_chunk) {
+void heap_corrupt(Chunk * free_chunk) {
     // TODO - implement
 }
 
-__inline__ void validate_chunk(FreeChunk * chunk, HeapStruct * hs, int free_chunk_index, bool is_free) {
-    if (free_chunk->cookie != hs->cookie) heap_corrupt(free_chunk);
-    if (chunk->size_in_blocks != free_chunk_index && i < FREE_LIST_ARRAY_SIZE - 1) { // heap corrupt!
-        heap_corrupt(chunk);
-    }
-    if (chunk->is_free != is_free) heap_corrupt(chunk);
+void * alloc_new_cluster() {
+	uint32 i, j;
+	for (i = 0; i < CLUSTERS_BITMAP_SIZE; i++) {
+		if (clusters_bitmap[i] != 0xFF) {
+			break;
+		}
+	}
+	if (clusters_bitmap[i] != 0xFF) {
+		uint8 x = clusters_bitmap[i];
+		for (j = 0; j < 8; j++) {
+			if (x&(1 << j)) {
+				break;
+			}
+		}
+		clusters_bitmap[i] |= (1 << j);
+		return (void*)((uint8*)g_heap_struct.clusters_area + (8 * i + j)*CLUSTER_SIZE);
+	}
+	return NULL;
 }
 
-__inline__ void write_chunk_header(FreeChunk * chunk, HeapStruct * hs, int size_in_blocks, bool is_free) {
-    chunk->cookie = hs->cookie;
-    chunk->size_in_blocks = size_in_blocks;
-    chunk->is_free = is_free;
-    FreeChunk * next_chunk = chunk + size_in_blocks + 1
-    if (is_in_heap(next_chunk)) { // There is next chunk (We not the last chunk in the heap)
-        next_chunk->prev_size_in_blocks = size_in_blocks;
-        next_chunk->prev_is_free = is_free;
-    }
+void free_cluster(void* addr) {
+	uint32 cluster_index = ((uint64)addr - (uint64)g_heap_struct.clusters_area) / CLUSTER_SIZE;
+	clusters_bitmap[cluster_index / 8] &= ~(1 << (cluster_index % 8));
 }
 
-__inline__ void add_to_list(FreeChunk * chunk, HeapStruct * hs, int index) {
+inline Chunk* get_next_chunk(Chunk* c) {
+	Chunk* next = (Chunk*)((uint64)c + BLOCK_SIZE * (c->size_in_blocks + 1));
+	if (((uint64)next) & (CLUSTER_SIZE - 1)) {
+		return next;
+	}
+	return NULL;
+}
+
+inline Chunk* get_prev_chunk(Chunk* c) {
+	if (c->prev_size_in_blocks == 0) {
+		return NULL;
+	}
+	Chunk* prev = (Chunk*)((uint64)c + BLOCK_SIZE * (c->prev_size_in_blocks + 1));
+	return prev;
+}
+
+void inline validate_chunk(Chunk * chunk, int size_in_blocks, BOOL is_free) {
+	if (chunk->cookie != g_heap_struct.cookie) { heap_corrupt(chunk); }
+	if (chunk->size_in_blocks != size_in_blocks) { heap_corrupt(chunk); }
+	if (chunk->is_free != is_free) { heap_corrupt(chunk); }
+}
+
+void inline add_to_list(Chunk * chunk, uint32 index) {
     chunk->prev = NULL;
-    chunk->next = hs->free_lists[index]
-    hs->free_lists[index] = chunk;
+	chunk->next = g_heap_struct.free_lists[index];
+    g_heap_struct.free_lists[index] = chunk;
 }
-__inline__ void remove_from_list(FreeChunk * chunk, HeapStruct * hs, int index) {
+
+void inline remove_from_list(Chunk * chunk, uint32 index) {
     if (chunk->prev) {
         if (chunk->prev->next != chunk) heap_corrupt(chunk);  
         chunk->prev->next = chunk->next;
-    } else { // it is the first element in the list
-        if (hs->free_lists[index] != chunk) heap_corrupt(chunk);
-        hs->free_lists[index] = chunk->next;
+    } 
+	else { // it is the first element in the list
+        if (g_heap_struct.free_lists[index] != chunk) heap_corrupt(chunk);
+        g_heap_struct.free_lists[index] = chunk->next;
     }
     if (chunk->next) {
         if (chunk->next->prev != chunk) heap_corrupt(chunk);
@@ -93,96 +151,129 @@ __inline__ void remove_from_list(FreeChunk * chunk, HeapStruct * hs, int index) 
     }
     // TODO: do we want to zero the chunk->next and chunk->prev to prevent information disclosure?
 }
-void * malloc(int size) {
-    // TODO: add lock.
-    HeapStruct * hs = get_heap_struct();
-    if (size > MAX_ALLOC_SIZE) {
-        hs->stat_num_of_big_allocs++;
-        return system_allocate_memory(size);
+
+void * kheap_alloc(uint32 size) {
+	LOCK(g_heap_lock);
+    if (size > MAX_ALLOC_IN_CLUSTER) {
+        g_heap_struct.stat_num_of_big_allocs++;
+        return ALLOC_PAGES(NUM_OF_PAGES(size));
     }
     
     void * ret = NULL;
-    ret = _malloc_int(size);
-    if (ret == NULL) return ret;
-    // update some stats:
-    hs->stat_total_user_alloc += size;
-    hs->stat_total_mem_alloc += size / BLOCK_SIZE * BLOCK_SIZE + sizeof(FreeChunk);
-    hs->stat_num_of_allocs++;
-    hs->stat_num_of_block_alloc[size / BLOCK_SIZE]++;
-    return ret;
-}
-    
-void * _malloc_int(size) {
-    // TODO: Do we want to add cache?
-    int free_list_index = size / BLOCK_SIZE;
-    // First try to find in the free list:
-    FreeChunk * chunk = hs->free_list[free_list_index];
-    if (chunk != NULL) {
-        validate_chunk(chunk, hs, free_list_index, TRUE);
-        remove_from_list(chunk, hs, free_list_index);
-        write_chunk_header(chunk, hs, free_list_index, FALSE);
-        return (void *)&(chunk+1); // return the pointer to the user.
-    }
-    // If we not found in the free list, search in the next lists:
-    for (int i = free_list_index + 1; i < FREE_LIST_ARRAY_SIZE; i++) {
-        chunk = hs->free_list[i];
-        if (chunk != NULL) { // we found one! split the buffer.
-            hs->stat_num_of_splits++;
-            validate_chunk(chunk, hs, i, TRUE);
-            remove_from_list(chunk, hs, i);
-            // Dont forget that we asserted that sizeof(FreeChunk) == BLOCK_SIZE
-            FreeChunk * reminder = ((char*)(chunk + 1)) + free_list_index * BLOCK_SIZE; // always has place to the header
-            int reminder_index = chunk->size_in_blocks - free_list_index - 1;
-            write_chunk_header(reminder, hs, reminder_index, TRUE); 
-            if (reminder_index >= FREE_LIST_ARRAY_SIZE - 1) { // We need to put the reminder in the last list.
-                remindex_index = FREE_LIST_ARRAY_SIZE - 1;
-            }
-            write_chunk_header(chunk, hs, free_list_index, FALSE); // allocated.
-            add_to_list(reminder, hs, reminder_index);
-            return (void*)&(chunk+1);
-        }
-    }
-    // If we not found any free space, get more memory:
-    // TODO - implement it, if needed.
-    return NULL;
+	uint32 num_of_blocks = NUM_OF_BLOCKS(size);
+	Chunk *chunk = NULL;
+	for (uint32 i = num_of_blocks; i < FREE_LIST_ARRAY_SIZE; i++) {
+		chunk = g_heap_struct.free_lists[i];
+		if (chunk) {
+			validate_chunk(chunk, i, TRUE);
+			g_heap_struct.free_lists[i] = chunk->next;
+			chunk->next->prev = NULL;
+			break;
+		}
+	}
+	
+	if (chunk == NULL) {
+		for (chunk = g_heap_struct.free_lists[0]; chunk; chunk = chunk->next) {
+			if (chunk->size_in_blocks >= num_of_blocks) {
+				validate_chunk(chunk, chunk->size_in_blocks, TRUE);
+				remove_from_list(chunk,0);
+				break;
+			}
+		}
+	}
+	if (chunk == NULL) {
+		chunk = (Chunk*)alloc_new_cluster();
+		chunk->cookie = g_heap_struct.cookie;
+		chunk->is_free = TRUE;
+		chunk->prev_size_in_blocks = 0;
+		chunk->size_in_blocks = CLUSTER_SIZE / BLOCK_SIZE - 1;
+		chunk->prev = NULL;
+		chunk->next = g_heap_struct.free_lists[0];
+		g_heap_struct.free_lists[0] = chunk;
 
+	}
+	if (chunk == NULL) {
+		return NULL;
+	}
+	chunk->is_free = FALSE;
+	if ((chunk->size_in_blocks - num_of_blocks) > 1) {
+		Chunk* next_chunk = get_next_chunk(chunk);
+		Chunk* reminder = (Chunk*)(((uint8*)chunk + BLOCK_SIZE) + num_of_blocks * BLOCK_SIZE); // always has place to the header
+		uint32 reminder_index = chunk->size_in_blocks - num_of_blocks - 1;
+		reminder->cookie = g_heap_struct.cookie;
+		reminder->size_in_blocks = reminder_index;
+		reminder->is_free = TRUE;
+		reminder->prev_size_in_blocks = num_of_blocks;
+
+		chunk->size_in_blocks = num_of_blocks;
+		if (reminder_index >= FREE_LIST_ARRAY_SIZE) {
+			reminder_index = 0;
+		}
+		reminder->prev = NULL;
+		reminder->next = g_heap_struct.free_lists[reminder_index];
+		g_heap_struct.free_lists[reminder_index] = reminder;
+
+		if (next_chunk) {
+			next_chunk->prev_size_in_blocks = reminder_index;
+		}
+	}
+	g_heap_struct.stat_total_mem_alloc += ((num_of_blocks + 1)*BLOCK_SIZE);
+	return (void*)chunk;
 }
 
-void free(void * address) {
-    if (address == NULL) return;
-    FreeChunk * chunk = ((FreeChunk *) address) - 1;
-    int num_of_blocks = chunk->size_in_blocks;
-    validate_chunk(chunk, hs, num_of_blocks); // We cant really validate the size.
+void kheap_free(void * address) {
+	if ((address < g_heap_struct.clusters_area) || (address >= (void*)((uint64)g_heap_struct.clusters_area + CLUSTERS_AREA_SIZE))){
+		FREE_PAGES(address);
+		return;
+	}
+    Chunk * chunk = (Chunk*)((uint8*) address - BLOCK_SIZE);
+    uint32 num_of_blocks = chunk->size_in_blocks;
+    g_heap_struct.stat_num_of_block_free[num_of_blocks]++;
+	// validate chunk
+	if (chunk->cookie != g_heap_struct.cookie) { heap_corrupt(chunk); }
+	if (chunk->is_free != FALSE) { heap_corrupt(chunk); }
+
+	Chunk* next = get_next_chunk(chunk);
+	Chunk* prev = get_prev_chunk(chunk);
+
     // consolidates:
-    if (!is_chunk_first(chunk)) { // There is something before it.
-        if (chunk->prev_is_free) {
-            FreeChunk * prev = chunk - chunk->prev_size_in_blocks - 1;
-            if (prev->is_free != chunk->prev_is_free) heap_corrupt(chunk);
-            if (prev->size_in_blocks != chunk->prev_size_in_blocks) heap_corrupt(chunk);
-            validate_chunk(prev, hs, prev->size_in_blocks); // We cant really validate the size.
+    if (next) { // There is next chunk. We not the last one.
+		// validate
+		if (next->cookie != g_heap_struct.cookie) { heap_corrupt(chunk); }
+        if (next->is_free) {
             // consolidate:
-            remove_from_list(prev, hs, prev->size_in_blocks);
-            num_of_blocks += prev->num_of_blocks + 1 // +1 for the header.
+            remove_from_list(next, next->size_in_blocks);
+			num_of_blocks += next->size_in_blocks + 1; // +1 for the header.
+        } 
+    }
+
+
+
+    if (prev) { // There is something before it.
+		// validate
+		if (prev->cookie != g_heap_struct.cookie) { heap_corrupt(chunk); }
+        if (prev->is_free) {
+            // consolidate:
+            remove_from_list(prev, prev->size_in_blocks);
+			num_of_blocks += prev->size_in_blocks + 1; // +1 for the header.
             chunk = prev;
         }
     }
-    FreeChunk * next = chunk + num_of_blocks + 1;
-    if (chunk_in_heap(next)) { // There is next chunk. We not the last one.
-        if (next->is_free) {
-            validate_chunk(next, hs, next->size_in_blocks); // We cant really validate the size.
-            // consolidate:
-            remove_from_list(next, hs, next->size_in_blocks);
-            num_of_blocks += next->size_in_blocks + 1 // +1 for the header.
-        } 
-    }
+    
     // Write the header:
-    write_chunk_header(chunk, hs, num_of_blocks, TRUE);
-    if (num_of_blocks >= FREE_LIST_ARRAY_SIZE-1) {
-        num_of_blocks = FREE_LIST_ARRAY_SIZE-1;
-    }
-    add_to_list(chunk, hs, num_of_blocks);
-    hs->stat_total_mem_alloc -= (num_of_blocks*BLOCK_SIZE + sizeof(FreeChunk));
-    hs->stat_num_of_frees++;
-    hs->stat_num_of_block_free[size / BLOCK_SIZE]++;
+	chunk->size_in_blocks = num_of_blocks;
+	chunk->is_free = TRUE;
+	if (get_next_chunk(chunk)) {
+		Chunk * next_chunk = get_next_chunk(chunk);
+		next_chunk->prev_size_in_blocks = num_of_blocks;
+	}
+	if (chunk->size_in_blocks < (CLUSTER_SIZE / BLOCK_SIZE - 1)) {
+		add_to_list(chunk, num_of_blocks);
+	}
+	else {
+		free_cluster(chunk);
+	}
+    g_heap_struct.stat_total_mem_alloc -= ((num_of_blocks+1)*BLOCK_SIZE);
+    g_heap_struct.stat_num_of_frees++;
     return;
 }

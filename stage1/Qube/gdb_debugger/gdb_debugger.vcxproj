@@ -147,6 +147,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeOutput>
     </NMakeOutput>
+    <NMakeBuildCommandLine>python make.py build</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>python make.py rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>python make.py clean</NMakeCleanCommandLine>
   </PropertyGroup>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
