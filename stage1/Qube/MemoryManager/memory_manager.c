@@ -33,7 +33,7 @@ static uint64 pop_physical_page() {
 
 static uint64 push_physical_page(uint64 page) {
 	g_physical_pages_current--;
-	*g_physical_pages_current = page & 0xFFFFFF000;
+	*g_physical_pages_current = page & 0xFFFFFFFFFF000;
 }
 
 BOOL get_bit(uint8* stream, uint32 bit_num) {
@@ -117,17 +117,32 @@ static void add_physical_page(MemoryRegion* region, void* v_address, uint64 spec
 	if (region->PPE_use_count[ppe_offset] == 0) {
 		*PPE(v_address) = pop_physical_page()|3;
 	}
-	if (region->PPE_use_count[pde_offset] == 0) {
+	if (region->PDE_use_count[pde_offset] == 0) {
 		*PDE(v_address) = pop_physical_page()|3;
+		region->PPE_use_count[ppe_offset]++;
 	}
 	if (specific_physical_addr == -1) {
 		*PTE(v_address) = pop_physical_page()|3;
 	}
 	else {
-		*PTE(v_address) = specific_physical_addr|3;
+		*PTE(v_address) = specific_physical_addr|(3| FLAG_OWNED_PAGE);
 	}
-	region->PPE_use_count[ppe_offset]++;
-	region->PPE_use_count[pde_offset]++;
+	region->PDE_use_count[pde_offset]++;
+}
+
+static void remove_physical_page(MemoryRegion* region, void* v_address) {
+	uint32 pde_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9);
+	uint32 ppe_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9 + 9);
+	if (!((*PTE(v_address)) & FLAG_OWNED_PAGE)) {
+		push_physical_page(*PTE(v_address));
+	}
+	*PTE(v_address) = 0;
+	region->PDE_use_count[pde_offset]--;
+	if (region->PDE_use_count[pde_offset] == 0) {
+		push_physical_page(*PDE(v_address));
+		*PDE(v_address) = 0;
+		region->PPE_use_count[ppe_offset]--;
+	}
 }
 
 static void init_regions(KernelGlobalData* kgd) {
@@ -218,11 +233,25 @@ void assign_committed(void* addr, uint32 size, uint64 specific_physical) {
 }
 
 void unassign_committed(void* addr, uint32 size) {
-	// TODO
-	return;
+	MemoryRegion* region = &g_regions[0];
+	while (addr < region->start || addr > (void*)(((uint8*)region->start) + REGION_BITMAP_MAX_SIZE)) {
+		region++;
+	}
+	for (uint8* cur = addr; cur < ((uint8*)addr) + size; cur += 0x1000) {
+		remove_physical_page(region, cur);
+	}
 }
 
 void free_pages(void* addr) {
-	// TODO
+	MemoryRegion* region = &g_regions[0];
+	while (addr < region->start || addr >(void*)(((uint8*)region->start) + REGION_BITMAP_MAX_SIZE)) {
+		region++;
+	}
+	uint32 start_bit;
+	start_bit = ((uint64)addr - (uint64)region->start) / 0x1000;
+	for (uint32 cur_bit = start_bit; get_bit(region->free_pages_bitmap, cur_bit); cur_bit++,(uint64)addr+=0x1000) {
+		remove_physical_page(region, addr);
+		set_bit(region->free_pages_bitmap, cur_bit, 0);
+	}
 	return;
 }
