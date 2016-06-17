@@ -63,3 +63,8 @@
 /stage1/Qube/libc/x64/Release/libc.tlog/unsuccessfulbuild
 /stage1/Qube/libc/x64/Release/libc.tlog/CL.command.1.tlog
 /stage1/Qube/gdb_debugger/x64/Release/gdb_debugger.log
+/stage1/Qube/qkr_interrupts/x64/Release/qkr_interrupts.tlog/CL.command.1.tlog
+/stage1/Qube/qkr_interrupts/x64/Release/qkr_interrupts.tlog/unsuccessfulbuild
+/stage1/Qube/qkr_interrupts/x64/Release/qkr_interrupts.log
+/stage1/Qube/qkr_interrupts/x64/Release/vc140.pdb
+/stage1/Qube/kernel/x64/Release/kernel.log

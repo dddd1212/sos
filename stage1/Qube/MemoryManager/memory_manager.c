@@ -112,8 +112,8 @@ static void set_bitmap(KernelGlobalData* kgd, REGION_TYPE region_type, MemoryReg
 }
 
 static void add_physical_page(MemoryRegion* region, void* v_address, uint64 specific_physical_addr) {
-	uint32 pde_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9);
-	uint32 ppe_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9 + 9);
+	uint32 pde_offset = (((uint8*)v_address) - ((uint8*)region->start)) >> (12 + 9);
+	uint32 ppe_offset = (((uint8*)v_address) - ((uint8*)region->start)) >> (12 + 9 + 9);
 	if (region->PPE_use_count[ppe_offset] == 0) {
 		*PPE(v_address) = pop_physical_page()|3;
 	}
@@ -131,8 +131,8 @@ static void add_physical_page(MemoryRegion* region, void* v_address, uint64 spec
 }
 
 static void remove_physical_page(MemoryRegion* region, void* v_address) {
-	uint32 pde_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9);
-	uint32 ppe_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9 + 9);
+	uint32 pde_offset = (((uint8*)v_address) - ((uint8*)region->start)) >> (12 + 9);
+	uint32 ppe_offset = (((uint8*)v_address) - ((uint8*)region->start)) >> (12 + 9 + 9);
 	if (!((*PTE(v_address)) & FLAG_OWNED_PAGE)) {
 		push_physical_page(*PTE(v_address));
 	}
@@ -154,18 +154,18 @@ static void init_regions(KernelGlobalData* kgd) {
 		g_regions[i].bitmap_size = get_region_bitmap_size(i);
 		g_regions[i].start = get_region_start_address(kgd,i);
 		// TODO: is this needed? or the loader already zeros this?
-		for (uint32 j = 0; j < sizeof(g_regions[i].PPE_use_count); j++) {
+		for (uint32 j = 0; j < sizeof(g_regions[i].PPE_use_count) / sizeof(g_regions[i].PPE_use_count[0]); j++) {
 			g_regions[i].PPE_use_count[j] = 0;
 		}
 
-		for (uint32 j = 0; j < sizeof(g_regions[i].PDE_use_count); j++) {
+		for (uint32 j = 0; j < sizeof(g_regions[i].PDE_use_count) / sizeof(g_regions[i].PDE_use_count[0]); j++) {
 			g_regions[i].PDE_use_count[j] = 0;
 		}
 
 		// TODO: zero the pages
 		for (uint64* pxe = PXE(g_regions[i].start); pxe <= PXE(((uint8*)(g_regions[i].start)) + (uint64)REGION_BITMAP_MAX_SIZE * 8 * 0x1000); pxe++) {
 			if (*pxe == 0) {
-				*pxe = pop_physical_page();
+				*pxe = pop_physical_page() | 3;
 			}
 		}
 
@@ -183,6 +183,7 @@ QResult qkr_main(KernelGlobalData* kgd) {
 	g_physical_pages_end = kgd->boot_info->physical_pages_end;
 	g_physical_pages_start = kgd->boot_info->physical_pages_start;
 	init_regions(kgd);
+	init_kernel_heap();
 	return QSuccess;
 }
 
@@ -249,8 +250,9 @@ void free_pages(void* addr) {
 	}
 	uint32 start_bit;
 	start_bit = ((uint64)addr - (uint64)region->start) / 0x1000;
-	for (uint32 cur_bit = start_bit; get_bit(region->free_pages_bitmap, cur_bit); cur_bit++,(uint64)addr+=0x1000) {
-		remove_physical_page(region, addr);
+	uint8* cur_page = (uint8*)addr;
+	for (uint32 cur_bit = start_bit; get_bit(region->free_pages_bitmap, cur_bit); cur_bit++,cur_page+=0x1000) {
+		remove_physical_page(region, (void*)cur_page);
 		set_bit(region->free_pages_bitmap, cur_bit, 0);
 	}
 	return;

@@ -20,9 +20,10 @@
 #define UNASSIGN_COMMITED(addr, num_of_pages) unassign_committed(addr, 0x1000*num_of_pages)
 
 #define HEAP_LOCK SpinLock
-#define INIT_LOCK(x) spin_init(x)
-#define LOCK(x) spin_lock(x)
-#define UNLOCK(x) spin_unlock(x)
+#define INIT_LOCK(x) //spin_init(&x)
+#define LOCK(x) //spin_lock(&x)
+#define UNLOCK(x) //spin_unlock(&x)
+
 //----------------------------------
 
 
@@ -65,10 +66,10 @@ HEAP_LOCK g_heap_lock;
 HeapStruct g_heap_struct;
 uint8 clusters_bitmap[CLUSTERS_BITMAP_SIZE];
 
-QResult heap_init() {
+QResult HEAP_INIT_FUNC() {
 	INIT_LOCK(g_heap_lock);
 	void* clusters_area;
-	clusters_area = COMMIT_PAGES(NUM_OF_PAGES(CLUSTERS_AREA_SIZE));
+	clusters_area = commit_pages(KHEAP, PAGE_SIZE*NUM_OF_PAGES(CLUSTERS_AREA_SIZE));//COMMIT_PAGES(NUM_OF_PAGES(CLUSTERS_AREA_SIZE));
 	if (clusters_area && ((((uint64)clusters_area)&(CLUSTER_SIZE - 1)) == 0)) {
 		// TODO: we dont realy should fail if cluster_area is not aligned to CLUSTER_SIZE.
 		g_heap_struct.clusters_area = clusters_area;
@@ -152,7 +153,7 @@ void inline remove_from_list(Chunk * chunk, uint32 index) {
     // TODO: do we want to zero the chunk->next and chunk->prev to prevent information disclosure?
 }
 
-void * kheap_alloc(uint32 size) {
+void * HEAP_ALLOC_FUNC(uint32 size) {
 	LOCK(g_heap_lock);
     if (size > MAX_ALLOC_IN_CLUSTER) {
         g_heap_struct.stat_num_of_big_allocs++;
@@ -221,7 +222,7 @@ void * kheap_alloc(uint32 size) {
 	return (void*)chunk;
 }
 
-void kheap_free(void * address) {
+void HEAP_FREE_FUNC(void * address) {
 	if ((address < g_heap_struct.clusters_area) || (address >= (void*)((uint64)g_heap_struct.clusters_area + CLUSTERS_AREA_SIZE))){
 		FREE_PAGES(address);
 		return;

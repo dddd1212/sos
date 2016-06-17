@@ -3,7 +3,7 @@
 #include "../Common/Qube.h"
 #define REGION_BITMAP_MAX_SIZE 0x100000
 #define FLAG_OWNED_PAGE (1<<9)
-
+#include "heap.h"
 
 typedef struct {
 	uint16 limit_low;
@@ -48,4 +48,5 @@ EXPORT void* commit_pages(REGION_TYPE region, uint32 size);
 EXPORT void assign_committed(void* addr, uint32 size, uint64 specific_physical);
 EXPORT void unassign_committed(void* addr, uint32 size);
 EXPORT void free_pages(void* addr);
+
 #endif
