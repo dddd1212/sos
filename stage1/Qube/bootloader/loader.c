@@ -170,6 +170,7 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 	}
 #endif
 	hack_for_gdb2();
+	set_boot_info(boot_loader_allocator, kgd->boot_info);
 	// Finally, call to the entry points:
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
 		

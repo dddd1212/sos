@@ -40,6 +40,7 @@ void _start() {
 	// CR: there is one nonvolatile alloc for kgd + modules-list + modules-data, but isn't the module-data should be volatile?
 	// CR COMPLETE: Gilad - Done.
 	kgd = (KernelGlobalData *)mem_alloc(&allocator, alloc_bytes, FALSE);
+	kgd->boot_info = (BootInfo *)mem_alloc(&allocator, sizeof(BootInfo), FALSE);
 	alloc_bytes = 0;
 	// CR: ret set to NULL...
 	if (kgd == NULL) {

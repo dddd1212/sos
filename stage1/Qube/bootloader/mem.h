@@ -31,6 +31,7 @@ typedef enum {
 }PAGE_ACCESS;
 
 int32 init_allocator(BootLoaderAllocator *allocator);
+void set_boot_info(BootLoaderAllocator *allocator, BootInfo* boot_info);
 void* mem_alloc(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile);
 
 // commit and allocate 'size' bytes with the allocator 'allocator' using the 'specific_phys_addr' physical address.
