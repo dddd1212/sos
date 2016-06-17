@@ -1,69 +1,11 @@
 ﻿  x86_64-elf-gcc.exe -c *.c -fpic -fvisibility=hidden -g -o qbject_manager.o
-  In file included from ../Common/Qube.h:100:0,
-                   from Qbject.h:3,
-                   from Qbject.c:1:
-  ../Common/intrinsics.h: In function 'spin_lock':
-  ../Common/intrinsics.h:22:44: warning: passing argument 1 of '__qube_sync_bool_compare_and_swap' discards 'volatile' qualifier from pointer target type [-Wdiscarded-qualifiers]
-    while (!__qube_sync_bool_compare_and_swap(p, 0, 1))
-                                              ^
-  ../Common/intrinsics.h:10:20: note: expected 'void *' but argument is of type 'SpinLock {aka volatile int *}'
-   static inline BOOL __qube_sync_bool_compare_and_swap(void *p, int old_val, int new_val) __attribute__((always_inline));
-                      ^
-  ../Common/intrinsics.h: In function '__qube_mm_pause':
-  ../Common/intrinsics.h:38:2: warning: implicit declaration of function '_mm_pause' [-Wimplicit-function-declaration]
-    _mm_pause();
-    ^
-  ../Common/intrinsics.h: At top level:
-  ../Common/intrinsics.h:41:20: error: conflicting types for '__qube_sync_bool_compare_and_swap'
-   static inline BOOL __qube_sync_bool_compare_and_swap(SpinLock p, int old_val, int new_val) {
-                      ^
-  ../Common/intrinsics.h:10:20: note: previous declaration of '__qube_sync_bool_compare_and_swap' was here
-   static inline BOOL __qube_sync_bool_compare_and_swap(void *p, int old_val, int new_val) __attribute__((always_inline));
-                      ^
-  In file included from Qbject.c:1:0:
-  Qbject.h:31:1: warning: no semicolon at end of struct or union
-   };
-   ^
-  Qbject.c: In function 'qkr_main':
-  Qbject.c:6:6: error: 'QNode {aka struct QNode_}' has no member named 'CreateQbjectFunction'
-    root.CreateQbjectFunction = NULL;
-        ^
-  Qbject.c:7:6: error: 'QNode {aka struct QNode_}' has no member named 'QbjectReadFunction'
-    root.QbjectReadFunction = NULL;
-        ^
-  Qbject.c:8:6: error: 'QNode {aka struct QNode_}' has no member named 'QbjectWriteFunction'
-    root.QbjectWriteFunction = NULL;
-        ^
-  Qbject.c: At top level:
-  Qbject.c:23:10: error: conflicting types for 'create_qbject'
-   Qbject * create_qbject(char * path, ACCESS access)
-            ^
-  In file included from Qbject.c:1:0:
-  Qbject.h:33:9: note: previous declaration of 'create_qbject' was here
-   QHandle create_qbject(char* path, ACCESS access);
+  Qbject.c: In function 'name_match':
+  Qbject.c:18:41: warning: implicit declaration of function 'memcmp' [-Wimplicit-function-declaration]
+    return ((len < MAX_QNODE_NAME_LEN) && (memcmp(qnode->name, s, len) == 0) && (qnode->name[len] == '\0'));
+                                           ^
+  Qbject.c: In function 'allocate_qbject':
+  Qbject.c:78:9: warning: implicit declaration of function 'kalloc' [-Wimplicit-function-declaration]
+    return kalloc(sizeof(Qbject) + content_size);
            ^
-  Qbject.c:28:10: error: conflicting types for 'allocate_qbject'
-   Qbject * allocate_qbject(uint32 content_size)
-            ^
-  In file included from Qbject.c:1:0:
-  Qbject.h:35:9: note: previous declaration of 'allocate_qbject' was here
-   QHandle allocate_qbject(uint32 content_size);
-           ^
-  In file included from ../Common/Qube.h:100:0,
-                   from Qbject.h:3,
-                   from Qbject.c:1:
-  ../Common/intrinsics.h:30:2: warning: '__qube_memory_barrier' is static but used in inline function 'spin_unlock' which is not static
-    __qube_memory_barrier();
-    ^
-  ../Common/intrinsics.h:24:14: warning: '__qube_mm_pause' is static but used in inline function 'spin_lock' which is not static
-     while (*p) __qube_mm_pause();
-                ^
-  ../Common/intrinsics.h:22:10: warning: '__qube_sync_bool_compare_and_swap' is static but used in inline function 'spin_lock' which is not static
-    while (!__qube_sync_bool_compare_and_swap(p, 0, 1))
-            ^
-  ../Common/intrinsics.h:10:20: warning: '__qube_sync_bool_compare_and_swap' used but never defined
-   static inline BOOL __qube_sync_bool_compare_and_swap(void *p, int old_val, int new_val) __attribute__((always_inline));
-                      ^
-  Makefile:6: recipe for target 'qbject_manager' failed
-  make: *** [qbject_manager] Error 1
-C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.MakeFile.Targets(37,5): error MSB3073: The command "make all" exited with code 2.
+  Qbject.c:78:9: warning: return makes pointer from integer without a cast [-Wint-conversion]
+  x86_64-elf-ld.exe -fpic -fvisibility=hidden -shared qbject_manager.o -o ../_output/system/qbject_manager.qkr

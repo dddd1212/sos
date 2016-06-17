@@ -11,7 +11,7 @@
 #define KHEAP_START_ADDRESS (0xffffe00000000000)
 
 #define MODULES_BITMAP_SIZE (0x100)
-#define KHEAP_BITMAP_SIZE (0x100)
+#define KHEAP_BITMAP_SIZE (0x400)
 
 uint64 *g_physical_pages_current;
 uint64 *g_physical_pages_end;
@@ -37,15 +37,15 @@ static uint64 push_physical_page(uint64 page) {
 }
 
 BOOL get_bit(uint8* stream, uint32 bit_num) {
-	return (stream[bit_num / 8] & (1 >> (bit_num % 8)) != 0);
+	return ((stream[bit_num / 8] & (1 << (bit_num % 8))) != 0);
 }
 
 void set_bit(uint8* stream, uint32 bit_num, BOOL value) {
 	if (value) {
-		stream[bit_num / 8] |= (1 >> (bit_num % 8));
+		stream[bit_num / 8] |= (1 << (bit_num % 8));
 	}
 	else {
-		stream[bit_num / 8] &= ~(1 >> (bit_num % 8));
+		stream[bit_num / 8] &= ~(1 << (bit_num % 8));
 	}
 	
 }
@@ -187,14 +187,15 @@ QResult qkr_main(KernelGlobalData* kgd) {
 	return QSuccess;
 }
 
-void* alloc_pages(REGION_TYPE region, uint32 size) {
-	uint8* addr = (uint8*)commit_pages(region, size);
+void* alloc_pages_(REGION_TYPE region, uint32 size) {
+	uint8* addr = (uint8*)commit_pages_(region, size);
 	for (uint8* cur = addr; cur < addr + size; cur += 0x1000) {
 		add_physical_page(&g_regions[region], cur, -1);
 	}
+	return (void*)addr;
 }
 
-void* commit_pages(REGION_TYPE region_type, uint32 size) {
+void* commit_pages_(REGION_TYPE region_type, uint32 size) {
 	MemoryRegion* region = &g_regions[region_type];
 	uint32 num_of_pages = ((size + 0xFFF) >> 12);
 	uint32 cur_length = 0;
@@ -216,11 +217,12 @@ void* commit_pages(REGION_TYPE region_type, uint32 size) {
 		for (cur_bit = start_bit; cur_bit < start_bit + num_of_pages; cur_bit++) {
 			set_bit(region->free_pages_bitmap, cur_bit, 1);
 		}
-		return (uint8*)region->start + 8 * 0x1000 * start_bit;
+		return (uint8*)region->start + 0x1000 * start_bit;
 	}
 }
 
-void assign_committed(void* addr, uint32 size, uint64 specific_physical) {
+void assign_committed_(void* addr, uint32 size, uint64 specific_physical) {
+	// TODO: handle out of physical pages case.
 	MemoryRegion* region = &g_regions[0];
 	while (addr < region->start || addr > (void*)(((uint8*)region->start) + REGION_BITMAP_MAX_SIZE)) {
 		region++;
@@ -233,7 +235,7 @@ void assign_committed(void* addr, uint32 size, uint64 specific_physical) {
 	}
 }
 
-void unassign_committed(void* addr, uint32 size) {
+void unassign_committed_(void* addr, uint32 size) {
 	MemoryRegion* region = &g_regions[0];
 	while (addr < region->start || addr > (void*)(((uint8*)region->start) + REGION_BITMAP_MAX_SIZE)) {
 		region++;
@@ -243,9 +245,9 @@ void unassign_committed(void* addr, uint32 size) {
 	}
 }
 
-void free_pages(void* addr) {
+void free_pages_(void* addr) {
 	MemoryRegion* region = &g_regions[0];
-	while (addr < region->start || addr >(void*)(((uint8*)region->start) + REGION_BITMAP_MAX_SIZE)) {
+	while (addr < region->start || addr >(void*)(((uint8*)region->start) + (uint64)0x8000*REGION_BITMAP_MAX_SIZE)) {
 		region++;
 	}
 	uint32 start_bit;
@@ -256,4 +258,27 @@ void free_pages(void* addr) {
 		set_bit(region->free_pages_bitmap, cur_bit, 0);
 	}
 	return;
+}
+
+
+
+
+void* alloc_pages(REGION_TYPE region, uint32 size) {
+	return alloc_pages_(region, size);
+}
+
+void* commit_pages(REGION_TYPE region_type, uint32 size) {
+	return commit_pages_(region_type, size);
+}
+
+void assign_committed(void* addr, uint32 size, uint64 specific_physical) {
+	assign_committed_(addr, size, specific_physical);
+}
+
+void unassign_committed(void* addr, uint32 size) {
+	unassign_committed_(addr, size);
+}
+
+void free_pages(void* addr) {
+	free_pages_(addr);
 }

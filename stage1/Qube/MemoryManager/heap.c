@@ -13,11 +13,11 @@
 #define MAX_ALLOC_IN_CLUSTER (PAGE_SIZE*2 - BLOCK_SIZE) // must be: (a) multiple of BLOCK_SIZE. (b) less than or equal to (CLUSTERS_AREA_SIZE-BLOCK_SIZE).
 
 //----------------------------------
-#define ALLOC_PAGES(x) alloc_pages(KHEAP, PAGE_SIZE*x)
-#define FREE_PAGES(x) free_pages(x)
-#define COMMIT_PAGES(x) commit_pages(KHEAP, PAGE_SIZE*x)
-#define ASSIGN_COMMITED(addr, num_of_pages) assign_committed(addr, 0x1000*num_of_pages)
-#define UNASSIGN_COMMITED(addr, num_of_pages) unassign_committed(addr, 0x1000*num_of_pages)
+#define ALLOC_PAGES(x) alloc_pages_(KHEAP, PAGE_SIZE*x)
+#define FREE_PAGES(x) free_pages_(x)
+#define COMMIT_PAGES(x) commit_pages_(KHEAP, PAGE_SIZE*x)
+#define ASSIGN_COMMITED(addr, num_of_pages) assign_committed_(addr, 0x1000*num_of_pages, -1)
+#define UNASSIGN_COMMITED(addr, num_of_pages) unassign_committed_(addr, 0x1000*num_of_pages)
 
 #define HEAP_LOCK SpinLock
 #define INIT_LOCK(x) //spin_init(&x)
@@ -51,6 +51,7 @@ typedef struct Chunk_{
 typedef struct {
 	Chunk * free_lists[FREE_LIST_ARRAY_SIZE]; // number of free_lists.
 	void* clusters_area;
+	uint32 cluster_start_mask;
 	uint64 cookie;
 	uint32 stat_num_of_big_allocs;
 	uint32 stat_total_user_alloc;
@@ -69,8 +70,9 @@ uint8 clusters_bitmap[CLUSTERS_BITMAP_SIZE];
 QResult HEAP_INIT_FUNC() {
 	INIT_LOCK(g_heap_lock);
 	void* clusters_area;
-	clusters_area = commit_pages(KHEAP, PAGE_SIZE*NUM_OF_PAGES(CLUSTERS_AREA_SIZE));//COMMIT_PAGES(NUM_OF_PAGES(CLUSTERS_AREA_SIZE));
-	if (clusters_area && ((((uint64)clusters_area)&(CLUSTER_SIZE - 1)) == 0)) {
+	clusters_area = COMMIT_PAGES(NUM_OF_PAGES(CLUSTERS_AREA_SIZE));
+	if (clusters_area) {
+		g_heap_struct.cluster_start_mask = ((uint64)clusters_area)&(CLUSTER_SIZE - 1);
 		// TODO: we dont realy should fail if cluster_area is not aligned to CLUSTER_SIZE.
 		g_heap_struct.clusters_area = clusters_area;
 		return QSuccess;
@@ -85,6 +87,7 @@ void heap_corrupt(Chunk * free_chunk) {
 }
 
 void * alloc_new_cluster() {
+	// TODO: handle ASSIGN_COMMITED failure case. (out of physical pages)
 	uint32 i, j;
 	for (i = 0; i < CLUSTERS_BITMAP_SIZE; i++) {
 		if (clusters_bitmap[i] != 0xFF) {
@@ -94,50 +97,59 @@ void * alloc_new_cluster() {
 	if (clusters_bitmap[i] != 0xFF) {
 		uint8 x = clusters_bitmap[i];
 		for (j = 0; j < 8; j++) {
-			if (x&(1 << j)) {
+			if (!(x&(1 << j))) {
 				break;
 			}
 		}
 		clusters_bitmap[i] |= (1 << j);
-		return (void*)((uint8*)g_heap_struct.clusters_area + (8 * i + j)*CLUSTER_SIZE);
+		void *addr = (void*)((uint8*)g_heap_struct.clusters_area + (8 * i + j)*CLUSTER_SIZE);
+		ASSIGN_COMMITED(addr, (CLUSTER_SIZE / PAGE_SIZE));
+		return addr;
 	}
 	return NULL;
 }
 
 void free_cluster(void* addr) {
+	UNASSIGN_COMMITED(addr, (CLUSTER_SIZE / PAGE_SIZE));
 	uint32 cluster_index = ((uint64)addr - (uint64)g_heap_struct.clusters_area) / CLUSTER_SIZE;
 	clusters_bitmap[cluster_index / 8] &= ~(1 << (cluster_index % 8));
 }
 
-inline Chunk* get_next_chunk(Chunk* c) {
+static inline Chunk* get_next_chunk(Chunk* c) {
 	Chunk* next = (Chunk*)((uint64)c + BLOCK_SIZE * (c->size_in_blocks + 1));
-	if (((uint64)next) & (CLUSTER_SIZE - 1)) {
+	if ((((uint64)next) & (CLUSTER_SIZE - 1)) != g_heap_struct.cluster_start_mask){
 		return next;
 	}
 	return NULL;
 }
 
-inline Chunk* get_prev_chunk(Chunk* c) {
+static inline Chunk* get_prev_chunk(Chunk* c) {
 	if (c->prev_size_in_blocks == 0) {
 		return NULL;
 	}
-	Chunk* prev = (Chunk*)((uint64)c + BLOCK_SIZE * (c->prev_size_in_blocks + 1));
+	Chunk* prev = (Chunk*)((uint64)c - BLOCK_SIZE * (c->prev_size_in_blocks + 1));
 	return prev;
 }
 
-void inline validate_chunk(Chunk * chunk, int size_in_blocks, BOOL is_free) {
+static inline void validate_chunk(Chunk * chunk, int size_in_blocks, BOOL is_free) {
 	if (chunk->cookie != g_heap_struct.cookie) { heap_corrupt(chunk); }
 	if (chunk->size_in_blocks != size_in_blocks) { heap_corrupt(chunk); }
 	if (chunk->is_free != is_free) { heap_corrupt(chunk); }
 }
 
-void inline add_to_list(Chunk * chunk, uint32 index) {
+static inline void add_to_list(Chunk * chunk, uint32 index) {
+	if (index >= FREE_LIST_ARRAY_SIZE) {
+		index = 0;
+	}
     chunk->prev = NULL;
 	chunk->next = g_heap_struct.free_lists[index];
     g_heap_struct.free_lists[index] = chunk;
 }
 
-void inline remove_from_list(Chunk * chunk, uint32 index) {
+static inline void remove_from_list(Chunk * chunk, uint32 index) {
+	if (index >= FREE_LIST_ARRAY_SIZE) {
+		index = 0;
+	}
     if (chunk->prev) {
         if (chunk->prev->next != chunk) heap_corrupt(chunk);  
         chunk->prev->next = chunk->next;
@@ -154,6 +166,9 @@ void inline remove_from_list(Chunk * chunk, uint32 index) {
 }
 
 void * HEAP_ALLOC_FUNC(uint32 size) {
+	if (size == 0) {
+		return NULL;
+	}
 	LOCK(g_heap_lock);
     if (size > MAX_ALLOC_IN_CLUSTER) {
         g_heap_struct.stat_num_of_big_allocs++;
@@ -189,9 +204,6 @@ void * HEAP_ALLOC_FUNC(uint32 size) {
 		chunk->prev_size_in_blocks = 0;
 		chunk->size_in_blocks = CLUSTER_SIZE / BLOCK_SIZE - 1;
 		chunk->prev = NULL;
-		chunk->next = g_heap_struct.free_lists[0];
-		g_heap_struct.free_lists[0] = chunk;
-
 	}
 	if (chunk == NULL) {
 		return NULL;
@@ -219,7 +231,7 @@ void * HEAP_ALLOC_FUNC(uint32 size) {
 		}
 	}
 	g_heap_struct.stat_total_mem_alloc += ((num_of_blocks + 1)*BLOCK_SIZE);
-	return (void*)chunk;
+	return (void*)((uint8*)chunk + BLOCK_SIZE);
 }
 
 void HEAP_FREE_FUNC(void * address) {
