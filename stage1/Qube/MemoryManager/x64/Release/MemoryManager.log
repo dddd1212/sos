@@ -1,2 +1,4 @@
-﻿  x86_64-elf-gcc.exe -c *.c -Wall -fpic -fvisibility=hidden -g
+﻿  rm -f memory_manager.o
+  rm -f memory_manager.qmo
+  x86_64-elf-gcc.exe -c *.c -Wall -fpic -fvisibility=hidden -g
   x86_64-elf-ld.exe -fpic -fvisibility=hidden -shared *.o -o ../_output/system/memory_manager.qkr

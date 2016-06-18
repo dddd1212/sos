@@ -11,7 +11,6 @@
 #define KHEAP_START_ADDRESS (0xffffe00000000000)
 
 #define MODULES_BITMAP_SIZE (0x100)
-#define KHEAP_BITMAP_SIZE (0x100)
 #define KHEAP_BITMAP_SIZE (0x400)
 
 uint64 *g_physical_pages_current;
@@ -32,25 +31,20 @@ static uint64 pop_physical_page() {
 	return page;
 }
 
-static uint64 push_physical_page(uint64 page) {
 static void push_physical_page(uint64 page) {
 	g_physical_pages_current--;
-	*g_physical_pages_current = page & 0xFFFFFF000;
 	*g_physical_pages_current = page & 0xFFFFFFFFFF000;
 }
 
 BOOL get_bit(uint8* stream, uint32 bit_num) {
-	return (stream[bit_num / 8] & (1 >> (bit_num % 8)) != 0);
 	return ((stream[bit_num / 8] & (1 << (bit_num % 8))) != 0);
 }
 
 void set_bit(uint8* stream, uint32 bit_num, BOOL value) {
 	if (value) {
-		stream[bit_num / 8] |= (1 >> (bit_num % 8));
 		stream[bit_num / 8] |= (1 << (bit_num % 8));
 	}
 	else {
-		stream[bit_num / 8] &= ~(1 >> (bit_num % 8));
 		stream[bit_num / 8] &= ~(1 << (bit_num % 8));
 	}
 	
@@ -118,14 +112,11 @@ static void set_bitmap(KernelGlobalData* kgd, REGION_TYPE region_type, MemoryReg
 }
 
 static void add_physical_page(MemoryRegion* region, void* v_address, uint64 specific_physical_addr) {
-	uint32 pde_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9);
-	uint32 ppe_offset = (((uint8*)region->start) - ((uint8*)v_address)) >> (12 + 9 + 9);
 	uint32 pde_offset = (((uint8*)v_address) - ((uint8*)region->start)) >> (12 + 9);
 	uint32 ppe_offset = (((uint8*)v_address) - ((uint8*)region->start)) >> (12 + 9 + 9);
 	if (region->PPE_use_count[ppe_offset] == 0) {
 		*PPE(v_address) = pop_physical_page()|3;
 	}
-	if (region->PPE_use_count[pde_offset] == 0) {
 	if (region->PDE_use_count[pde_offset] == 0) {
 		*PDE(v_address) = pop_physical_page()|3;
 		region->PPE_use_count[ppe_offset]++;
@@ -134,11 +125,8 @@ static void add_physical_page(MemoryRegion* region, void* v_address, uint64 spec
 		*PTE(v_address) = pop_physical_page()|3;
 	}
 	else {
-		*PTE(v_address) = specific_physical_addr|3;
 		*PTE(v_address) = specific_physical_addr|(3| FLAG_OWNED_PAGE);
 	}
-	region->PPE_use_count[ppe_offset]++;
-	region->PPE_use_count[pde_offset]++;
 	region->PDE_use_count[pde_offset]++;
 }
 
@@ -162,17 +150,14 @@ static void init_regions(KernelGlobalData* kgd) {
 
 
 	for (uint32 i = MEMORY_MANAGEMENT; i < NUM_OF_REGION_TYPE; i++) {
-		g_regions[i].free_pages_bitmap = memory_management_region_start_address + REGION_BITMAP_MAX_SIZE;
 		g_regions[i].free_pages_bitmap = memory_management_region_start_address + i*REGION_BITMAP_MAX_SIZE;
 		g_regions[i].bitmap_size = get_region_bitmap_size(i);
 		g_regions[i].start = get_region_start_address(kgd,i);
 		// TODO: is this needed? or the loader already zeros this?
-		for (uint32 j = 0; j < sizeof(g_regions[i].PPE_use_count); j++) {
 		for (uint32 j = 0; j < sizeof(g_regions[i].PPE_use_count) / sizeof(g_regions[i].PPE_use_count[0]); j++) {
 			g_regions[i].PPE_use_count[j] = 0;
 		}
 
-		for (uint32 j = 0; j < sizeof(g_regions[i].PDE_use_count); j++) {
 		for (uint32 j = 0; j < sizeof(g_regions[i].PDE_use_count) / sizeof(g_regions[i].PDE_use_count[0]); j++) {
 			g_regions[i].PDE_use_count[j] = 0;
 		}
@@ -180,31 +165,19 @@ static void init_regions(KernelGlobalData* kgd) {
 		// TODO: zero the pages
 		for (uint64* pxe = PXE(g_regions[i].start); pxe <= PXE(((uint8*)(g_regions[i].start)) + (uint64)REGION_BITMAP_MAX_SIZE * 8 * 0x1000); pxe++) {
 			if (*pxe == 0) {
-				*pxe = pop_physical_page();
 				*pxe = pop_physical_page() | 3;
 			}
 		}
 
-		for (uint32 j = 0; j < g_regions[i].bitmap_size; j++) {
-			if (j & 0xFFF == 0) {
-				add_physical_page(&g_regions[MEMORY_MANAGEMENT], &g_regions[i].free_pages_bitmap[i],-1);
-			}
-			g_regions[MEMORY_MANAGEMENT].free_pages_bitmap[i] = 0x00;
 		for (uint32 j = 0; j < g_regions[i].bitmap_size; j+=PAGE_SIZE) {
 			add_physical_page(&g_regions[MEMORY_MANAGEMENT], &g_regions[i].free_pages_bitmap[j],-1);
-
-
-
-
 		}
 
 		set_bitmap(kgd, i, &g_regions[i]);
 	}
 }
 
-void qkr_main(KernelGlobalData* kgd) {
 QResult qkr_main(KernelGlobalData* kgd) {
-
 	__lgdt(&g_gdtr);
 	g_physical_pages_current = kgd->boot_info->physical_pages_current;
 	g_physical_pages_end = kgd->boot_info->physical_pages_end;
@@ -214,8 +187,6 @@ QResult qkr_main(KernelGlobalData* kgd) {
 	return QSuccess;
 }
 
-void* alloc_pages(REGION_TYPE region, uint32 size) {
-	uint8* addr = (uint8*)commit_pages(region, size);
 void* alloc_pages_(REGION_TYPE region, uint32 size) {
 	uint8* addr = (uint8*)commit_pages_(region, size);
 	for (uint8* cur = addr; cur < addr + size; cur += 0x1000) {
@@ -224,7 +195,6 @@ void* alloc_pages_(REGION_TYPE region, uint32 size) {
 	return (void*)addr;
 }
 
-void* commit_pages(REGION_TYPE region_type, uint32 size) {
 void* commit_pages_(REGION_TYPE region_type, uint32 size) {
 	MemoryRegion* region = &g_regions[region_type];
 	uint32 num_of_pages = ((size + 0xFFF) >> 12);
@@ -247,12 +217,10 @@ void* commit_pages_(REGION_TYPE region_type, uint32 size) {
 		for (cur_bit = start_bit; cur_bit < start_bit + num_of_pages; cur_bit++) {
 			set_bit(region->free_pages_bitmap, cur_bit, 1);
 		}
-		return (uint8*)region->start + 8 * 0x1000 * start_bit;
 		return (uint8*)region->start + 0x1000 * start_bit;
 	}
 }
 
-void assign_committed(void* addr, uint32 size, uint64 specific_physical) {
 void assign_committed_(void* addr, uint32 size, uint64 specific_physical) {
 	// TODO: handle out of physical pages case.
 	MemoryRegion* region = &g_regions[0];
@@ -267,9 +235,6 @@ void assign_committed_(void* addr, uint32 size, uint64 specific_physical) {
 	}
 }
 
-void unassign_committed(void* addr, uint32 size) {
-	// TODO
-	return;
 void unassign_committed_(void* addr, uint32 size) {
 	MemoryRegion* region = &g_regions[0];
 	while (addr < region->start || addr > (void*)(((uint8*)region->start) + REGION_BITMAP_MAX_SIZE)) {
@@ -280,8 +245,6 @@ void unassign_committed_(void* addr, uint32 size) {
 	}
 }
 
-void free_pages(void* addr) {
-	// TODO
 void free_pages_(void* addr) {
 	MemoryRegion* region = &g_regions[0];
 	while (addr < region->start || addr >(void*)(((uint8*)region->start) + (uint64)0x8000*REGION_BITMAP_MAX_SIZE)) {
@@ -297,8 +260,6 @@ void free_pages_(void* addr) {
 	return;
 }
 
-void* kalloc(uint32 size) {
-	return NULL;
 
 
 
@@ -306,8 +267,6 @@ void* alloc_pages(REGION_TYPE region, uint32 size) {
 	return alloc_pages_(region, size);
 }
 
-void kfree(void* addr) {
-	return;
 void* commit_pages(REGION_TYPE region_type, uint32 size) {
 	return commit_pages_(region_type, size);
 }

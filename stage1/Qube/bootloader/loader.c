@@ -12,7 +12,7 @@ void hack_for_gdb(char * module_file_name, Elf64_Addr entry) {
 void hack_for_gdb2() { 
 	return;
 }
-// kgd - pointer to KernelGlobalData\
+// kgd - pointer to KernelGlobalData
 // boot_modules - ptr to array of STAGE0BootModules
 // num_of_modules - boot_modules entries
 int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule * boot_modules, BootLoaderAllocator * boot_loader_allocator, int num_of_modules) {
@@ -27,11 +27,11 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 	//char string_strtab[] = {".strtab" };
 	char string_dynsym[] = {".dynsym" };
 	char string_dynstr[] = {".dynstr" };
-	char string_rela_plt[] = { ".rela.plt" };
-	char string_rela_dyn[] = { ".rela.dyn" };
+	//char string_rela_plt[] = { ".rela.plt" };
+	//char string_rela_dyn[] = { ".rela.dyn" };
 	char entry_point_name[] = { "qkr_main" };
 
-	Elf64_Xword size;
+	Elf64_Xword size = 0;
 	// First - load the segments, handle exports, and reloacations
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
 		boot_module->symbols_start_index = kgd->bootloader_symbols.index;
@@ -117,11 +117,11 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 	}
 
 	// Now handle the imports and the rela sections:
-	int num_of_rela_sections = 0;
+	//int num_of_rela_sections = 0;
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
 		DBG_PRINTF1("Handle relocations (and imports) of module %d", i); ENTER;
 		int start_index = 0;
-		struct Elf64SectionHeader * sh = (struct Elf64SectionHeader *) (((char *)boot_module) + boot_module->file_data->e_shoff);
+		//struct Elf64SectionHeader * sh = (struct Elf64SectionHeader *) (((char *)boot_module) + boot_module->file_data->e_shoff);
 		struct Elf64Symbol * dynsym_table = (struct Elf64Symbol *) find_section_by_type(boot_module, SHT_DYNSYM, NULL, &size);
 		struct Elf64Symbol * dynsym;
 		struct Elf64RelaStruct * rela_table;
@@ -129,7 +129,7 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 		while (1) { // Iterate over SHT_RELA sections:
 			rela_table = (struct Elf64RelaStruct *) find_section_by_type(boot_module, SHT_RELA, &start_index, &size);
 			if (!rela_table) break; // finish iterate.
-			size = size /= sizeof(struct Elf64RelaStruct); // num of structs.
+			size = size / sizeof(struct Elf64RelaStruct); // num of structs.
 			struct Elf64RelaStruct * rela;
 			for (rela = rela_table; rela < rela_table + size; rela++) {
 				if (rela->r_type != R_AMD64_GLOB_DAT && rela->r_type != R_AMD64_JUMP_SLOT && rela->r_type != R_AMD64_64 && rela->r_type != R_AMD64_RELATIVE) {
@@ -179,7 +179,7 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 			continue;
 		}
 		DBG_PRINTF1("Call entry point of module %d", i); ENTER;
-		if (ret2 = boot_module->entry_point(kgd) != 0) {
+		if ((ret2 = boot_module->entry_point(kgd)) != 0) {
 			DBG_PRINTF("    ERROR: entry point return non zero!"); ENTER;
 			return i * 0x10000000 + ret2;
 		}

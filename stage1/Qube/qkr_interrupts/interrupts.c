@@ -274,7 +274,7 @@ void handle_interrupts(ProcessorContext * regs) {
 
 
 // apic_timer api:
-BOOL apic_timer_init(); // Should be called only once.
+BOOL apic_timer_init(); // Should be called only once before any calls to apic_timer_start, apic_timer_stop and apic_timer_get_time_ellapsed.
 BOOL apic_timer_start(uint64 timer_us);
 BOOL apic_timer_stop();
 uint64 apic_timer_get_time_ellapsed();
@@ -308,11 +308,11 @@ BOOL apic_timer_start(uint64 timer_us) {
 	apic->divide_conf = divide_value & 0b1011;
 	apic->initial_count = (uint32)ticks;
 	
-	spin_lock(g_is_timer_run_lock);
-	g_is_timer_run = TRUE;
+	spin_lock(g_apic_context.is_timer_run_lock);
+	g_apic_context.is_timer_run = TRUE;
 	apic->LVT_timer = 0; // unmask the interrupt. one-shot mode.
-	spin_unlock(g_is_timer_run_lock);
-	return;
+	spin_unlock(g_apic_context.is_timer_run_lock);
+	return TRUE;
 
 }
 
@@ -320,11 +320,11 @@ BOOL apic_timer_stop() {
 	APICRegisters * apic = g_apic_context.regs;
 	
 	BOOL ret;
-	spin_lock(g_is_timer_run_lock);
+	spin_lock(g_apic_context.is_timer_run_lock);
 	apic->LVT_timer = 0x10000; // mask the interrupt.
-	ret = g_is_timer_run;
-	g_is_timer_run = FALSE;
-	spin_unlock(g_is_timer_run_lock);
+	ret = g_apic_context.is_timer_run;
+	g_apic_context.is_timer_run = FALSE;
+	spin_unlock(g_apic_context.is_timer_run_lock);
 	return ret; // TRUE - if we stopped the timer. FALSE - if the timer was stopped before us.
 
 }
@@ -332,13 +332,13 @@ BOOL apic_timer_stop() {
 // ret - useconds.
 uint64 apic_timer_get_time_ellapsed() {
 	APICRegisters * apic = g_apic_context.regs;
-	spin_lock(g_is_timer_run_lock);
+	spin_lock(g_apic_context.is_timer_run_lock);
 	uint64 ret = g_apic_context.bus_freq *1000 * 1000 / (apic->initial_count - apic->current_count);
-	spin_unlock(g_is_timer_run_lock);
+	spin_unlock(g_apic_context.is_timer_run_lock);
 	return ret;
 }
 BOOL apic_timer_is_run() {
-	return g_is_timer_run;
+	return g_apic_context.is_timer_run;
 }
 typedef void(*APICTimerCallback)();
 BOOL apic_timer_set_callback_function(APICTimerCallback cb) {

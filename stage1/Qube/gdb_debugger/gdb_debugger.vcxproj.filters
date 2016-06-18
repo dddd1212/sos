@@ -37,6 +37,9 @@
     <None Include=".gdbinit">
       <Filter>gdb_files</Filter>
     </None>
+    <None Include="gdb_proxy.py">
+      <Filter>gdb_files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme\readme.html">

@@ -71,6 +71,7 @@
     <Text Include="Readme\stylesheet.css" />
     <None Include=".gdbinit" />
     <None Include="bochsrc_gdb.bxrc" />
+    <None Include="gdb_proxy.py" />
     <None Include="make.py" />
     <None Include="qube_gdb.bat" />
     <None Include="Readme\images\debugproperties.png" />
