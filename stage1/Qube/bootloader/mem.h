@@ -7,13 +7,13 @@
 
 #include "../Common/Qube.h"
 typedef struct {
-	int64* next_physical_nonvolatile;
-	int64 next_virtual_nonvolatile;
-	int64* next_physical_volatile;
-	int64 next_virtual_volatile;
+	uint64* next_physical_nonvolatile;
+	uint64 next_virtual_nonvolatile;
+	uint64* next_physical_volatile;
+	uint64 next_virtual_volatile;
 
-	int64* physical_pages_start;
-	int64* physical_pages_end;
+	uint64* physical_pages_start;
+	uint64* physical_pages_end;
 #ifdef DEBUG
 	BOOL disable_non_volatile_allocs;
 #endif

@@ -40,17 +40,17 @@ QResult init_FAT32(BootLoaderAllocator *allocator, uint32 BPB_sector, FAT32Desc 
 	fat32_desc->FAT = (int32*)mem_alloc(fat32_desc->allocator, num_of_sectors*sizeof(int32)/fat32_desc->sectors_per_cluster, TRUE);
 	fat32_desc->cluster_buf = (int8*)mem_alloc(fat32_desc->allocator, fat32_desc->sectors_per_cluster*fat32_desc->bytes_per_sector, TRUE);
 	if ((fat32_desc->FAT == 0) || (fat32_desc->cluster_buf == 0)){
-		return -1;
+		return QFail;
 	}
 	read_sectors(fat32_desc->num_of_hidden_sectors+fat32_desc->num_of_reserved_sectors, num_of_sectors, fat32_desc->FAT);
-	return 0; //success.
+	return QSuccess; //success.
 }
 
 static int32 get_next_cluster(FAT32Desc *fat32_desc, int32 cluster){
 	return fat32_desc->FAT[cluster]; // 2 is the first data cluster.
 }
 
-static inline int32 name_to_cname(char *name, int32 namelen, char *cname){
+static inline void name_to_cname(char *name, int32 namelen, char *cname){
 	int32 i,j;
 	for (i=0; i<8 && i<namelen;i++){
 		if (name[i]=='.'){
@@ -145,7 +145,7 @@ QResult fat32_read_file(FAT32Desc *fat32_desc, char *filename, int8* out_buf) {
 	cluster_size = fat32_desc->sectors_per_cluster*fat32_desc->bytes_per_sector;
 	DirectoryEntry entry;
 	if (fat32_get_entry(fat32_desc, filename, &entry) == -1) {
-		return -1;
+		return QFail;
 	}
 	cur_cluster = (entry.fstClusHi << 0x10) | entry.fstClusLo;
 	byte_to_read = entry.fileSize;
@@ -161,4 +161,5 @@ QResult fat32_read_file(FAT32Desc *fat32_desc, char *filename, int8* out_buf) {
 			out_buf[i] = fat32_desc->cluster_buf[i];
 		}
 	}
+	return QSuccess;
 }

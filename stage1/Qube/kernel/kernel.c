@@ -35,4 +35,9 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	y = kheap_alloc(0x1652);
 	x = kheap_alloc(0x253);
 	z = kheap_alloc(0x100253);
+	
+	kheap_free(z);
+	kheap_free(y);
+	kheap_free(x);
+	return QSuccess;
 }

@@ -28,7 +28,6 @@ void _start() {
 	char boot_txt_data[BOOT_TXT_FILE_MAX_SIZE];
 	struct STAGE0BootModule boot_modules[MAX_BOOT_MODULES];
 	//char * boot_txt_end;
-	char a[] = { "asdf" };
 	char boot_txt_file_name[] = { 'B','O','O','T','.','T','X','T','\x00' };
 	unsigned int boot_txt_file_size;
 
@@ -64,7 +63,6 @@ void _start() {
 	
 
 	void * modules_addr = NULL;
-	void * ret = NULL;
 	int32 i, temp, line, num_of_lines;
 	
 	// First, calculate how many bytes we need to allocate for the kgd (KernelGlobalData), for the symbol table, and for the boot modules:
@@ -78,7 +76,7 @@ void _start() {
 		//DBG_PRINTF2("BOOT_TXT_FILE size is zero!", boot_txt_file_size, BOOT_TXT_FILE_MAX_SIZE); ENTER;
 		STAGE0_suicide(0x2000);
 	}
-
+	// TODO: check return value
 	read_file(&hd_desc, boot_txt_file_name, boot_txt_data);
 	boot_txt_data[boot_txt_file_size] = '\x00';
 
@@ -128,6 +126,7 @@ void _start() {
 
 	for (line = 0; line < num_of_lines; line++) {
 		// read
+		// TODO: check return value
 		read_file(&hd_desc, boot_modules[line].file_name, modules_addr);
 
 		// points to the data:

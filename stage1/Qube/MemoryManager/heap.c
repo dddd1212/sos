@@ -175,7 +175,6 @@ void * HEAP_ALLOC_FUNC(uint32 size) {
         return ALLOC_PAGES(NUM_OF_PAGES(size));
     }
     
-    void * ret = NULL;
 	uint32 num_of_blocks = NUM_OF_BLOCKS(size);
 	Chunk *chunk = NULL;
 	for (uint32 i = num_of_blocks; i < FREE_LIST_ARRAY_SIZE; i++) {

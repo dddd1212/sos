@@ -31,7 +31,7 @@ static uint64 pop_physical_page() {
 	return page;
 }
 
-static uint64 push_physical_page(uint64 page) {
+static void push_physical_page(uint64 page) {
 	g_physical_pages_current--;
 	*g_physical_pages_current = page & 0xFFFFFFFFFF000;
 }

@@ -48,7 +48,6 @@ static inline int8 __in8(uint16 port){
 }
 
 static inline void __out8(uint16 port, uint8 data){
-	int8 res;
 	__asm__(
 		".intel_syntax noprefix;"
 		"mov dx, %1;"

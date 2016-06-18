@@ -28,7 +28,7 @@ typedef int32 BOOL;
 #define ULLONG_MAX 0xffffffffffffffff
 
 // TODO: Do with it something
-#define ASSERT
+#define ASSERT(x)
 
 typedef int32 QResult;
 #define QSuccess 0
