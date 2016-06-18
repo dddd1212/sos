@@ -1,4 +1,4 @@
-.set NUM_OF_BOOT_PAGES, 9 # not including first two sectors!
+.set NUM_OF_BOOT_PAGES, 7 # not including first two sectors! 7 is the maximum value because we have the physical pages list at 0xF000 (if we want more we need to mode that list to other address).
 .intel_syntax noprefix#
 # org 0x7C00 # boot sector address
 .text
