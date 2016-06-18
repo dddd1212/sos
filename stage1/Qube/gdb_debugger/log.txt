@@ -124,3 +124,57 @@
 --> -gdb-exit
 <-- ^exit
 --> logout
+
+Microsoft DiskPart version 10.0.10586
+
+Copyright (C) 1999-2013 Microsoft Corporation.
+On computer: GILAD-PC
+
+DiskPart successfully selected the virtual disk file.
+
+  100 percent completed
+
+DiskPart successfully attached the virtual disk file.
+
+Partition 1 is now the selected partition.
+
+DiskPart has encountered an error: The directory is not empty.
+See the System Event Log for more information.
+
+Microsoft DiskPart version 10.0.10586
+
+Copyright (C) 1999-2013 Microsoft Corporation.
+On computer: GILAD-PC
+
+DiskPart successfully selected the virtual disk file.
+
+Partition 1 is now the selected partition.
+
+DiskPart successfully detached the virtual disk file.
+
+Microsoft DiskPart version 10.0.10586
+
+Copyright (C) 1999-2013 Microsoft Corporation.
+On computer: GILAD-PC
+
+DiskPart successfully selected the virtual disk file.
+
+  100 percent completed
+
+DiskPart successfully attached the virtual disk file.
+
+Partition 1 is now the selected partition.
+
+DiskPart has encountered an error: The directory is not empty.
+See the System Event Log for more information.
+
+Microsoft DiskPart version 10.0.10586
+
+Copyright (C) 1999-2013 Microsoft Corporation.
+On computer: GILAD-PC
+
+DiskPart successfully selected the virtual disk file.
+
+Partition 1 is now the selected partition.
+
+DiskPart successfully detached the virtual disk file.
