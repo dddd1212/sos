@@ -166,11 +166,11 @@ void* mem_alloc_ex(BootLoaderAllocator *allocator, uint32 size, BOOL isVolatile,
 		}
 		if (specific_phys_addr == -1) { // Take physical address from the list
 			*PTE(next_virtual) = (*next_physical) | 3;
+			next_physical++;
 		} else { // Set specific physical address:
 			*PTE(next_virtual) = (specific_phys_addr + i * 0x1000) | 3;
 		}
 		next_virtual += 0x1000;
-		next_physical++;
 	}
 
 	if (isVolatile) {
