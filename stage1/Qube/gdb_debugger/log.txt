@@ -1,0 +1,961 @@
+<-- =thread-group-added,id="i1"
+<-- ~"GNU gdb (GDB) (Cygwin 7.10.1-1) 7.10.1\n"
+<-- ~"Copyright (C) 2015 Free Software Foundation, Inc.\n"
+<-- ~"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.  Type \"show copying\"\nand \"show warranty\" for details.\n"
+<-- ~"This GDB was configured as \"x86_64-pc-cygwin\".\nType \"show configuration\" for configuration details."
+<-- ~"\nFor bug reporting instructions, please see:\n"
+<-- ~"<http://www.gnu.org/software/gdb/bugs/>.\n"
+<-- ~"Find the GDB manual and other documentation resources online at:\n<http://www.gnu.org/software/gdb/documentation/>.\n"
+<-- ~"For help, type \"help\".\n"
+<-- ~"Type \"apropos word\" to search for commands related to \"word\".\n"
+<-- =cmd-param-changed,param="auto-load safe-path",value="/"
+<-- =cmd-param-changed,param="step-mode",value="on"
+<-- =cmd-param-changed,param="disassembly-flavor",value="intel"
+<-- =breakpoint-created,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x000000000000aa7d",func="hack_for_gdb",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="10",thread-groups=["i1"],times="0",original-location="hack_for_gdb"}
+<S- =breakpoint-modified,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x000000000000aa7d",func="hack_for_gdb",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="10",thread-groups=["i1"],times="0",script={"silent","eval \"add-symbol-file /cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/%s 0x%lx\", module_file_name, entry","c"},original-location="hack_for_gdb"}
+<-- (gdb) 
+--> 1001-gdb-set target-async on
+<-- 1001^done
+<-- (gdb) 
+--> 1002-gdb-set solib-search-path "E:\\gilad\\sos-git2\\sos\\stage1\\Qube\\\\_output\\bootloader;"
+<-- 1002^done
+<-- (gdb) 
+--> 1003-gdb-set stop-on-solib-events 1
+<-- 1003^done
+<-- (gdb) 
+--> 1004-environment-cd E:\\gilad\\sos-git2\\sos\\stage1\\Qube\\
+<-- 1004^done
+<-- (gdb) 
+--> 1005-file-exec-and-symbols E:\\gilad\\sos-git2\\sos\\stage1\\Qube\\\\_output\\bootloader\\boot.elf
+<-- 1005^done
+<-- (gdb) 
+--> 1006-break-insert main
+<-- 1006^error,msg="Function \"main\" not defined."
+<-- (gdb) 
+--> 1007-target-select remote localhost:1234
+<-- =thread-group-started,id="i1",pid="42000"
+<-- =thread-created,id="1",group-id="i1"
+<-- ~"0x000000000000fff0 in ?? ()\n"
+<-- *stopped,frame={addr="0x000000000000fff0",func="??",args=[]},thread-id="1",stopped-threads="all"
+<-- 1007^connected
+<-- (gdb) 
+--> 1008-break-insert -f interrupts.c:129
+<-- &"No source file named interrupts.c.\n"
+<-- 1008^done,bkpt={number="2",type="breakpoint",disp="keep",enabled="y",addr="<PENDING>",pending="interrupts.c:129",times="0",original-location="interrupts.c:129"}
+<-- (gdb) 
+--> 1009-break-insert -f interrupts.c:369
+<-- &"No source file named interrupts.c.\n"
+<-- 1009^done,bkpt={number="3",type="breakpoint",disp="keep",enabled="y",addr="<PENDING>",pending="interrupts.c:369",times="0",original-location="interrupts.c:369"}
+<-- (gdb) 
+--> 1010-break-insert -f interrupts.c:413
+<-- &"No source file named interrupts.c.\n"
+<-- 1010^done,bkpt={number="4",type="breakpoint",disp="keep",enabled="y",addr="<PENDING>",pending="interrupts.c:413",times="0",original-location="interrupts.c:413"}
+<-- (gdb) 
+--> 1011-break-insert -f interrupts.c:412
+<-- &"No source file named interrupts.c.\n"
+<-- 1011^done,bkpt={number="5",type="breakpoint",disp="keep",enabled="y",addr="<PENDING>",pending="interrupts.c:412",times="0",original-location="interrupts.c:412"}
+<-- (gdb) 
+--> 1012-interpreter-exec console "info sharedlibrary"
+<-- ~"No shared libraries loaded at this time.\n"
+<-- 1012^done
+<-- (gdb) 
+--> 1013-thread-info
+<-- 1013^done,threads=[{id="1",target-id="Thread <main>",frame={level="0",addr="0x000000000000fff0",func="??",args=[]},state="stopped"}],current-thread-id="1"
+<-- (gdb) 
+--> 1014-stack-list-frames 0 1000
+<-- 1014^done,stack=[frame={level="0",addr="0x000000000000fff0",func="??"}]
+<-- (gdb) 
+--> -exec-continue
+<-- ^running
+<-- *running,thread-id="all"
+<-- (gdb) 
+<-- (gdb) 
+<S- =breakpoint-modified,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x000000000000aa7d",func="hack_for_gdb",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="10",thread-groups=["i1"],times="1",script={"silent","eval \"add-symbol-file /cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/%s 0x%lx\", module_file_name, entry","c"},original-location="hack_for_gdb"}
+<-- *stopped
+<-- ~"add symbol table from file \"/cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/LIBC.QKR\" at\n"
+<-- ~"\t.text_addr = 0xfffff000001053d0\n"
+<-- *running,thread-id="all"
+<S- =breakpoint-modified,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x000000000000aa7d",func="hack_for_gdb",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="10",thread-groups=["i1"],times="2",script={"silent","eval \"add-symbol-file /cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/%s 0x%lx\", module_file_name, entry","c"},original-location="hack_for_gdb"}
+<-- *stopped
+<-- ~"add symbol table from file \"/cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/SCREEN.QKR\" at\n"
+<-- ~"\t.text_addr = 0xfffff000003064c0\n"
+<-- *running,thread-id="all"
+<S- =breakpoint-modified,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x000000000000aa7d",func="hack_for_gdb",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="10",thread-groups=["i1"],times="3",script={"silent","eval \"add-symbol-file /cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/%s 0x%lx\", module_file_name, entry","c"},original-location="hack_for_gdb"}
+<-- *stopped
+<-- ~"add symbol table from file \"/cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/KERNEL.QKR\" at\n"
+<-- ~"\t.text_addr = 0xfffff000005072f0\n"
+<-- *running,thread-id="all"
+<S- =breakpoint-modified,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x000000000000aa7d",func="hack_for_gdb",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="10",thread-groups=["i1"],times="4",script={"silent","eval \"add-symbol-file /cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/%s 0x%lx\", module_file_name, entry","c"},original-location="hack_for_gdb"}
+<-- *stopped
+<-- ~"add symbol table from file \"/cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/INTRPTS.QKR\" at\n"
+<-- ~"\t.text_addr = 0xfffff00000709ae0\n"
+<-- =breakpoint-modified,bkpt={number="2",type="breakpoint",disp="keep",enabled="y",addr="0xfffff0000070ae50",func="qkr_main",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="129",thread-groups=["i1"],times="0",original-location="interrupts.c:129"}
+<-- =breakpoint-modified,bkpt={number="3",type="breakpoint",disp="keep",enabled="y",addr="0xfffff0000070b64f",func="init_APIC",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="369",thread-groups=["i1"],times="0",original-location="interrupts.c:369"}
+<-- =breakpoint-modified,bkpt={number="4",type="breakpoint",disp="keep",enabled="y",addr="0xfffff0000070b7af",func="init_APIC",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="413",thread-groups=["i1"],times="0",original-location="interrupts.c:413"}
+<-- =breakpoint-modified,bkpt={number="5",type="breakpoint",disp="keep",enabled="y",addr="0xfffff0000070b7a0",func="init_APIC",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="412",thread-groups=["i1"],times="0",original-location="interrupts.c:412"}
+<-- *running,thread-id="all"
+<-- =breakpoint-modified,bkpt={number="2",type="breakpoint",disp="keep",enabled="y",addr="0xfffff0000070ae50",func="qkr_main",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="129",thread-groups=["i1"],times="1",original-location="interrupts.c:129"}
+<-- ~"\nBreakpoint "
+<-- ~"2, qkr_main (kgd=0xfffff00000000000) at interrupts.c:129\n"
+<-- ~"129\t\tscreen_write_string(\"LIDT INITED!\", TRUE);\n"
+<-- *stopped,reason="breakpoint-hit",disp="keep",bkptno="2",frame={addr="0xfffff0000070ae50",func="qkr_main",args=[{name="kgd",value="0xfffff00000000000"}],file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="129"},thread-id="1",stopped-threads="all"
+--> 1015-stack-list-frames 0 1000
+<-- 1015^done,stack=[frame={level="0",addr="0xfffff0000070ae50",func="qkr_main",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="129"},frame={level="1",addr="0x000000000000c02a",func="load_modules_and_run_kernel",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="181"},frame={level="2",addr="0x000000000000cca1",func="_start",file="long_mode_main.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/long_mode_main.c",line="150"}]
+<-- (gdb) 
+--> 1016-stack-list-arguments 2 0 2
+<-- 1016^done,stack-args=[frame={level="0",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"}]},frame={level="1",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"},{name="boot_modules",type="struct STAGE0BootModule *",value="0x2c18"},{name="boot_loader_allocator",type="BootLoaderAllocator *",value="0x3f78"},{name="num_of_modules",type="int",value="4"}]},frame={level="2",args=[]}]
+<-- (gdb) 
+--> 1017-gdb-set output-radix 16
+<-- 1017^done
+<-- (gdb) 
+--> 1018-stack-list-variables 0
+<-- 1018^done,variables=[{name="kgd",arg="1"}]
+<-- (gdb) 
+--> 1019-var-create - * "kgd"
+<-- 1019^done,name="var1",numchild="5",value="0xfffff00000000000",type="KernelGlobalData *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> -exec-continue
+<-- ^running
+<-- *running,thread-id="all"
+<-- (gdb) 
+<-- (gdb) 
+<-- =breakpoint-modified,bkpt={number="3",type="breakpoint",disp="keep",enabled="y",addr="0xfffff0000070b64f",func="init_APIC",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="369",thread-groups=["i1"],times="1",original-location="interrupts.c:369"}
+<-- ~"\nBreakpoint "
+<-- ~"3, init_APIC (apic_address_for_ipi=0x0) at interrupts.c:370\n"
+<-- ~"370\t\tapic->LVT_timer = APIC_TIMER;\n"
+<-- *stopped,reason="breakpoint-hit",disp="keep",bkptno="3",frame={addr="0xfffff0000070b64f",func="init_APIC",args=[{name="apic_address_for_ipi",value="0x0"}],file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="370"},thread-id="1",stopped-threads="all"
+--> 1020-stack-list-frames 0 1000
+<-- 1020^done,stack=[frame={level="0",addr="0xfffff0000070b64f",func="init_APIC",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="370"},frame={level="1",addr="0xfffff0000070ae16",func="init_interrupts",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="115"},frame={level="2",addr="0xfffff0000070ae7a",func="qkr_main",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="133"},frame={level="3",addr="0x000000000000c02a",func="load_modules_and_run_kernel",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="181"},frame={level="4",addr="0x000000000000cca1",func="_start",file="long_mode_main.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/long_mode_main.c",line="150"}]
+<-- (gdb) 
+--> 1021-stack-list-arguments 2 0 4
+<-- 1021^done,stack-args=[frame={level="0",args=[{name="apic_address_for_ipi",type="char",value="0x0"}]},frame={level="1",args=[]},frame={level="2",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"}]},frame={level="3",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"},{name="boot_modules",type="struct STAGE0BootModule *",value="0x2c18"},{name="boot_loader_allocator",type="BootLoaderAllocator *",value="0x3f78"},{name="num_of_modules",type="int",value="0x4"}]},frame={level="4",args=[]}]
+<-- (gdb) 
+--> 1022-stack-list-variables 0
+<-- 1022^done,variables=[{name="apic_address_for_ipi",arg="1"},{name="apic_context"},{name="apic"},{name="orig"},{name="i"},{name="counts_elapsed"}]
+<-- (gdb) 
+--> 1023-var-create - * "apic_address_for_ipi"
+<-- 1023^done,name="var2",numchild="0",value="0x0",type="char",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1024-var-create - * "apic_context"
+<-- 1024^done,name="var3",numchild="2",value="0xfffff0000090c990",type="APICContext *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1025-var-create - * "apic"
+<-- 1025^done,name="var4",numchild="128",value="0xfffff00000104000",type="APICRegisters *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1026-var-create - * "orig"
+<-- 1026^done,name="var5",numchild="0",value="0x10",type="char",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1027-var-create - * "i"
+<-- 1027^done,name="var6",numchild="0",value="0x0",type="int",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1028-var-create - * "counts_elapsed"
+<-- 1028^done,name="var7",numchild="0",value="0x2898",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> -exec-continue
+<-- ^running
+<-- *running,thread-id="all"
+<-- (gdb) 
+<-- (gdb) 
+<-- =breakpoint-modified,bkpt={number="5",type="breakpoint",disp="keep",enabled="y",addr="0xfffff0000070b7a0",func="init_APIC",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="412",thread-groups=["i1"],times="1",original-location="interrupts.c:412"}
+<-- ~"\nBreakpoint "
+<-- ~"5, init_APIC (apic_address_for_ipi=0x0) at interrupts.c:412\n"
+<-- ~"412\t\tuint32 counts_elapsed = 0xffffffff - apic->current_count;\n"
+<-- *stopped,reason="breakpoint-hit",disp="keep",bkptno="5",frame={addr="0xfffff0000070b7a0",func="init_APIC",args=[{name="apic_address_for_ipi",value="0x0"}],file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="412"},thread-id="1",stopped-threads="all"
+--> 1029-stack-list-frames 0 1000
+<-- 1029^done,stack=[frame={level="0",addr="0xfffff0000070b7a0",func="init_APIC",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="412"},frame={level="1",addr="0xfffff0000070ae16",func="init_interrupts",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="115"},frame={level="2",addr="0xfffff0000070ae7a",func="qkr_main",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="133"},frame={level="3",addr="0x000000000000c02a",func="load_modules_and_run_kernel",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="181"},frame={level="4",addr="0x000000000000cca1",func="_start",file="long_mode_main.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/long_mode_main.c",line="150"}]
+<-- (gdb) 
+--> 1030-stack-list-arguments 2 0 4
+<-- 1030^done,stack-args=[frame={level="0",args=[{name="apic_address_for_ipi",type="char",value="0x0"}]},frame={level="1",args=[]},frame={level="2",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"}]},frame={level="3",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"},{name="boot_modules",type="struct STAGE0BootModule *",value="0x2c18"},{name="boot_loader_allocator",type="BootLoaderAllocator *",value="0x3f78"},{name="num_of_modules",type="int",value="0x4"}]},frame={level="4",args=[]}]
+<-- (gdb) 
+--> 1031-stack-list-variables 0
+<-- 1031^done,variables=[{name="apic_address_for_ipi",arg="1"},{name="apic_context"},{name="apic"},{name="orig"},{name="i"},{name="counts_elapsed"}]
+<-- (gdb) 
+--> 1032-var-create - * "apic_address_for_ipi"
+<-- 1032^done,name="var8",numchild="0",value="0x0",type="char",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1033-var-create - * "apic_context"
+<-- 1033^done,name="var9",numchild="2",value="0xfffff0000090c990",type="APICContext *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1034-var-create - * "apic"
+<-- 1034^done,name="var10",numchild="128",value="0xfffff00000104000",type="APICRegisters *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1035-var-create - * "orig"
+<-- 1035^done,name="var11",numchild="0",value="0x31",type="char",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1036-var-create - * "i"
+<-- 1036^done,name="var12",numchild="0",value="0xffffffff",type="int",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1037-var-create - * "counts_elapsed"
+<-- 1037^done,name="var13",numchild="0",value="0x2898",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1038-var-create - * "apic"
+<-- 1038^done,name="var14",numchild="128",value="0xfffff00000104000",type="APICRegisters *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1039-var-create - * "// Wait until the on-shot PIT will fire:"
+<-- 1039^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1040-var-create - * "int"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1040^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1041-var-create - * "// Calculate the BUS frequency:"
+<-- 1041^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1042-var-create - * "apic->current_count"
+<-- 1042^done,name="var18",numchild="0",value="",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1043-var-evaluate-expression var18
+<-- 1043^done,value=""
+<-- (gdb) 
+--> 1044-var-create - * "counts_elapsed"
+<-- 1044^done,name="var19",numchild="0",value="0x2898",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1045-exec-next
+<-- 1045^running
+<-- *running,thread-id="all"
+<-- (gdb) 
+<-- (gdb) 
+<-- *stopped,reason="end-stepping-range",frame={addr="0xfffff0000070b7c1",func="init_APIC",args=[{name="apic_address_for_ipi",value="0x0"}],file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="420"},thread-id="1",stopped-threads="all"
+--> 1046-stack-list-frames 0 1000
+<-- 1046^done,stack=[frame={level="0",addr="0xfffff0000070b7c1",func="init_APIC",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="420"},frame={level="1",addr="0xfffff0000070ae16",func="init_interrupts",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="115"},frame={level="2",addr="0xfffff0000070ae7a",func="qkr_main",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="133"},frame={level="3",addr="0x000000000000c02a",func="load_modules_and_run_kernel",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="181"},frame={level="4",addr="0x000000000000cca1",func="_start",file="long_mode_main.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/long_mode_main.c",line="150"}]
+<-- (gdb) 
+--> 1047-var-delete var2
+<-- 1047^done,ndeleted="1"
+<-- (gdb) 
+--> 1048-var-delete var3
+<-- 1048^done,ndeleted="1"
+<-- (gdb) 
+--> 1049-var-delete var7
+<-- 1049^done,ndeleted="1"
+<-- (gdb) 
+--> 1050-var-delete var5
+<-- 1050^done,ndeleted="1"
+<-- (gdb) 
+--> 1051-var-delete var4
+<-- 1051^done,ndeleted="1"
+<-- (gdb) 
+--> 1052-var-delete var6
+<-- 1052^done,ndeleted="1"
+<-- (gdb) 
+--> 1053-stack-list-arguments 2 0 4
+<-- 1053^done,stack-args=[frame={level="0",args=[{name="apic_address_for_ipi",type="char",value="0x0"}]},frame={level="1",args=[]},frame={level="2",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"}]},frame={level="3",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"},{name="boot_modules",type="struct STAGE0BootModule *",value="0x2c18"},{name="boot_loader_allocator",type="BootLoaderAllocator *",value="0x3f78"},{name="num_of_modules",type="int",value="0x4"}]},frame={level="4",args=[]}]
+<-- (gdb) 
+--> 1054-var-create - * "counts_elapsed"
+<-- 1054^done,name="var20",numchild="0",value="0x9c4",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1055-stack-list-variables 0
+<-- 1055^done,variables=[{name="apic_address_for_ipi",arg="1"},{name="apic_context"},{name="apic"},{name="orig"},{name="i"},{name="counts_elapsed"}]
+<-- (gdb) 
+--> 1056-var-create - * "apic_address_for_ipi"
+<-- 1056^done,name="var21",numchild="0",value="0x0",type="char",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1057-var-create - * "apic_context"
+<-- 1057^done,name="var22",numchild="2",value="0xfffff0000090c990",type="APICContext *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1058-var-create - * "apic"
+<-- 1058^done,name="var23",numchild="128",value="0xfffff00000104000",type="APICRegisters *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1059-var-create - * "orig"
+<-- 1059^done,name="var24",numchild="0",value="0x31",type="char",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1060-var-create - * "i"
+<-- 1060^done,name="var25",numchild="0",value="0xffffffff",type="int",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1061-var-create - * "counts_elapsed"
+<-- 1061^done,name="var26",numchild="0",value="0x9c4",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1062-var-create - * "g_apic_context.bus_freq"
+<-- 1062^done,name="var27",numchild="0",value="",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1063-var-evaluate-expression var27
+<-- 1063^done,value=""
+<-- (gdb) 
+--> 1064-var-list-children --simple-values "var22"
+<-- 1064^done,numchild="2",children=[child={name="var22.regs",exp="regs",numchild="128",value="0xfffff00000104000",type="APICRegisters *",thread-id="1"},child={name="var22.bus_freq",exp="bus_freq",numchild="0",value="0x3d0900",type="uint64",thread-id="1"}],has_more="0"
+<-- (gdb) 
+--> 1065-var-create - * "((APICContext *)0xfffff0000090c990)->bus_freq"
+<-- 1065^done,name="var28",numchild="0",value="0x3d0900",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1066-var-create - * "g_apic_context.bus_freq"
+<-- 1066^done,name="var29",numchild="0",value="",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1067-var-evaluate-expression var29
+<-- 1067^done,value=""
+<-- (gdb) 
+--> 1068-var-create - * "g_apic_context.bus_freq"
+<-- 1068^done,name="var30",numchild="0",value="",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1069-var-evaluate-expression var30
+<-- 1069^done,value=""
+<-- (gdb) 
+--> 1070-var-create - * "//set_apic_timer(timer_ms);"
+<-- 1070^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1071-var-create - * "//set_apic_timer(timer_ms);"
+<-- 1071^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1072-var-create - * "// Stop the APIC timer:"
+<-- 1072^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1073-var-create - * "counts_elapsed"
+<-- 1073^done,name="var34",numchild="0",value="0x9c4",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1074-var-create - * "// g_apic_bus_freq = number of ticks per second."
+<-- 1074^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1075-gdb-set output-radix 10
+<-- 1075^done
+<-- (gdb) 
+--> 1076-stack-list-variables 0
+<-- 1076^done,variables=[{name="apic_address_for_ipi",arg="1"},{name="apic_context"},{name="apic"},{name="orig"},{name="i"},{name="counts_elapsed"}]
+<-- (gdb) 
+--> 1077-var-create - * "apic_address_for_ipi"
+<-- 1077^done,name="var36",numchild="0",value="0 '\\000'",type="char",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1078-var-create - * "apic_context"
+<-- 1078^done,name="var37",numchild="2",value="0xfffff0000090c990",type="APICContext *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1079-var-create - * "apic"
+<-- 1079^done,name="var38",numchild="128",value="0xfffff00000104000",type="APICRegisters *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1080-var-create - * "orig"
+<-- 1080^done,name="var39",numchild="0",value="49 '1'",type="char",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1081-var-create - * "i"
+<-- 1081^done,name="var40",numchild="0",value="-1",type="int",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1082-var-create - * "counts_elapsed"
+<-- 1082^done,name="var41",numchild="0",value="2500",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1083-var-list-children --simple-values "var37"
+<-- 1083^done,numchild="2",children=[child={name="var37.regs",exp="regs",numchild="128",value="0xfffff00000104000",type="APICRegisters *",thread-id="1"},child={name="var37.bus_freq",exp="bus_freq",numchild="0",value="4000000",type="uint64",thread-id="1"}],has_more="0"
+<-- (gdb) 
+--> 1084-stack-list-arguments 2 0 4
+<-- 1084^done,stack-args=[frame={level="0",args=[{name="apic_address_for_ipi",type="char",value="0 '\\000'"}]},frame={level="1",args=[]},frame={level="2",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"}]},frame={level="3",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"},{name="boot_modules",type="struct STAGE0BootModule *",value="0x2c18"},{name="boot_loader_allocator",type="BootLoaderAllocator *",value="0x3f78"},{name="num_of_modules",type="int",value="4"}]},frame={level="4",args=[]}]
+<-- (gdb) 
+--> 1085-stack-list-arguments 2 0 4
+<-- 1085^done,stack-args=[frame={level="0",args=[{name="apic_address_for_ipi",type="char",value="0 '\\000'"}]},frame={level="1",args=[]},frame={level="2",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"}]},frame={level="3",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"},{name="boot_modules",type="struct STAGE0BootModule *",value="0x2c18"},{name="boot_loader_allocator",type="BootLoaderAllocator *",value="0x3f78"},{name="num_of_modules",type="int",value="4"}]},frame={level="4",args=[]}]
+<-- (gdb) 
+--> 1086-gdb-set output-radix 16
+<-- 1086^done
+<-- (gdb) 
+--> 1087-stack-list-variables 0
+<-- 1087^done,variables=[{name="apic_address_for_ipi",arg="1"},{name="apic_context"},{name="apic"},{name="orig"},{name="i"},{name="counts_elapsed"}]
+<-- (gdb) 
+--> 1088-var-create - * "apic_address_for_ipi"
+<-- 1088^done,name="var42",numchild="0",value="0x0",type="char",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1089-var-create - * "apic_context"
+<-- 1089^done,name="var43",numchild="2",value="0xfffff0000090c990",type="APICContext *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1090-var-create - * "apic"
+<-- 1090^done,name="var44",numchild="128",value="0xfffff00000104000",type="APICRegisters *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1091-var-create - * "orig"
+<-- 1091^done,name="var45",numchild="0",value="0x31",type="char",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1092-var-create - * "i"
+<-- 1092^done,name="var46",numchild="0",value="0xffffffff",type="int",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1093-var-create - * "counts_elapsed"
+<-- 1093^done,name="var47",numchild="0",value="0x9c4",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1094-var-list-children --simple-values "var43"
+<-- 1094^done,numchild="2",children=[child={name="var43.regs",exp="regs",numchild="128",value="0xfffff00000104000",type="APICRegisters *",thread-id="1"},child={name="var43.bus_freq",exp="bus_freq",numchild="0",value="0x3d0900",type="uint64",thread-id="1"}],has_more="0"
+<-- (gdb) 
+--> 1095-var-create - * "g_apic_context.bus_freq"
+<-- 1095^done,name="var48",numchild="0",value="",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1096-var-evaluate-expression var48
+<-- 1096^done,value=""
+<-- (gdb) 
+--> 1097-var-create - * "g_apic_context.bus_freq"
+<-- 1097^done,name="var49",numchild="0",value="",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1098-var-evaluate-expression var49
+<-- 1098^done,value=""
+<-- (gdb) 
+--> 1099-var-create - * "// g_apic_bus_freq = number of ticks per second."
+<-- 1099^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1100-var-create - * "//set_apic_timer(timer_ms);"
+<-- 1100^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1101-var-create - * "// Stop the APIC timer:"
+<-- 1101^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1102-var-create - * "("
+<-- 1102^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1103-var-create - * "("
+<-- 1103^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1104-var-create - * "i"
+<-- 1104^done,name="var55",numchild="0",value="0xffffffff",type="int",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1105-var-create - * "i"
+<-- 1105^done,name="var56",numchild="0",value="0xffffffff",type="int",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1106-var-create - * "// Calculate the BUS frequency:"
+<-- 1106^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1107-var-create - * "counts_elapsed"
+<-- 1107^done,name="var58",numchild="0",value="0x9c4",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1108-var-create - * "__in8"
+<-- 1108^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1109-var-create - * "__in8"
+<-- 1109^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1110-var-create - * "counts_elapsed"
+<-- 1110^done,name="var61",numchild="0",value="0x9c4",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1111-var-create - * "// Calculate the BUS frequency:"
+<-- 1111^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1112-var-create - * "0x61"
+<-- 1112^done,name="var63",numchild="0",value="0x61",type="int",has_more="0"
+<-- (gdb) 
+--> 1113-var-create - * "0x61"
+<-- 1113^done,name="var64",numchild="0",value="0x61",type="int",has_more="0"
+<-- (gdb) 
+--> 1114-var-create - * "apic->current_count"
+<-- 1114^done,name="var65",numchild="0",value="",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1115-var-evaluate-expression var65
+<-- 1115^done,value=""
+<-- (gdb) 
+--> 1116-var-create - * "counts_elapsed"
+<-- 1116^done,name="var66",numchild="0",value="0x9c4",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1117-var-create - * "// set the reload value (1193180 / 100 Hz = 11931 = 2e9bh, beacuse we want to measure 1 ms."
+<-- 1117^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1118-var-create - * "// set the reload value (1193180 / 100 Hz = 11931 = 2e9bh, beacuse we want to measure 1 ms."
+<-- 1118^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1119-var-create - * "// set the reload value (1193180 / 100 Hz = 11931 = 2e9bh, beacuse we want to measure 1 ms."
+<-- 1119^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1120-var-create - * "// Start the counting (In the one-shot mode, we need to put 0 at the output bit and then 1."
+<-- 1120^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1121-var-create - * "// Start the counting (In the one-shot mode, we need to put 0 at the output bit and then 1."
+<-- 1121^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1122-var-create - * "// Start the counting (In the one-shot mode, we need to put 0 at the output bit and then 1."
+<-- 1122^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1123-var-create - * "// Mask it"
+<-- 1123^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1124-var-create - * "// Mask it"
+<-- 1124^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1125-var-create - * "// g_apic_bus_freq = number of ticks per second."
+<-- 1125^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1126-var-create - * "g_apic_context.bus_freq"
+<-- 1126^done,name="var76",numchild="0",value="",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1127-var-evaluate-expression var76
+<-- 1127^done,value=""
+<-- (gdb) 
+--> 1128-var-create - * "g_apic_context.bus_freq"
+<-- 1128^done,name="var77",numchild="0",value="",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1129-var-evaluate-expression var77
+<-- 1129^done,value=""
+<-- (gdb) 
+--> 1130-var-create - * "g_apic_context.bus_freq"
+<-- 1130^done,name="var78",numchild="0",value="",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1131-var-evaluate-expression var78
+<-- 1131^done,value=""
+<-- (gdb) 
+--> 1132-var-create - * "// g_apic_bus_freq = number of ticks per second."
+<-- 1132^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1133-var-create - * "g_apic_context.bus_freq"
+<-- 1133^done,name="var80",numchild="0",value="",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1134-var-evaluate-expression var80
+<-- 1134^done,value=""
+<-- (gdb) 
+--> 1135-var-create - * "// g_apic_bus_freq = number of ticks per second."
+<-- 1135^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1136-var-create - * "// g_apic_bus_freq = number of ticks per second."
+<-- 1136^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1137-var-create - * "// g_apic_bus_freq = number of ticks per second."
+<-- 1137^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1138-var-create - * "g_apic_context"
+<-- 1138^done,name="var84",numchild="2",value="{...}",type="APICContext",has_more="0"
+<-- (gdb) 
+--> 1139-var-create - * "g_apic_context"
+<-- 1139^done,name="var85",numchild="2",value="{...}",type="APICContext",has_more="0"
+<-- (gdb) 
+--> 1140-var-create - * "// g_apic_bus_freq = number of ticks per second."
+<-- 1140^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1141-var-create - * "g_apic_context"
+<-- 1141^done,name="var87",numchild="2",value="{...}",type="APICContext",has_more="0"
+<-- (gdb) 
+--> 1142-var-create - * "g_apic_context"
+<-- 1142^done,name="var88",numchild="2",value="{...}",type="APICContext",has_more="0"
+<-- (gdb) 
+--> 1143-var-create - * "// g_apic_bus_freq = number of ticks per second."
+<-- 1143^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1144-var-create - * "g_apic_"
+<-- 1144^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1145-var-create - * "g_apic_"
+<-- 1145^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1146-var-create - * "// g_apic_context.bus_freq = number of ticks per second."
+<-- 1146^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1147-var-create - * "// g_apic_context.bus_freq = number of ticks per second."
+<-- 1147^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1148-var-create - * "// g_apic_context.bus_freq = number of ticks per second."
+<-- 1148^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1149-var-create - * "// g_apic_context.bus_freq = number of ticks per second."
+<-- 1149^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1150-var-create - * "// g_apic_context.bus_freq = number of ticks per second."
+<-- 1150^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1151-var-create - * "// g_apic_context.bus_freq = number of ticks per second."
+<-- 1151^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1152-var-create - * "// g_apic_context.bus_freq = number of ticks per second."
+<-- 1152^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1153-var-create - * "// g_apic_context.bus_freq = number of ticks per second."
+<-- 1153^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1154-var-create - * "// g_apic_context.bus_freq = number of ticks per second."
+<-- 1154^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1155-var-create - * "// g_apic_context.bus_freq = number of ticks per second."
+<-- 1155^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1156-var-create - * "counts_elapsed"
+<-- 1156^done,name="var102",numchild="0",value="0x9c4",type="uint32",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1157-var-create - * "0xffffffff"
+<-- 1157^done,name="var103",numchild="0",value="0xffffffff",type="unsigned int",has_more="0"
+<-- (gdb) 
+--> 1158-var-create - * "0xffffffff"
+<-- 1158^done,name="var104",numchild="0",value="0xffffffff",type="unsigned int",has_more="0"
+<-- (gdb) 
+--> 1159-var-create - * "0xffffffff"
+<-- 1159^done,name="var105",numchild="0",value="0xffffffff",type="unsigned int",has_more="0"
+<-- (gdb) 
+--> 1160-var-create - * "0xffffffff"
+<-- 1160^done,name="var106",numchild="0",value="0xffffffff",type="unsigned int",has_more="0"
+<-- (gdb) 
+--> 1161-var-create - * "g_apic_context.bus_freq"
+<-- 1161^done,name="var107",numchild="0",value="",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1162-var-evaluate-expression var107
+<-- 1162^done,value=""
+<-- (gdb) 
+--> 1163-var-create - * "0b11111111"
+<-- 1163^done,name="var108",numchild="0",value="0xff",type="int",has_more="0"
+<-- (gdb) 
+--> 1164-var-create - * "g_apic_context"
+<-- 1164^done,name="var109",numchild="2",value="{...}",type="APICContext",has_more="0"
+<-- (gdb) 
+--> 1165-var-create - * "="
+<-- 1165^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1166-var-create - * "="
+<-- 1166^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1167-var-create - * "*"
+<-- 1167^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1168-var-create - * "*"
+<-- 1168^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1169-var-create - * "g_apic_context.bus_freq"
+<-- 1169^done,name="var114",numchild="0",value="",type="uint64",has_more="0"
+<-- (gdb) 
+--> 1170-var-evaluate-expression var114
+<-- 1170^done,value=""
+<-- (gdb) 
+--> 1171-var-create - * "g_apic_context"
+<-- 1171^done,name="var115",numchild="2",value="{...}",type="APICContext",has_more="0"
+<-- (gdb) 
+--> 1172-var-create - * "="
+<-- 1172^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1173-var-create - * "="
+<-- 1173^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1174-var-create - * "divide_value"
+<-- 1174^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1175-var-create - * "divide_value"
+<-- 1175^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1176-var-create - * "// time too long to wait it in the timer."
+<-- 1176^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1177-var-create - * "////////////////////////////////////////////////////////////////"
+<-- 1177^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1178-var-create - * "//    The point is, that this timer will never fire, because ~10ms from here we will stop it."
+<-- 1178^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1179-var-create - * "//               Also, if this freq is < 10Ghz, it will take at least 1.6 seconds to fire the timer."
+<-- 1179^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1180-var-create - * "//               Also, if this freq is < 10Ghz, it will take at least 1.6 seconds to fire the timer."
+<-- 1180^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1181-var-create - * "//    The point is, that this timer will never fire, because ~10ms from here we will stop it."
+<-- 1181^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1182-var-create - * "//    The point is, that this timer will never fire, because ~10ms from here we will stop it."
+<-- 1182^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1183-var-create - * "//               Also, if this freq is < 10Ghz, it will take at least 1.6 seconds to fire the timer."
+<-- 1183^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1184-var-create - * "//               Also, if this freq is < 10Ghz, it will take at least 1.6 seconds to fire the timer."
+<-- 1184^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1185-var-create - * "//               Also, if this freq is < 10Ghz, it will take at least 1.6 seconds to fire the timer."
+<-- 1185^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1186-var-create - * "// divide by 16. Note that if the bus freq is ~ the cpu freq, so it will take about 0xffffffff * 16 opcodes to fire the timer."
+<-- 1186^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1187-var-create - * "typedef"
+<-- 1187^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1188-var-create - * "// This function handle all of the interrupts."
+<-- 1188^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1189-var-create - * "BOOL"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1189^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1190-var-create - * "BOOL"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1190^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1191-var-create - * "apic_timer_stop"
+<-- 1191^done,name="var135",numchild="0",value="{BOOL ()} 0xfffff0000070b41d <apic_timer_stop>",type="BOOL ()",has_more="0"
+<-- (gdb) 
+--> 1192-var-create - * "uint64"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1192^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1193-var-create - * "uint64"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1193^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1194-var-create - * "BOOL"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1194^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1195-var-create - * "BOOL"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1195^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1196-var-create - * "#define"
+<-- 1196^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1197-var-create - * "apic_timer_start"
+<-- 1197^done,name="var141",numchild="0",value="{BOOL (uint64)} 0xfffff0000070b2e6 <apic_timer_start>",type="BOOL (uint64)",has_more="0"
+<-- (gdb) 
+--> 1198-var-create - * "apic_timer_stop"
+<-- 1198^done,name="var142",numchild="0",value="{BOOL ()} 0xfffff0000070b41d <apic_timer_stop>",type="BOOL ()",has_more="0"
+<-- (gdb) 
+--> 1199-var-create - * "apic_timer_get_time_ellapsed"
+<-- 1199^done,name="var143",numchild="0",value="{uint64 ()} 0xfffff0000070b4b4 <apic_timer_get_time_ellapsed>",type="uint64 ()",has_more="0"
+<-- (gdb) 
+--> 1200-var-create - * "apic_timer_get_time_ellapsed"
+<-- 1200^done,name="var144",numchild="0",value="{uint64 ()} 0xfffff0000070b4b4 <apic_timer_get_time_ellapsed>",type="uint64 ()",has_more="0"
+<-- (gdb) 
+--> 1201-var-create - * "apic_timer_stop"
+<-- 1201^done,name="var145",numchild="0",value="{BOOL ()} 0xfffff0000070b41d <apic_timer_stop>",type="BOOL ()",has_more="0"
+<-- (gdb) 
+--> 1202-var-create - * "g_is_timer_run_lock"
+<-- 1202^done,name="var146",numchild="1",value="",type="volatile int *",has_more="0"
+<-- (gdb) 
+--> 1203-var-evaluate-expression var146
+<-- 1203^done,value=""
+<-- (gdb) 
+--> 1204-var-create - * "g_is_timer_run"
+<-- 1204^done,name="var147",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1205-var-evaluate-expression var147
+<-- 1205^done,value=""
+<-- (gdb) 
+--> 1206-var-create - * "apic_timer_stop"
+<-- 1206^done,name="var148",numchild="0",value="{BOOL ()} 0xfffff0000070b41d <apic_timer_stop>",type="BOOL ()",has_more="0"
+<-- (gdb) 
+--> 1207-var-create - * "g_is_timer_run"
+<-- 1207^done,name="var149",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1208-var-evaluate-expression var149
+<-- 1208^done,value=""
+<-- (gdb) 
+--> 1209-var-create - * "g_is_timer_run"
+<-- 1209^done,name="var150",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1210-var-evaluate-expression var150
+<-- 1210^done,value=""
+<-- (gdb) 
+--> 1211-var-create - * "BOOL apic_timer_start(uint64 timer_us) {  "
+<-- 1211^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1212-var-create - * "BOOL apic_timer_start(uint64 timer_us) {  "
+<-- 1212^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1213-var-create - * "g_is_timer_run"
+<-- 1213^done,name="var153",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1214-var-evaluate-expression var153
+<-- 1214^done,value=""
+<-- (gdb) 
+--> 1215-var-create - * "apic"
+<-- 1215^done,name="var154",numchild="128",value="0xfffff00000104000",type="APICRegisters *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1216-var-create - * "g_is_timer_run"
+<-- 1216^done,name="var155",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1217-var-evaluate-expression var155
+<-- 1217^done,value=""
+<-- (gdb) 
+--> 1218-var-create - * "BOOL"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1218^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1219-var-create - * "BOOL"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1219^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1220-var-create - * "g_is_timer_run"
+<-- 1220^done,name="var158",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1221-var-evaluate-expression var158
+<-- 1221^done,value=""
+<-- (gdb) 
+--> 1222-var-create - * "// apic_timer api:"
+<-- 1222^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1223-var-create - * "apic_timer_get_time_ellapsed"
+<-- 1223^done,name="var160",numchild="0",value="{uint64 ()} 0xfffff0000070b4b4 <apic_timer_get_time_ellapsed>",type="uint64 ()",has_more="0"
+<-- (gdb) 
+--> 1224-var-create - * "apic_timer_get_time_ellapsed"
+<-- 1224^done,name="var161",numchild="0",value="{uint64 ()} 0xfffff0000070b4b4 <apic_timer_get_time_ellapsed>",type="uint64 ()",has_more="0"
+<-- (gdb) 
+--> 1225-var-create - * "g_is_timer_run_lock"
+<-- 1225^done,name="var162",numchild="1",value="",type="volatile int *",has_more="0"
+<-- (gdb) 
+--> 1226-var-evaluate-expression var162
+<-- 1226^done,value=""
+<-- (gdb) 
+--> 1227-var-create - * "g_is_timer_run_lock"
+<-- 1227^done,name="var163",numchild="1",value="",type="volatile int *",has_more="0"
+<-- (gdb) 
+--> 1228-var-evaluate-expression var163
+<-- 1228^done,value=""
+<-- (gdb) 
+--> 1229-var-create - * "g_is_timer_run"
+<-- 1229^done,name="var164",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1230-var-evaluate-expression var164
+<-- 1230^done,value=""
+<-- (gdb) 
+--> 1231-var-create - * "apic_timer_start"
+<-- 1231^done,name="var165",numchild="0",value="{BOOL (uint64)} 0xfffff0000070b2e6 <apic_timer_start>",type="BOOL (uint64)",has_more="0"
+<-- (gdb) 
+--> 1232-var-create - * "g_is_timer_run_lock"
+<-- 1232^done,name="var166",numchild="1",value="",type="volatile int *",has_more="0"
+<-- (gdb) 
+--> 1233-var-evaluate-expression var166
+<-- 1233^done,value=""
+<-- (gdb) 
+--> 1234-var-create - * "g_is_timer_run"
+<-- 1234^done,name="var167",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1235-var-evaluate-expression var167
+<-- 1235^done,value=""
+<-- (gdb) 
+--> 1236-var-create - * "g_is_timer_run"
+<-- 1236^done,name="var168",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1237-var-evaluate-expression var168
+<-- 1237^done,value=""
+<-- (gdb) 
+--> 1238-var-create - * "PIT_FREQ"
+<-- 1238^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1239-var-create - * "PIT_FREQ"
+<-- 1239^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1240-var-create - * "APICContext"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1240^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1241-var-create - * "APICContext"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1241^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1242-var-create - * "typedef"
+<-- 1242^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1243-var-create - * "g_is_timer_run"
+<-- 1243^done,name="var174",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1244-var-evaluate-expression var174
+<-- 1244^done,value=""
+<-- (gdb) 
+--> 1245-var-create - * "g_is_timer_run"
+<-- 1245^done,name="var175",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1246-var-evaluate-expression var175
+<-- 1246^done,value=""
+<-- (gdb) 
+--> 1247-var-create - * "// apic_timer api:"
+<-- 1247^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1248-var-create - * "("
+<-- 1248^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1249-var-create - * "("
+<-- 1249^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1250-var-create - * "g_is_timer_run"
+<-- 1250^done,name="var179",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1251-var-evaluate-expression var179
+<-- 1251^done,value=""
+<-- (gdb) 
+--> 1252-var-create - * "g_is_timer_run_lock"
+<-- 1252^done,name="var180",numchild="1",value="",type="volatile int *",has_more="0"
+<-- (gdb) 
+--> 1253-var-evaluate-expression var180
+<-- 1253^done,value=""
+<-- (gdb) 
+--> 1254-var-create - * "g_is_timer_run"
+<-- 1254^done,name="var181",numchild="0",value="",type="BOOL",has_more="0"
+<-- (gdb) 
+--> 1255-var-evaluate-expression var181
+<-- 1255^done,value=""
+<-- (gdb) 
+--> 1256-var-create - * "divide_value"
+<-- 1256^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1257-var-create - * "divide_value"
+<-- 1257^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1258-var-create - * "SpinLock g_is_timer_run_lock;"
+<-- 1258^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1259-var-create - * "SpinLock g_is_timer_run_lock;"
+<-- 1259^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1260-var-create - * "SpinLock g_is_timer_run_lock;"
+<-- 1260^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1261-var-create - * "SpinLock g_is_timer_run_lock;"
+<-- 1261^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1262-var-create - * "bus_freq"
+<-- 1262^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1263-var-create - * "bus_freq"
+<-- 1263^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1264-var-create - * "SpinLock"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1264^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1265-var-create - * "SpinLock"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1265^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1266-var-create - * "apic_timer_start"
+<-- 1266^done,name="var192",numchild="0",value="{BOOL (uint64)} 0xfffff0000070b2e6 <apic_timer_start>",type="BOOL (uint64)",has_more="0"
+<-- (gdb) 
+--> 1267-var-create - * "apic"
+<-- 1267^done,name="var193",numchild="128",value="0xfffff00000104000",type="APICRegisters *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1268-var-create - * "uint64"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1268^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1269-var-create - * "uint64"
+<-- &"Attempt to use a type name as an expression.\n"
+<-- 1269^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1270-var-create - * "spin_lock"
+<-- 1270^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1271-var-create - * "spin_lock"
+<-- 1271^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1272-var-create - * "spin_init"
+<-- 1272^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1273-var-create - * "spin_init"
+<-- 1273^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1274-var-create - * "sping_apic_context"
+<-- 1274^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1275-var-create - * "sping_apic_context"
+<-- 1275^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1276-var-create - * "sping_apic_context"
+<-- 1276^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1277-var-create - * "sping_apic_context"
+<-- 1277^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1278-var-create - * "g_apic_context.timer_inited"
+<-- 1278^error,msg="There is no member named timer_inited."
+<-- (gdb) 
+--> 1279-var-create - * "g_apic_context.timer_inited"
+<-- 1279^error,msg="There is no member named timer_inited."
+<-- (gdb) 
+--> 1280-var-create - * "g_apic_context.timer_inited"
+<-- 1280^error,msg="There is no member named timer_inited."
+<-- (gdb) 
+--> 1281-var-create - * "g_apic_context.timer_inited"
+<-- 1281^error,msg="There is no member named timer_inited."
+<-- (gdb) 
+--> 1282-var-create - * "("
+<-- 1282^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1283-var-create - * "("
+<-- 1283^error,msg="-var-create: unable to create variable object"
+<-- (gdb) 
+--> 1284-var-create - * "apic_timer_stop"
+<-- 1284^done,name="var210",numchild="0",value="{BOOL ()} 0xfffff0000070b41d <apic_timer_stop>",type="BOOL ()",has_more="0"
+<-- (gdb) 
+--> 1285-var-create - * "apic_timer_get_time_ellapsed"
+<-- 1285^done,name="var211",numchild="0",value="{uint64 ()} 0xfffff0000070b4b4 <apic_timer_get_time_ellapsed>",type="uint64 ()",has_more="0"
+<-- (gdb) 
+--> 1286kill
+<-- &"kill\n"
+<-- ~"Kill the program being debugged? (y or n) [answered Y; input not from terminal]\n"
+<-- =thread-group-exited,id="i1"
+<-- 1286^done
+<-- (gdb) 
+--> -gdb-exit
+<-- ^exit
+--> logout

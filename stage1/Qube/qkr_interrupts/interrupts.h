@@ -67,4 +67,6 @@ typedef enum {
 // implements in isrs.S
 extern uint64 isrs_list[0x100] asm("isrs_list");
 
+// TODO: If we will use for system-call the opcode sysenter, so we won't need it.
+//	     So change it to 0x101 or remove it and fix the code that using it.
 #define SYSTEM_CALL_VECTOR 0x51 // 'Q'

@@ -16,6 +16,7 @@ static inline void __sti() __attribute__((always_inline));
 static inline uint64 __rdmsr(uint32 msr_id) __attribute__((always_inline));
 static inline void __wrmsr(uint32 msr_id, uint64 msr_value) __attribute__((always_inline));
 static inline void __lidt(void* addr) __attribute__((always_inline));
+static inline void io_wait() __attribute__((always_inline));
 // #define __int(N) // implements later in the file.
 
 
@@ -121,6 +122,10 @@ static inline uint64 __rdmsr(uint32 msr_id)
 static inline void __sti() {
 	__asm__("sti");
 	return;
+}
+static inline void io_wait() {
+	// According to OSDev this is done like this in linux. We assumes that nobody uses this port.
+	asm volatile ("outb %%al, $0x80" : : "a"(0));
 }
 #define __int(n) __asm__("int %0" : : "N"((n)) : "cc", "memory");
 

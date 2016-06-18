@@ -8,7 +8,10 @@ DISK_FILEPATH = os.path.abspath("../_output/_disk/disk.vhd")
 BOOTLOADER_OUT = os.path.abspath("../_output/bootloader/boot.bin")
 
 def mount():
-    #os.system("md mount")    
+    import code
+    code.interact(local = locals())
+    os.system("md mount")
+
     open("diskpartscript","wb").write(
 r"""select vdisk file="%s\disk.vhd"
 attach vdisk

@@ -2,18 +2,18 @@
 #include "../Common/Qube.h"
 #include "../Common/intrinsics.h"
 #include "../MemoryManager/memory_manager.h"
-
+#include "../Common/spin_lock.h"
 #ifdef DEBUG
 #include "../screen/screen.h"
 #endif
 
 
-BOOL disable_old_PIC();
+BOOL configure_old_PIC();
 BOOL init_IDTs();
-BOOL init_APIC();
+
+BOOL init_APIC(char apic_address_for_ipi);
 BOOL enable_APIC();
 
-BOOL init_APIC();
 BOOL is_APIC_exist();
 BOOL enable_interrupts();
 BOOL init_IDT(uint8 vector, uint8 dpl, DescType type, uint64 handler_addr);
@@ -91,23 +91,32 @@ typedef struct {
 	APIC_DWORD(reserved3f0); // 0x3f0
 } APICRegisters;
 
-static APICRegisters * g_apic_regs = 0;
-InterruptDescriptor IDT[0x100];
+typedef struct {
+	APICRegisters * regs;
+	uint64 bus_freq;
+	
+	BOOL is_timer_run;
+	SpinLock is_timer_run_lock;
 
+} APICContext;
+static APICContext g_apic_context;
+//static APICRegisters * g_apic_regs = 0;
+InterruptDescriptor IDT[0x100];
+//static uint64 g_apic_bus_freq = 0; // number of ticks per second. Not initialized yet.
 BOOL init_interrupts() {
 	
 	return (
 		// First thing we want to validate that we support the hardware
 		is_APIC_exist() &&
 
-		// Disable the legacy PIC because we won't use it.
-		disable_old_PIC() &&
+		// Configure the legacy PIC to be disabled except from the timer.
+		configure_old_PIC() &&
 
 		// Prepare the IDTs
 	    init_IDTs() &&
 
 		// Configure the APIC
-		init_APIC() &&
+		init_APIC(0) &&
 
 		// Now we ready to enable the APIC
 		enable_APIC() &&
@@ -123,7 +132,7 @@ BOOL init_interrupts() {
 QResult qkr_main(KernelGlobalData * kgd) {
 	screen_write_string("LIDT INITED!", TRUE);
 	//screen_printf("My temp string %s %d", "1111", 1234, 0, 0);
-	g_apic_regs = kgd->APIC_base;
+	g_apic_context.regs = kgd->APIC_base;
 	//g_apic_regs = 2;
 	init_interrupts();
 
@@ -144,7 +153,7 @@ BOOL is_APIC_exist() {
 #define IA32_APIC_BASE_MSR 0x1b
 	__cpuid(code, &eax_out, &edx_out);
 	if (!(edx_out & (1 << 9))) return FALSE;
-	// Validate that the base address ofr the APIC registers are as expected:
+	// Validate that the base address of the APIC registers are as expected:
 	
 	// TODO: the field is more then 32bit. we need to see what the size and & with these bits.
 	if (__rdmsr(IA32_APIC_BASE_MSR) & 0xfffff100 != APIC_REG_BASE) return FALSE;
@@ -157,96 +166,63 @@ BOOL is_APIC_exist() {
 	//		 For now, we will assume the default address.
 	return TRUE;
 }
-/* reinitialize the PIC controllers, giving them specified vector offsets
-rather than 8h and 70h, as configured by default */
-#define PIC1		0x20		/* IO base address for master PIC */
-#define PIC2		0xA0		/* IO base address for slave PIC */
-#define PIC1_COMMAND	PIC1
-#define PIC1_DATA	(PIC1+1)
-#define PIC2_COMMAND	PIC2
-#define PIC2_DATA	(PIC2+1)
-#define ICW1_ICW4	0x01		/* ICW4 (not) needed */
-#define ICW1_SINGLE	0x02		/* Single (cascade) mode */
-#define ICW1_INTERVAL4	0x04		/* Call address interval 4 (8) */
-#define ICW1_LEVEL	0x08		/* Level triggered (edge) mode */
-#define ICW1_INIT	0x10		/* Initialization - required! */
 
-#define ICW4_8086	0x01		/* 8086/88 (MCS-80/85) mode */
-#define ICW4_AUTO	0x02		/* Auto (normal) EOI */
-#define ICW4_BUF_SLAVE	0x08		/* Buffered mode/slave */
-#define ICW4_BUF_MASTER	0x0C		/* Buffered mode/master */
-#define ICW4_SFNM	0x10		/* Special fully nested (not) */
+#define PIC1_COMMAND	0x20
+#define PIC1_DATA		0x21
+#define PIC2_COMMAND	0xa0
+#define PIC2_DATA		0xa1
 
-/*
-arguments:
-offset1 - vector offset for master PIC
-vectors on the master become offset1..offset1+7
-offset2 - same for slave PIC: offset2..offset2+7
-*/
-void io_wait() {
-	asm volatile ("outb %%al, $0x80" : : "a"(0));
-}
-void PIC_remap(int offset1, int offset2)
-{
-	unsigned char a1, a2;
+#define PIT_FREQ 1193182
 
-	a1 = __in8(PIC1_DATA);                        // save masks
-	a2 = __in8(PIC2_DATA);
+typedef enum {
+	// Lowest priority:
+	PIC1_IRQ0 = 0x20, // PIC timer
+	PIC1_IRQ1 = 0x21,
+	PIC1_IRQ2 = 0x22,
+	PIC1_IRQ3 = 0x23,
+	PIC1_IRQ4 = 0x24,
+	PIC1_IRQ5 = 0x25,
+	PIC1_IRQ6 = 0x26,
+	PIC1_IRQ7 = 0x27,
+	PIC2_IRQ0 = 0x28,
+	PIC2_IRQ1 = 0x29,
+	PIC2_IRQ2 = 0x2a,
+	PIC2_IRQ3 = 0x2b,
+	PIC2_IRQ4 = 0x2c,
+	PIC2_IRQ5 = 0x2d,
+	PIC2_IRQ6 = 0x2e,
+	PIC2_IRQ7 = 0x2f,
+	APIC_TIMER = 0x30,
+	APIC_SPURIOUS = 0x39,
+} InterruptVectors;
 
-	__out8(PIC1_COMMAND, ICW1_INIT + ICW1_ICW4);  // starts the initialization sequence (in cascade mode)
+BOOL configure_old_PIC() {
+	// Configure the timer (PIT):
+	__out8(0x43, 0x36); // We going to configure channel 0.
+	__out8(0x40, 0x1); // Low byte
+	__out8(0x40, 0x0); // High byte
+	
+	// re-init the PIC:
+	__out8(PIC1_COMMAND, 0x11);
 	io_wait();
-	__out8(PIC2_COMMAND, ICW1_INIT + ICW1_ICW4);
+	__out8(PIC2_COMMAND, 0x11);
 	io_wait();
-	__out8(PIC1_DATA, offset1);                 // ICW2: Master PIC vector offset
+	__out8(PIC1_DATA, PIC1_IRQ0);                 // ICW2: Master PIC vector offset
 	io_wait();
-	__out8(PIC2_DATA, offset2);                 // ICW2: Slave PIC vector offset
+	__out8(PIC2_DATA, PIC2_IRQ0);                 // ICW2: Slave PIC vector offset
 	io_wait();
 	__out8(PIC1_DATA, 4);                       // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
 	io_wait();
 	__out8(PIC2_DATA, 2);                       // ICW3: tell Slave PIC its cascade identity (0000 0010)
 	io_wait();
-
-	__out8(PIC1_DATA, ICW4_8086);
+	__out8(PIC1_DATA, 0x01);
 	io_wait();
-	__out8(PIC2_DATA, ICW4_8086);
+	__out8(PIC2_DATA, 0x01);
 	io_wait();
-
-	__out8(PIC1_DATA, a1);   // restore saved masks.
-	__out8(PIC2_DATA, a2);
-}
-BOOL disable_old_PIC() {
-	PIC_remap(0x80, 0x90);
-	//__out8(0xa1, 0xff); // disable the pic
-	//__out8(0x21, 0xff); // disable the pic
-	// TODO: We have to understand whats going on here. according to bochs code, the only way to clear the interrupt that pending now is throut reset the PIC.
-	//	     The problem is that this is enable the pic, so we have atomic problem...
-	//__out8(0x20, 0x11); // reset the pic
-	/*
-	uint16 port;
-	uint8 value;
-	for (int IRQline = 0; IRQline < 16; IRQline++) {
-		if (IRQline < 8) {
-			port = 0x21;
-		}
-		else {
-			port = 0xa1;
-			IRQline -= 8;
-		}
-		value = __in8(port) | (1 << IRQline);
-		__out8(port, value);
-	}
-	__out8(0xa1, 0xff); // disable the pic
-	__out8(0x21, 0xff); // disable the pic
-	// Clear any already pending interrupts:
-	// TODO: Check if this is needed in non-bochs environment
-	for (int i = 0; i < 20; i++) {
-		__out8(0xA0, 0x20);
-		__out8(0x20, 0x20);
-	}
-	*/
-		
-	uint64 msr = __rdmsr(IA32_APIC_BASE_MSR);
-	//__wrmsr(IA32_APIC_BASE_MSR, msr & (~(1 << 11)));
+	__out8(PIC1_DATA, 0xfe);   // mask everything except timer.
+	io_wait();
+	__out8(PIC2_DATA, 0xff);   // mask everything.
+	
 }
 
 BOOL init_IDT(uint8 vector, uint8 dpl, DescType type, uint64 handler_addr) {
@@ -290,19 +266,172 @@ void handle_interrupts(ProcessorContext * regs) {
 	//screen_write_string("Interrupt called!", TRUE);
 	screen_printf("Interrupt called: %d\n", regs->interrupt_vector,0,0,0);
 #endif
+	switch (regs->interrupt_vector) {
+	
+	}
 	return;
 }
 
 
-BOOL init_APIC() {
-	APICRegisters * apic = g_apic_regs;
-	uint32 spur = apic->Spurious_interrupt_vector;
-	uint64 msr = __rdmsr(IA32_APIC_BASE_MSR);
+// apic_timer api:
+BOOL apic_timer_init(); // Should be called only once.
+BOOL apic_timer_start(uint64 timer_us);
+BOOL apic_timer_stop();
+uint64 apic_timer_get_time_ellapsed();
+
+BOOL apic_timer_init() {
+	g_apic_context.is_timer_run = FALSE;
+	spin_init(g_apic_context.is_timer_run_lock);
+	if (g_apic_context.bus_freq == 0) return FALSE;
+}
+
+BOOL apic_timer_start(uint64 timer_us) {
+	APICRegisters * apic = g_apic_context.regs;
+
 	
+	// Calculate how many ticks we need:
+	uint64 ticks = g_apic_context.bus_freq * timer_us / 1000 / 1000;
+	uint32 divide_number = 1;
+	char divide_value = 0b11111111; // we will use only the 4 low bits.
+	
+	while (ticks > 0xffffffff) {
+		divide_number *= 2;
+		divide_value += 1; // we will use only three low bits.
+		if (divide_value = 0b100) {
+			divide_value = 0b1000; // The 3rd bit must be zero...
+		}
+		ticks /= 2;
+		if (divide_number > 128) { // We can't divide more then 128..
+			return FALSE; // time too long to wait it in the timer.
+		}
+	}
+	apic->divide_conf = divide_value & 0b1011;
+	apic->initial_count = (uint32)ticks;
+	
+	spin_lock(g_is_timer_run_lock);
+	g_is_timer_run = TRUE;
+	apic->LVT_timer = 0; // unmask the interrupt. one-shot mode.
+	spin_unlock(g_is_timer_run_lock);
+	return;
+
+}
+
+BOOL apic_timer_stop() {
+	APICRegisters * apic = g_apic_context.regs;
+	
+	BOOL ret;
+	spin_lock(g_is_timer_run_lock);
+	apic->LVT_timer = 0x10000; // mask the interrupt.
+	ret = g_is_timer_run;
+	g_is_timer_run = FALSE;
+	spin_unlock(g_is_timer_run_lock);
+	return ret; // TRUE - if we stopped the timer. FALSE - if the timer was stopped before us.
+
+}
+
+// ret - useconds.
+uint64 apic_timer_get_time_ellapsed() {
+	APICRegisters * apic = g_apic_context.regs;
+	spin_lock(g_is_timer_run_lock);
+	uint64 ret = g_apic_context.bus_freq *1000 * 1000 / (apic->initial_count - apic->current_count);
+	spin_unlock(g_is_timer_run_lock);
+	return ret;
+}
+BOOL apic_timer_is_run() {
+	return g_is_timer_run;
+}
+typedef void(*APICTimerCallback)();
+BOOL apic_timer_set_callback_function(APICTimerCallback cb) {
+
+}
+////
+
+
+BOOL set_apic_timer(uint32 timer_us) {
+
+
+
+}
+
+
+
+BOOL init_APIC(char apic_address_for_ipi) {
+	APICContext * apic_context = &g_apic_context;
+	APICRegisters * apic = g_apic_context.regs;
+	// init the local apic address for this LAPIC:
+	apic->Destination_format = 0xffffffff; // means FLAT mode.
+	apic->local_destination = apic->local_destination & 0x00FFFFFF | (apic_address_for_ipi << 24);
+
+	// Disable all the LVTs:
+	apic->LVT_CMCI = 0x10000; // Mask it
+	apic->LVT_LINT0 = 0x10000; // Mask it
+	apic->LVT_LINT1 = 0x10000; // Mask it
+	apic->LVT_error = 0x10000; // Mask it
+	apic->LVT_performance = 0x10000; // Mask it
+	apic->LVT_thermal = 0x10000; // Mask it
+	apic->LVT_timer = 0x10000; // Mask it
+
+	//don't inhibit interrupts for now.
+	apic->TPR = 0; // make task priority to zero. That means that we allow every interrupt priority.
+
+	// Program the spurious interrupt, and permit the software to enable/disable the APIC:
+	apic->Spurious_interrupt_vector = APIC_SPURIOUS | 0x10000;
+
+	// Now configure the APIC timer to the rellevant ISR and make it in ONE_SHOT mode, and non-mask.
+	apic->LVT_timer = APIC_TIMER;
+
+	apic->divide_conf = 3; // divide by 16. Note that if the bus freq is ~ the cpu freq, so it will take about 0xffffffff * 16 opcodes to fire the timer.
+						   //               Also, if this freq is < 10Ghz, it will take at least 1.6 seconds to fire the timer.
+						   //				The point is, that this timer will never fire, because ~10ms from here we will stop it.
+
+	////////////////////////////////////////////////////////////////
+	// We want to measure how many ticks is 1 ms. To do so we will use the PIT clock, that run in predefined freq. of 1193180 Hz.
+	//
+	//
+	// We will use PIT channel 2, because we can check when the timer is fire. Note that this channel control the speaker too.
+	__out8(0x61, __in8(0x61) & 0b11111101); // zero bit 1 to shut the speaker up.
+	
+	// configure the channel:
+	__out8(0x43, 0b10110010); // Binary mode (0), One-shot mode (001), 16bit mode (11), channel2 (10).
+
+	// set the reload value (1193180 / 100 Hz = 11931 = 2e9bh, beacuse we want to measure 1 ms.
+	__out8(0x42, 0x9b); 
+	io_wait();
+	__out8(0x42, 0x2e);
+
+	// Start the counting (In the one-shot mode, we need to put 0 at the output bit and then 1.
+	char orig = __in8(0x61);
+	__out8(0x61, orig & 0b11111110);
+	io_wait();
+	__out8(0x61, orig | 0b00000001);
+
+	//
+	//
+	////////////////////////////////////////////////////////////////
+
+	// Reset the APIC timer:
+	apic->initial_count = 0xffffffff;
+
+	// Wait until the on-shot PIT will fire:
+	while (!(__in8(0x61) & 0b00100000));
+
+	// Stop the APIC timer:
+	apic->LVT_timer = 0x10000; // Mask it
+
+	// Calculate the BUS frequency:
+	uint32 counts_elapsed = 0xffffffff - apic->current_count;
+	g_apic_context.bus_freq = counts_elapsed * 16 * 100; // * 16 because we divide the APIC by 16. * 100 because we measure just 10ms.
+												 // g_apic_context.bus_freq = number of ticks per second.
+	
+	//spin_init(g_is_timer_run_lock);
+	//set_apic_timer(timer_ms);
+	
+		
 	return TRUE;
 }
 
 BOOL enable_APIC() {
+	if (__rdmsr(IA32_APIC_BASE_MSR) & 0x800 == 0) return FALSE;
 	return TRUE;
 }
 
