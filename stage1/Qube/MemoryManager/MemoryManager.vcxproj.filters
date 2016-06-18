@@ -27,9 +27,15 @@
     <ClCompile Include="Makefile">
       <Filter>build</Filter>
     </ClCompile>
+    <ClCompile Include="heap.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="memory_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="heap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

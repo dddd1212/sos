@@ -44,7 +44,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -72,6 +72,13 @@
     <NMakeBuildCommandLine>make all</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
+    <NMakePreprocessorDefinitions>__attribute__</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NMakeBuildCommandLine>make all</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
+    <NMakePreprocessorDefinitions>__attribute__</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

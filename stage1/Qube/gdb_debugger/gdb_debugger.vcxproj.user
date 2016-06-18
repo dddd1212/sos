@@ -9,5 +9,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebuggerFlavor>LocalDebugger</DebuggerFlavor>
+    <LocalWorkingDirectory>$(SolutionDir)</LocalWorkingDirectory>
+    <LocalExecutable>_output\bootloader\boot.elf</LocalExecutable>
+    <LocalDebuggerExecutable>$(SolutionDir)\gdb_debugger\qube_gdb.bat</LocalDebuggerExecutable>
+    <LocalDebuggerServerAddress>localhost:1234</LocalDebuggerServerAddress>
   </PropertyGroup>
 </Project>

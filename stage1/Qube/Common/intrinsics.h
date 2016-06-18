@@ -49,7 +49,6 @@ static inline int8 __in8(uint16 port){
 }
 
 static inline void __out8(uint16 port, uint8 data){
-	int8 res;
 	__asm__(
 		".intel_syntax noprefix;"
 		"mov dx, %1;"
@@ -128,5 +127,4 @@ static inline void io_wait() {
 	asm volatile ("outb %%al, $0x80" : : "a"(0));
 }
 #define __int(n) __asm__("int %0" : : "N"((n)) : "cc", "memory");
-
 #endif

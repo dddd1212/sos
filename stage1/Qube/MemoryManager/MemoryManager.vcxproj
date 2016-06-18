@@ -53,9 +53,11 @@
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="heap.h" />
     <ClInclude Include="memory_manager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="heap.c" />
     <ClCompile Include="Makefile" />
     <ClCompile Include="memory_manager.c" />
   </ItemGroup>

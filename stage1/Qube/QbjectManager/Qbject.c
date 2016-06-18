@@ -1,6 +1,8 @@
 #include "Qbject.h"
+#include "../libc/string.h"
 #include "../MemoryManager/memory_manager.h"
 #include "../Common/spin_lock.h"
+#include "../MemoryManager/memory_manager.h"
 // TODO: Use better synchronization.
 QNode root;
 SpinLock treelock;
@@ -13,6 +15,7 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	root.rigth_sibling = NULL;
 	spin_init(treelock);
 	root.name[0] = '\0';
+	return QSuccess;
 }
 static BOOL name_match(QNode *qnode, char *s, uint32 len) {
 	return ((len < MAX_QNODE_NAME_LEN) && (memcmp(qnode->name, s, len) == 0) && (qnode->name[len] == '\0'));
@@ -61,7 +64,7 @@ QHandle create_qbject(char * path, ACCESS access)
 	};
 
 	if (cur->create_qbject) {
-		QHandle h = cur->create_qbject(start, access, CREATE_QBJECT_FLAGS_SECOND_CHANCE); // second chance
+		h = cur->create_qbject(start, access, CREATE_QBJECT_FLAGS_SECOND_CHANCE); // second chance
 	}
 
 	spin_unlock(treelock);
@@ -75,5 +78,5 @@ QHandle create_qbject(char * path, ACCESS access)
 
 QHandle allocate_qbject(uint32 content_size)
 {
-	return kalloc(sizeof(Qbject) + content_size);
+	return kheap_alloc(sizeof(Qbject) + content_size);
 }

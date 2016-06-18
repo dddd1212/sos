@@ -6,6 +6,7 @@
 
 #ifdef VS_EDITOR
 #define __attribute__(x)
+#define __asm__(x)
 #endif
 
 // C general defines:
@@ -27,7 +28,7 @@ typedef int32 BOOL;
 #define ULLONG_MAX 0xffffffffffffffff
 
 // TODO: Do with it something
-#define ASSERT
+#define ASSERT(x)
 
 typedef int32 QResult;
 #define QSuccess 0
