@@ -2,7 +2,6 @@
 #include "../libc/string.h"
 #include "../MemoryManager/memory_manager.h"
 #include "../Common/spin_lock.h"
-#include "../MemoryManager/memory_manager.h"
 // TODO: Use better synchronization.
 QNode root;
 SpinLock treelock;
@@ -13,16 +12,17 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	root.write = NULL;
 	root.left_child = NULL;
 	root.rigth_sibling = NULL;
-	spin_init(treelock);
+	spin_init(&treelock);
 	root.name[0] = '\0';
 	return QSuccess;
 }
 static BOOL name_match(QNode *qnode, char *s, uint32 len) {
 	return ((len < MAX_QNODE_NAME_LEN) && (memcmp(qnode->name, s, len) == 0) && (qnode->name[len] == '\0'));
 }
+
 QHandle create_qbject(char * path, ACCESS access)
 {
-	spin_lock(treelock);
+	spin_lock(&treelock);
 	char *start,*end;
 	start = path;
 	while (*start == '/') {
@@ -61,19 +61,126 @@ QHandle create_qbject(char * path, ACCESS access)
 		if (!child) {
 			break;
 		}
+		cur = child;
 	};
 
 	if (cur->create_qbject) {
 		h = cur->create_qbject(start, access, CREATE_QBJECT_FLAGS_SECOND_CHANCE); // second chance
 	}
 
-	spin_unlock(treelock);
+	spin_unlock(&treelock);
 
 	if (h) {
 		((Qbject*)h)->associated_qnode = cur;
 	}
 
 	return h;
+}
+
+QResult create_qnode(char * path)
+{
+	spin_lock(&treelock);
+	char *start, *end;
+	start = path;
+	while (*start == '/') {
+		start++;
+	}
+	QNode *cur;
+	cur = &root;
+	while (1) {
+		end = start;
+		while ((*end != '\0') && (*end != '/')) {
+			end++;
+		}
+		if (start == end) {
+			break;
+		}
+		if (end - start >= MAX_QNODE_NAME_LEN) {
+			spin_unlock(&treelock);
+			return QFail;
+		}
+		QNode *child;
+		for (child = cur->left_child; child != NULL; child = child->rigth_sibling) {
+			if (name_match(child, start, end - start)) {
+				start = end;
+				while (*start == '/') {
+					start++;
+				}
+				break;
+			}
+		}
+		if (!child) {
+			child = kheap_alloc(sizeof(QNode));
+			if (child == 0) {
+				spin_unlock(&treelock);
+				return QFail;
+			}
+			child->type = QNODE_TYPE_GENERIC;
+			strncpy(child->name, start, end - start);
+			child->name[end - start] = '\0';
+			child->create_qbject = NULL;
+			child->read = NULL;
+			child->write = NULL;
+			child->left_child = NULL;
+			child->rigth_sibling = cur->left_child;
+			cur->left_child = child;
+		}
+		start = end;
+		while (*start == '/') {
+			start++;
+		}
+		cur = child;
+	};
+	spin_unlock(&treelock);
+	return QSuccess;
+}
+
+QResult assign_qnode_funcs(char* path, CreateQbjectFunction create_qbject, QbjectReadFunction read, QbjectWriteFunction write) {
+	spin_lock(&treelock);
+	char *start, *end;
+	start = path;
+	while (*start == '/') {
+		start++;
+	}
+	QNode *cur;
+	cur = &root;
+	while (1) {
+		end = start;
+		while ((*end != '\0') && (*end != '/')) {
+			end++;
+		}
+		if (start == end) {
+			break;
+		}
+		if (end - start >= MAX_QNODE_NAME_LEN) {
+			spin_unlock(&treelock);
+			return QFail;
+		}
+		QNode *child;
+		for (child = cur->left_child; child != NULL; child = child->rigth_sibling) {
+			if (name_match(child, start, end - start)) {
+				start = end;
+				while (*start == '/') {
+					start++;
+				}
+				break;
+			}
+		}
+		if (!child) {
+			spin_unlock(&treelock);
+			return QFail;
+		}
+		start = end;
+		while (*start == '/') {
+			start++;
+		}
+		cur = child;
+	};
+	cur->create_qbject = create_qbject;
+	cur->read = read;
+	cur->write = write;
+	spin_unlock(&treelock);
+	return QSuccess;
 }
 
 QHandle allocate_qbject(uint32 content_size)

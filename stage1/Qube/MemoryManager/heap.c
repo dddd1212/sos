@@ -20,9 +20,9 @@
 #define UNASSIGN_COMMITED(addr, num_of_pages) unassign_committed_(addr, 0x1000*num_of_pages)
 
 #define HEAP_LOCK SpinLock
-#define INIT_LOCK(x) //spin_init(&x)
-#define LOCK(x) //spin_lock(&x)
-#define UNLOCK(x) //spin_unlock(&x)
+#define INIT_LOCK(x) spin_init(&x)
+#define LOCK(x) spin_lock(&x)
+#define UNLOCK(x) spin_unlock(&x)
 
 //----------------------------------
 
@@ -230,6 +230,7 @@ void * HEAP_ALLOC_FUNC(uint32 size) {
 		}
 	}
 	g_heap_struct.stat_total_mem_alloc += ((num_of_blocks + 1)*BLOCK_SIZE);
+	UNLOCK(g_heap_lock);
 	return (void*)((uint8*)chunk + BLOCK_SIZE);
 }
 
@@ -238,6 +239,7 @@ void HEAP_FREE_FUNC(void * address) {
 		FREE_PAGES(address);
 		return;
 	}
+	LOCK(g_heap_lock);
     Chunk * chunk = (Chunk*)((uint8*) address - BLOCK_SIZE);
     uint32 num_of_blocks = chunk->size_in_blocks;
     g_heap_struct.stat_num_of_block_free[num_of_blocks]++;
@@ -287,5 +289,6 @@ void HEAP_FREE_FUNC(void * address) {
 	}
     g_heap_struct.stat_total_mem_alloc -= ((num_of_blocks+1)*BLOCK_SIZE);
     g_heap_struct.stat_num_of_frees++;
+	UNLOCK(g_heap_lock);
     return;
 }

@@ -31,14 +31,16 @@ typedef struct QNode_{
 	char name[MAX_QNODE_NAME_LEN];
 } QNode;
 
-QHandle create_qbject(char* path, ACCESS access);
+EXPORT QResult create_qnode(char * path);
 
-QHandle allocate_qbject(uint32 content_size);
+EXPORT QHandle create_qbject(char* path, ACCESS access);
+
+EXPORT QHandle allocate_qbject(uint32 content_size);
 
 QbjectContent inline get_qbject_content(QHandle handle) {
 	return (void*)(&((Qbject*)handle)->content);
 }
 #define QNODE_TYPE_ROOT (0)
-
+#define QNODE_TYPE_GENERIC (1)
 #define CREATE_QBJECT_FLAGS_SECOND_CHANCE (1)
 #endif

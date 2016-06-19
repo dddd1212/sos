@@ -14,7 +14,7 @@ char * strcpy(char * dst, const char * src) {
 char * strncpy(char * dst, const char * src, size_t count) {
 	char * ret = dst;
 	BOOL null = FALSE;
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count; i++,src++,dst++) {
 		if (null) *dst = '\x00';
 		else {
 			*dst = *src;
