@@ -92,7 +92,7 @@ if sys.argv[1] in ('build','rebuild'):
 
 
 	# If the compile output changed:
-	if False and this_time != last_time: # The output modified
+	if False and this_time != last_time: # The output modified.
 		os.system("format q: /FS:FAT32 /Q /A:512 /y")
 		print "boot loader modified!"
 		last_compile_times["bootloader"] = str(this_time)
