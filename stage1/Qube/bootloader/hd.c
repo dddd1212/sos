@@ -1,6 +1,5 @@
 #include "../Common/Qube.h"
 #include "hd.h"
-#include "fat32.h"
 
 QResult init_hd(BootLoaderAllocator *allocator, hdDesc *desc){
 	desc->type = FAT32;

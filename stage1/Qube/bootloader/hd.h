@@ -2,7 +2,7 @@
 #define HD_H
 
 #include "../Common/Qube.h"
-#include "fat32.h"
+#include "bootfat32.h"
 
 typedef enum {
 	FAT32
