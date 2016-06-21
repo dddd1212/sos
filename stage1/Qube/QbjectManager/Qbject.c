@@ -34,7 +34,7 @@ QHandle create_qbject(char * path, ACCESS access)
 	while (1) {
 		// first - try to create the Qbject using the assigned crate_qbject function if any.
 		if (cur->create_qbject) {
-			h = cur->create_qbject(start, access, 0); // first chance
+			h = cur->create_qbject(cur->qnode_context,start, access, 0); // first chance
 			if (h) {
 				break;
 			}
@@ -65,7 +65,7 @@ QHandle create_qbject(char * path, ACCESS access)
 	};
 
 	if (cur->create_qbject) {
-		h = cur->create_qbject(start, access, CREATE_QBJECT_FLAGS_SECOND_CHANCE); // second chance
+		h = cur->create_qbject(cur->qnode_context,start, access, CREATE_QBJECT_FLAGS_SECOND_CHANCE); // second chance
 	}
 
 	spin_unlock(&treelock);
@@ -75,6 +75,16 @@ QHandle create_qbject(char * path, ACCESS access)
 	}
 
 	return h;
+}
+
+QResult read_qbject(QHandle qhandle, uint8* buffer, uint64 position, uint64 num_of_bytes_to_read, uint64* res_num_read)
+{
+	return ((Qbject*)qhandle)->associated_qnode->read((Qbject*)qhandle, buffer, position, num_of_bytes_to_read, res_num_read);
+}
+
+QResult write_qbject(QHandle qhandle, uint8* buffer, uint64 position, uint64 num_of_bytes_to_read, uint64* res_num_write)
+{
+	return ((Qbject*)qhandle)->associated_qnode->write((Qbject*)qhandle, buffer, position, num_of_bytes_to_read, res_num_write);
 }
 
 QResult create_qnode(char * path)
@@ -118,6 +128,7 @@ QResult create_qnode(char * path)
 			child->type = QNODE_TYPE_GENERIC;
 			strncpy(child->name, start, end - start);
 			child->name[end - start] = '\0';
+			child->qnode_context = NULL;
 			child->create_qbject = NULL;
 			child->read = NULL;
 			child->write = NULL;
@@ -135,7 +146,7 @@ QResult create_qnode(char * path)
 	return QSuccess;
 }
 
-QResult assign_qnode_funcs(char* path, CreateQbjectFunction create_qbject, QbjectReadFunction read, QbjectWriteFunction write) {
+QResult set_qnode_attributes(char* path, QNodeAttributes* attr) {
 	spin_lock(&treelock);
 	char *start, *end;
 	start = path;
@@ -176,9 +187,13 @@ QResult assign_qnode_funcs(char* path, CreateQbjectFunction create_qbject, Qbjec
 		}
 		cur = child;
 	};
-	cur->create_qbject = create_qbject;
-	cur->read = read;
-	cur->write = write;
+	cur->qnode_context = attr->qnode_context;
+	cur->create_qbject = attr->create_qbject;
+	cur->read = attr->read;
+	cur->write = attr->write;
+	cur->get_position = attr->get_position;
+	cur->set_position = attr->set_position;
+	cur->get_property = attr->get_property;
 	spin_unlock(&treelock);
 	return QSuccess;
 }
