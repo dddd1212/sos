@@ -192,8 +192,8 @@ QResult qkr_main(KernelGlobalData* kgd) {
 }
 
 void* alloc_pages_(REGION_TYPE region, uint32 size) {
-	spin_lock(&g_mem_lock);
 	uint8* addr = (uint8*)commit_pages_(region, size);
+	spin_lock(&g_mem_lock);
 	for (uint8* cur = addr; cur < addr + size; cur += 0x1000) {
 		add_physical_page(&g_regions[region], cur, -1);
 	}

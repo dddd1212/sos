@@ -2,6 +2,7 @@
 #include "../screen/screen.h"
 #include "../Common/Qube.h"
 #include "../MemoryManager/memory_manager.h"
+#include "../QbjectManager/Qbject.h"
 void kernel_main(KernelGlobalData * kgd) {
 	// This is the main kernel function.
 	// The function should not return.
@@ -39,5 +40,9 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	kheap_free(z);
 	kheap_free(y);
 	kheap_free(x);
+	x = kheap_alloc(0x1000);
+	QHandle file = create_qbject("FS/FS0/BOOT.TXT",ACCESS_READ);
+	uint64 bytes_read;
+	read_qbject(file, x, 0, 0x200, &bytes_read);
 	return QSuccess;
 }

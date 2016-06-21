@@ -57,7 +57,7 @@ EXPORT QHandle allocate_qbject(uint32 content_size);
 
 EXPORT QResult set_qnode_attributes(char* path, QNodeAttributes* attr);
 
-QbjectContent inline get_qbject_content(QHandle handle) {
+EXPORT QbjectContent get_qbject_content(QHandle handle) {
 	return (void*)(&((Qbject*)handle)->content);
 }
 #define QNODE_TYPE_ROOT (0)

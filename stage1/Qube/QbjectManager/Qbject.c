@@ -191,8 +191,6 @@ QResult set_qnode_attributes(char* path, QNodeAttributes* attr) {
 	cur->create_qbject = attr->create_qbject;
 	cur->read = attr->read;
 	cur->write = attr->write;
-	cur->get_position = attr->get_position;
-	cur->set_position = attr->set_position;
 	cur->get_property = attr->get_property;
 	spin_unlock(&treelock);
 	return QSuccess;

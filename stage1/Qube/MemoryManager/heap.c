@@ -169,11 +169,12 @@ void * HEAP_ALLOC_FUNC(uint32 size) {
 	if (size == 0) {
 		return NULL;
 	}
-	LOCK(g_heap_lock);
     if (size > MAX_ALLOC_IN_CLUSTER) {
         g_heap_struct.stat_num_of_big_allocs++;
         return ALLOC_PAGES(NUM_OF_PAGES(size));
     }
+
+	LOCK(g_heap_lock);
     
 	uint32 num_of_blocks = NUM_OF_BLOCKS(size);
 	Chunk *chunk = NULL;

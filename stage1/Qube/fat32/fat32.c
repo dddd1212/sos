@@ -170,6 +170,9 @@ static QHandle fat32_create_qbject(void* qnode_context_a, char* filename, ACCESS
 }
 
 static QResult fat32_read(QHandle qbject, uint8* buffer, uint64 position, uint64 num_of_bytes_to_read, uint64* res_num_read) {
+	if (position){
+		return QFail;
+	}
 	uint32 cur_cluster;
 	uint32 byte_to_read;
 	uint32 cluster_size;

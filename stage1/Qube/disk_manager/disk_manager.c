@@ -55,7 +55,7 @@ static QResult add_file_system(QHandle* raw_disk) {
 	uint8 buffer[0x200];
 	read_qbject(raw_disk, buffer, 0, 0x200, &num_read);
 	// currently we support only fat32.
-	if (*((uint64*)&buffer[3]) != 0x2020203233544146) { //"FAT32   ". according to the specification, this is wrong, but for now I leave it this way.
+	if (*((uint64*)&buffer[82]) != 0x2020203233544146) { //"FAT32   ". according to the specification, this is wrong, but for now I leave it this way.
 		return QFail;
 	}
 	res = create_fat32(raw_disk, &fs_qnode_attrs);
@@ -90,6 +90,7 @@ QResult def_hd_read(QHandle qbject_a, uint8* out_buf, uint64 position, uint64 nu
 	first_sector += ((DefHdQNodeContext*)qbject->associated_qnode->qnode_context)->first_sector_lba;
 	if (((position&(0x200 - 1)) == 0) && ((num_of_bytes_to_read&(0x200 - 1)) == 0)) {
 		def_hd_read_raw_sectors(first_sector, num_of_sectors, out_buf);
+		*res_num_read = num_of_bytes_to_read;
 		return QSuccess;
 	}
 	else {
@@ -100,6 +101,7 @@ QResult def_hd_read(QHandle qbject_a, uint8* out_buf, uint64 position, uint64 nu
 		def_hd_read_raw_sectors(first_sector, num_of_sectors, temp_buf);
 		memcpy(temp_buf+(position&(0x200-1)), out_buf, num_of_bytes_to_read);
 		kheap_free(temp_buf);
+		*res_num_read = num_of_bytes_to_read;
 		return QSuccess;
 	}
 }
