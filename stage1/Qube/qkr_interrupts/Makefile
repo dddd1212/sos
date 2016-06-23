@@ -6,12 +6,11 @@ INTER_DIR = ../_output/system/inter
 interrupts:
 	python generate_isr.py
 	$(AS) isrs.S -g -o $(INTER_DIR)/isrs.o
-	$(CC) -c *.c -fpic -fvisibility=hidden -g -o $(INTER_DIR)/interrupts.o
-	$(LD) -fpic -fvisibility=hidden -shared $(INTER_DIR)/isrs.o $(INTER_DIR)/interrupts.o -o $(OUT_DIR)/intrpts.qkr
+	$(CC) -c *.c -Wall -fpic -fvisibility=hidden -g
+	$(LD) -fpic -fvisibility=hidden -shared $(INTER_DIR)/isrs.o *.o -o $(OUT_DIR)/intrpts.qkr
 
 all: interrupts
 
 clean:
-	rm -f $(INTER_DIR)/interrupts.o
-	rm -f $(INTER_DIR)/isrs.o
-	rm -f $(INTER_DIR)/intrpts.qkr
+	rm -f $(INTER_DIR)/*.o
+	rm -f $(OUT_DIR)/intrpts.qkr

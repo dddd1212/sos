@@ -80,7 +80,7 @@
     <NMakeBuildCommandLine>make all</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>__attribute__(x) ; __attribute__((packed))</NMakePreprocessorDefinitions>
+    <NMakePreprocessorDefinitions>VS_EDITOR</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
@@ -88,11 +88,15 @@
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="lapic.h" />
     <ClInclude Include="interrupts.h" />
+    <ClInclude Include="processors.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="lapic.c" />
     <ClCompile Include="interrupts.c" />
     <ClCompile Include="Makefile" />
+    <ClCompile Include="processors.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="generate_isr.py" />

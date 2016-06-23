@@ -24,6 +24,12 @@
     <ClInclude Include="interrupts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="processors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lapic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="interrupts.c">
@@ -31,6 +37,12 @@
     </ClCompile>
     <ClCompile Include="Makefile">
       <Filter>build</Filter>
+    </ClCompile>
+    <ClCompile Include="processors.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lapic.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
