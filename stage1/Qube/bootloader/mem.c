@@ -48,8 +48,8 @@ int32 init_allocator(BootLoaderAllocator *allocator){
 
 	// The list of physical regions from the BIOS are in the physical address PHYSICAL_PAGES_ENTRIES_PHY_ADDR.
 	// This code sort the list.
-	*(PTE(VOLATILE_VIRTUAL_START)) = (PHYSICAL_PAGES_ENTRIES_PHY_ADDR) | 3;
-	PysicalRegionEntry* entries = (PysicalRegionEntry*)VOLATILE_VIRTUAL_START;
+	*(PTE(PHYSICAL_PAGES_ENTRIES_PHY_ADDR)) = (PHYSICAL_PAGES_ENTRIES_PHY_ADDR) | 3;
+	PysicalRegionEntry* entries = (PysicalRegionEntry*)PHYSICAL_PAGES_ENTRIES_PHY_ADDR;
 	uint32 i = 0;
 	uint32 j = 0;
 	while (entries[i].base != 0xFFFFFFFFFFFFFFFF) {
@@ -111,8 +111,6 @@ int32 init_allocator(BootLoaderAllocator *allocator){
 		}
 		*allocator->physical_pages_end = cur;
 	}
-	
-	*(PTE(VOLATILE_VIRTUAL_START)) = 0;
 	
 	allocator->next_physical_volatile = allocator->physical_pages_end-0x800; // maximum of 0x800 (minus the 0x60 pages at 0-0x60000) pages. [~8M]
 

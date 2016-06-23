@@ -1,4 +1,5 @@
 #include "memory_manager.h"
+#include "../Common/spin_lock.h"
 
 #define PTE(x) ((uint64*)(0xFFFFF68000000000 + (((((uint64)x) & 0x0000FFFFFFFFFFFF)>>12)<<3)))
 #define PDE(x) PTE(PTE(x))
@@ -13,6 +14,8 @@
 #define MODULES_BITMAP_SIZE (0x100)
 #define KHEAP_BITMAP_SIZE (0x400)
 
+
+SpinLock g_mem_lock;
 uint64 *g_physical_pages_current;
 uint64 *g_physical_pages_end;
 uint64 *g_physical_pages_start;
@@ -182,6 +185,7 @@ QResult qkr_main(KernelGlobalData* kgd) {
 	g_physical_pages_current = kgd->boot_info->physical_pages_current;
 	g_physical_pages_end = kgd->boot_info->physical_pages_end;
 	g_physical_pages_start = kgd->boot_info->physical_pages_start;
+	spin_init(&g_mem_lock);
 	init_regions(kgd);
 	init_kernel_heap();
 	return QSuccess;
@@ -189,13 +193,16 @@ QResult qkr_main(KernelGlobalData* kgd) {
 
 void* alloc_pages_(REGION_TYPE region, uint32 size) {
 	uint8* addr = (uint8*)commit_pages_(region, size);
+	spin_lock(&g_mem_lock);
 	for (uint8* cur = addr; cur < addr + size; cur += 0x1000) {
 		add_physical_page(&g_regions[region], cur, -1);
 	}
+	spin_unlock(&g_mem_lock);
 	return (void*)addr;
 }
 
 void* commit_pages_(REGION_TYPE region_type, uint32 size) {
+	spin_lock(&g_mem_lock);
 	MemoryRegion* region = &g_regions[region_type];
 	uint32 num_of_pages = ((size + 0xFFF) >> 12);
 	uint32 cur_length = 0;
@@ -210,6 +217,7 @@ void* commit_pages_(REGION_TYPE region_type, uint32 size) {
 	}
 	if (cur_length < num_of_pages+2) {
 		// no pages found
+		spin_unlock(&g_mem_lock);
 		return NULL;
 	}
 	else {
@@ -217,11 +225,13 @@ void* commit_pages_(REGION_TYPE region_type, uint32 size) {
 		for (cur_bit = start_bit; cur_bit < start_bit + num_of_pages; cur_bit++) {
 			set_bit(region->free_pages_bitmap, cur_bit, 1);
 		}
+		spin_unlock(&g_mem_lock);
 		return (uint8*)region->start + 0x1000 * start_bit;
 	}
 }
 
 void assign_committed_(void* addr, uint32 size, uint64 specific_physical) {
+	spin_lock(&g_mem_lock);
 	// TODO: handle out of physical pages case.
 	MemoryRegion* region = &g_regions[0];
 	while (addr < region->start || addr > (void*)(((uint8*)region->start) + REGION_BITMAP_MAX_SIZE)) {
@@ -233,9 +243,11 @@ void assign_committed_(void* addr, uint32 size, uint64 specific_physical) {
 			specific_physical += 0x1000;
 		}
 	}
+	spin_unlock(&g_mem_lock);
 }
 
 void unassign_committed_(void* addr, uint32 size) {
+	spin_lock(&g_mem_lock);
 	MemoryRegion* region = &g_regions[0];
 	while (addr < region->start || addr > (void*)(((uint8*)region->start) + REGION_BITMAP_MAX_SIZE)) {
 		region++;
@@ -243,9 +255,11 @@ void unassign_committed_(void* addr, uint32 size) {
 	for (uint8* cur = addr; cur < ((uint8*)addr) + size; cur += 0x1000) {
 		remove_physical_page(region, cur);
 	}
+	spin_unlock(&g_mem_lock);
 }
 
 void free_pages_(void* addr) {
+	spin_lock(&g_mem_lock);
 	MemoryRegion* region = &g_regions[0];
 	while (addr < region->start || addr >(void*)(((uint8*)region->start) + (uint64)0x8000*REGION_BITMAP_MAX_SIZE)) {
 		region++;
@@ -256,7 +270,9 @@ void free_pages_(void* addr) {
 	for (uint32 cur_bit = start_bit; get_bit(region->free_pages_bitmap, cur_bit); cur_bit++,cur_page+=0x1000) {
 		remove_physical_page(region, (void*)cur_page);
 		set_bit(region->free_pages_bitmap, cur_bit, 0);
+		__invlpg(cur_page);
 	}
+	spin_unlock(&g_mem_lock);
 	return;
 }
 

@@ -92,7 +92,7 @@ if sys.argv[1] in ('build','rebuild'):
 
 
 	# If the compile output changed:
-	if False and this_time != last_time: # The output modified
+	if False and this_time != last_time: # The output modified.
 		os.system("format q: /FS:FAT32 /Q /A:512 /y")
 		print "boot loader modified!"
 		last_compile_times["bootloader"] = str(this_time)
@@ -114,6 +114,8 @@ if sys.argv[1] in ('build','rebuild'):
 	print system_files
 	# copy the system files to the disk:
 	for file in system_files:
+		if len(file[:file.find('.')])>8: open(os.path.join(SYSTEM_PATH, file[:6]+"~1"+file[file.find("."):]),"wb").write(open(os.path.join(SYSTEM_PATH, file),"rb").read())
+		if '~' in file: continue
 		open(os.path.join(DISK_FOLDER_MOUNT, file),"wb").write(open(os.path.join(SYSTEM_PATH, file),"rb").read())
 		print "write file %s!"%file
 	try:

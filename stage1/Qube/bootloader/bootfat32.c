@@ -1,5 +1,5 @@
 #include "hd.h"
-#include "fat32.h"
+#include "bootfat32.h"
 
 typedef struct{
 	char name[11];

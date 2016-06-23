@@ -15,6 +15,7 @@ static inline void __cpuid(int code, uint32 * eax_out, uint32 * edx_out)  __attr
 static inline void __sti() __attribute__((always_inline));
 static inline uint64 __rdmsr(uint32 msr_id) __attribute__((always_inline));
 static inline void __wrmsr(uint32 msr_id, uint64 msr_value) __attribute__((always_inline));
+static inline void __invlpg(void* addr) __attribute__((always_inline));
 static inline void __lidt(void* addr) __attribute__((always_inline));
 static inline void io_wait() __attribute__((always_inline));
 
@@ -118,6 +119,17 @@ static inline uint64 __rdmsr(uint32 msr_id)
 	uint64 msr_value;
 	asm volatile ("rdmsr" : "=A" (msr_value) : "c" (msr_id));
 	return msr_value;
+}
+
+static inline void __invlpg(void* addr) {
+	__asm__(
+		".intel_syntax noprefix;"
+		"invlpg [%0];"
+		".att_syntax;"
+		:
+	: "r"(addr)
+		);
+	return;
 }
 
 static inline void __sti() {
