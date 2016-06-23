@@ -104,6 +104,10 @@ QResult qkr_main(KernelGlobalData * kgd);
 #define KERNEL_DATA_SEGMENT 0x10
 #define USER_DATA_SEGMENT 0x18
 
+#define UNUSED(x) (void)(x)
+//#define MAX_PROCESSORS 15
+//static inline uint8 get_) __attribute__((always_inline));
+
 
 #include "intrinsics.h"
 

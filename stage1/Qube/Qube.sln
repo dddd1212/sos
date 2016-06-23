@@ -30,8 +30,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QbjectManager", "QbjectMana
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "screen", "screen\screen.vcxproj", "{59204A33-9FE8-4C94-896A-89764F860BFD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MemoryManager", "MemoryManager\MemoryManager.vcxproj", "{74D09E08-CCDB-4BAC-AACA-F073FB519849}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libc", "libc\libc.vcxproj", "{19301BB9-882D-4019-AB17-C51858CEFEA6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gdb_debugger", "gdb_debugger\gdb_debugger.vcxproj", "{2CBF3899-7AC0-47BB-BA62-FF694FD5E965}"
@@ -51,6 +49,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qkr_threads", "qkr_threads\qkr_threads.vcxproj", "{20A8891D-221B-408E-828D-C283E8357713}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qkr_interrupts", "qkr_interrupts\qkr_interrupts.vcxproj", "{B4E8403D-6507-48F9-876B-E66D9A108C92}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MemoryManager", "MemoryManager\MemoryManager.vcxproj", "{74D09E08-CCDB-4BAC-AACA-F073FB519849}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qkr_processors_manager", "qkr_processors_manager\qkr_processors_manager.vcxproj", "{227BDF67-30C4-4FEE-BEE0-3C3B8388364E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,12 +131,6 @@ Global
 		{59204A33-9FE8-4C94-896A-89764F860BFD}.Release|x64.Build.0 = Release|x64
 		{59204A33-9FE8-4C94-896A-89764F860BFD}.Release|x86.ActiveCfg = Release|Win32
 		{59204A33-9FE8-4C94-896A-89764F860BFD}.Release|x86.Build.0 = Release|Win32
-		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Debug|x64.ActiveCfg = Debug|x64
-		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Debug|x64.Build.0 = Debug|x64
-		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Debug|x86.ActiveCfg = Debug|x64
-		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Release|x64.ActiveCfg = Release|x64
-		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Release|x64.Build.0 = Release|x64
-		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Release|x86.ActiveCfg = Release|x64
 		{19301BB9-882D-4019-AB17-C51858CEFEA6}.Debug|x64.ActiveCfg = Debug|x64
 		{19301BB9-882D-4019-AB17-C51858CEFEA6}.Debug|x64.Build.0 = Debug|x64
 		{19301BB9-882D-4019-AB17-C51858CEFEA6}.Debug|x86.ActiveCfg = Debug|Win32
@@ -183,6 +179,20 @@ Global
 		{B4E8403D-6507-48F9-876B-E66D9A108C92}.Release|x64.Build.0 = Release|x64
 		{B4E8403D-6507-48F9-876B-E66D9A108C92}.Release|x86.ActiveCfg = Release|Win32
 		{B4E8403D-6507-48F9-876B-E66D9A108C92}.Release|x86.Build.0 = Release|Win32
+		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Debug|x64.ActiveCfg = Debug|x64
+		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Debug|x64.Build.0 = Debug|x64
+		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Debug|x86.ActiveCfg = Debug|x64
+		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Release|x64.ActiveCfg = Release|x64
+		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Release|x64.Build.0 = Release|x64
+		{74D09E08-CCDB-4BAC-AACA-F073FB519849}.Release|x86.ActiveCfg = Release|x64
+		{227BDF67-30C4-4FEE-BEE0-3C3B8388364E}.Debug|x64.ActiveCfg = Debug|x64
+		{227BDF67-30C4-4FEE-BEE0-3C3B8388364E}.Debug|x64.Build.0 = Debug|x64
+		{227BDF67-30C4-4FEE-BEE0-3C3B8388364E}.Debug|x86.ActiveCfg = Debug|Win32
+		{227BDF67-30C4-4FEE-BEE0-3C3B8388364E}.Debug|x86.Build.0 = Debug|Win32
+		{227BDF67-30C4-4FEE-BEE0-3C3B8388364E}.Release|x64.ActiveCfg = Release|x64
+		{227BDF67-30C4-4FEE-BEE0-3C3B8388364E}.Release|x64.Build.0 = Release|x64
+		{227BDF67-30C4-4FEE-BEE0-3C3B8388364E}.Release|x86.ActiveCfg = Release|Win32
+		{227BDF67-30C4-4FEE-BEE0-3C3B8388364E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

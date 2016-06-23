@@ -39,13 +39,13 @@
 <-- *stopped,frame={addr="0x000000000000fff0",func="??",args=[]},thread-id="1",stopped-threads="all"
 <-- 1007^connected
 <-- (gdb) 
---> 1008-break-insert -f screen.c:11
-<-- &"No source file named screen.c.\n"
-<-- 1008^done,bkpt={number="2",type="breakpoint",disp="keep",enabled="y",addr="<PENDING>",pending="screen.c:11",times="0",original-location="screen.c:11"}
-<-- (gdb) 
---> 1009-break-insert -f interrupts.c:113
+--> 1008-break-insert -f interrupts.c:28
 <-- &"No source file named interrupts.c.\n"
-<-- 1009^done,bkpt={number="3",type="breakpoint",disp="keep",enabled="y",addr="<PENDING>",pending="interrupts.c:113",times="0",original-location="interrupts.c:113"}
+<-- 1008^done,bkpt={number="2",type="breakpoint",disp="keep",enabled="y",addr="<PENDING>",pending="interrupts.c:28",times="0",original-location="interrupts.c:28"}
+<-- (gdb) 
+--> 1009-break-insert -f lapic.c:14
+<-- &"No source file named lapic.c.\n"
+<-- 1009^done,bkpt={number="3",type="breakpoint",disp="keep",enabled="y",addr="<PENDING>",pending="lapic.c:14",times="0",original-location="lapic.c:14"}
 <-- (gdb) 
 --> 1010-interpreter-exec console "info sharedlibrary"
 <-- ~"No shared libraries loaded at this time.\n"
@@ -71,7 +71,6 @@
 <-- *stopped
 <-- ~"add symbol table from file \"/cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/SCREEN.QKR\" at\n"
 <-- ~"\t.text_addr = 0xfffff000003074c0\n"
-<-- =breakpoint-modified,bkpt={number="2",type="breakpoint",disp="keep",enabled="y",addr="0xfffff000003074e6",func="screen_init",file="screen.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/screen/screen.c",line="11",thread-groups=["i1"],times="0",original-location="screen.c:11"}
 <-- *running,thread-id="all"
 <S- =breakpoint-modified,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x000000000000aa81",func="hack_for_gdb",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="10",thread-groups=["i1"],times="3",script={"silent","eval \"add-symbol-file /cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/%s 0x%lx\", module_file_name, entry","c"},original-location="hack_for_gdb"}
 <-- *stopped
@@ -80,19 +79,26 @@
 <-- *running,thread-id="all"
 <S- =breakpoint-modified,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x000000000000aa81",func="hack_for_gdb",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="10",thread-groups=["i1"],times="4",script={"silent","eval \"add-symbol-file /cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/%s 0x%lx\", module_file_name, entry","c"},original-location="hack_for_gdb"}
 <-- *stopped
-<-- ~"add symbol table from file \"/cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/KERNEL.QKR\" at\n"
-<-- ~"\t.text_addr = 0xfffff00000725390\n"
+<-- ~"add symbol table from file \"/cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/INTRPTS.QKR\" at\n"
+<-- ~"\t.text_addr = 0xfffff00000726c10\n"
+<-- =breakpoint-modified,bkpt={number="2",type="breakpoint",disp="keep",enabled="y",addr="0xfffff00000727f8e",func="qkr_main",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="28",thread-groups=["i1"],times="0",original-location="interrupts.c:28"}
+<-- =breakpoint-modified,bkpt={number="3",type="breakpoint",disp="keep",enabled="y",addr="0xfffff00000728235",func="lapic_get_this_processor_index",file="lapic.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/lapic.c",line="14",thread-groups=["i1"],times="0",original-location="lapic.c:14"}
 <-- *running,thread-id="all"
-<-- =breakpoint-modified,bkpt={number="2",type="breakpoint",disp="keep",enabled="y",addr="0xfffff000003074e6",func="screen_init",file="screen.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/screen/screen.c",line="11",thread-groups=["i1"],times="1",original-location="screen.c:11"}
+<S- =breakpoint-modified,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x000000000000aa81",func="hack_for_gdb",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="10",thread-groups=["i1"],times="5",script={"silent","eval \"add-symbol-file /cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/%s 0x%lx\", module_file_name, entry","c"},original-location="hack_for_gdb"}
+<-- *stopped
+<-- ~"add symbol table from file \"/cygdrive/e/gilad/sos-git2/SOS/stage1/Qube/_output/system/KERNEL.QKR\" at\n"
+<-- ~"\t.text_addr = 0xfffff0000092b390\n"
+<-- *running,thread-id="all"
+<-- =breakpoint-modified,bkpt={number="3",type="breakpoint",disp="keep",enabled="y",addr="0xfffff00000728235",func="lapic_get_this_processor_index",file="lapic.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/lapic.c",line="14",thread-groups=["i1"],times="1",original-location="lapic.c:14"}
 <-- ~"\nBreakpoint "
-<-- ~"2, screen_init (first_MB_ptr=0xfffff00000003000) at screen.c:11\n"
-<-- ~"11\t\tg_screen.color = DEFAULT_COLOR;\n"
-<-- *stopped,reason="breakpoint-hit",disp="keep",bkptno="2",frame={addr="0xfffff000003074e6",func="screen_init",args=[{name="first_MB_ptr",value="0xfffff00000003000"}],file="screen.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/screen/screen.c",line="11"},thread-id="1",stopped-threads="all"
+<-- ~"3, lapic_get_this_processor_index () at lapic.c:14\n"
+<-- ~"14\t\treturn g_lapic_regs->local_apic_id;\n"
+<-- *stopped,reason="breakpoint-hit",disp="keep",bkptno="3",frame={addr="0xfffff00000728235",func="lapic_get_this_processor_index",args=[],file="lapic.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/lapic.c",line="14"},thread-id="1",stopped-threads="all"
 --> 1013-stack-list-frames 0 1000
-<-- 1013^done,stack=[frame={level="0",addr="0xfffff000003074e6",func="screen_init",file="screen.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/screen/screen.c",line="11"},frame={level="1",addr="0xfffff000003074dc",func="qkr_main",file="screen.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/screen/screen.c",line="7"},frame={level="2",addr="0x000000000000bff0",func="load_modules_and_run_kernel",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="182"},frame={level="3",addr="0x000000000000cc67",func="_start",file="long_mode_main.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/long_mode_main.c",line="150"}]
+<-- 1013^done,stack=[frame={level="0",addr="0xfffff00000728235",func="lapic_get_this_processor_index",file="lapic.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/lapic.c",line="14"},frame={level="1",addr="0xfffff00000728aea",func="init_this_processor_control_block",file="processors.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/processors.c",line="21"},frame={level="2",addr="0xfffff00000727f62",func="qkr_main",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="31"},frame={level="3",addr="0x000000000000bff0",func="load_modules_and_run_kernel",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="182"},frame={level="4",addr="0x000000000000cc67",func="_start",file="long_mode_main.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/long_mode_main.c",line="150"}]
 <-- (gdb) 
---> 1014-stack-list-arguments 2 0 3
-<-- 1014^done,stack-args=[frame={level="0",args=[{name="first_MB_ptr",type="void *",value="0xfffff00000003000"}]},frame={level="1",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"}]},frame={level="2",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"},{name="boot_modules",type="struct STAGE0BootModule *",value="0x2c28"},{name="boot_loader_allocator",type="BootLoaderAllocator *",value="0x3f88"},{name="num_of_modules",type="int",value="4"}]},frame={level="3",args=[]}]
+--> 1014-stack-list-arguments 2 0 4
+<-- 1014^done,stack-args=[frame={level="0",args=[]},frame={level="1",args=[]},frame={level="2",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"}]},frame={level="3",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"},{name="boot_modules",type="struct STAGE0BootModule *",value="0x2c28"},{name="boot_loader_allocator",type="BootLoaderAllocator *",value="0x3f88"},{name="num_of_modules",type="int",value="5"}]},frame={level="4",args=[]}]
 <-- (gdb) 
 --> 1015-gdb-set output-radix 16
 <-- 1015^done
@@ -100,81 +106,93 @@
 --> 1016-var-create - * "!$lineinfo"
 <-- 1016^done,name="var1",numchild="0",value="0x1",type="int",has_more="0"
 <-- (gdb) 
---> 1017-var-create - * "screen_set_color"
-<-- 1017^done,name="var2",numchild="0",value="{QResult (Color, Color)} 0xfffff0000030753e <screen_set_color>",type="QResult (Color, Color)",has_more="0"
+--> 1017-stack-list-variables 0
+<-- 1017^done,variables=[]
 <-- (gdb) 
---> 1018-stack-list-variables 0
-<-- 1018^done,variables=[{name="first_MB_ptr",arg="1"}]
+--> 1018-var-create - * "g_lapic_regs->local_apic_id"
+<-- 1018^error,msg="Cannot access memory at address 0x205980"
 <-- (gdb) 
---> 1019-var-create - * "first_MB_ptr"
-<-- 1019^done,name="var3",numchild="0",value="0xfffff00000003000",type="void *",thread-id="1",has_more="0"
+--> 1019-var-create - * "g_lapic_regs->local_apic_id"
+<-- 1019^error,msg="Cannot access memory at address 0x205980"
 <-- (gdb) 
---> 1020-var-create - * "background"
-<-- 1020^error,msg="-var-create: unable to create variable object"
+--> 1020-var-create - * "g_lapic_regs->local_apic_id"
+<-- 1020^error,msg="Cannot access memory at address 0x205980"
 <-- (gdb) 
---> 1021-var-create - * "background"
-<-- 1021^error,msg="-var-create: unable to create variable object"
+--> 1021-var-create - * "g_lapic_regs->local_apic_id"
+<-- 1021^error,msg="Cannot access memory at address 0x205980"
 <-- (gdb) 
---> 1022kill
+--> 1022-exec-next
+<-- 1022^running
+<-- *running,thread-id="all"
+<-- (gdb) 
+<-- (gdb) 
+<-- *stopped,reason="end-stepping-range",frame={addr="0xfffff00000728242",func="lapic_get_this_processor_index",args=[],file="lapic.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/lapic.c",line="15"},thread-id="1",stopped-threads="all"
+--> 1023-stack-list-frames 0 1000
+<-- 1023^done,stack=[frame={level="0",addr="0xfffff00000728242",func="lapic_get_this_processor_index",file="lapic.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/lapic.c",line="15"},frame={level="1",addr="0xfffff00000728aea",func="init_this_processor_control_block",file="processors.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/processors.c",line="21"},frame={level="2",addr="0xfffff00000727f62",func="qkr_main",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="31"},frame={level="3",addr="0x000000000000bff0",func="load_modules_and_run_kernel",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="182"},frame={level="4",addr="0x000000000000cc67",func="_start",file="long_mode_main.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/long_mode_main.c",line="150"}]
+<-- (gdb) 
+--> 1024-var-delete var1
+<-- 1024^done,ndeleted="1"
+<-- (gdb) 
+--> 1025-stack-list-arguments 2 0 4
+<-- 1025^done,stack-args=[frame={level="0",args=[]},frame={level="1",args=[]},frame={level="2",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"}]},frame={level="3",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"},{name="boot_modules",type="struct STAGE0BootModule *",value="0x2c28"},{name="boot_loader_allocator",type="BootLoaderAllocator *",value="0x3f88"},{name="num_of_modules",type="int",value="0x5"}]},frame={level="4",args=[]}]
+<-- (gdb) 
+--> 1026-var-create - * "!$lineinfo"
+<-- 1026^done,name="var6",numchild="0",value="0x1",type="int",has_more="0"
+<-- (gdb) 
+--> 1027-stack-list-variables 0
+<-- 1027^done,variables=[]
+<-- (gdb) 
+--> 1028-exec-next
+<-- 1028^running
+<-- *running,thread-id="all"
+<-- (gdb) 
+<-- (gdb) 
+<-- *stopped,reason="end-stepping-range",frame={addr="0xfffff00000728aed",func="init_this_processor_control_block",args=[],file="processors.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/processors.c",line="23"},thread-id="1",stopped-threads="all"
+--> 1029-stack-list-frames 0 1000
+<-- 1029^done,stack=[frame={level="0",addr="0xfffff00000728aed",func="init_this_processor_control_block",file="processors.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/processors.c",line="23"},frame={level="1",addr="0xfffff00000727f62",func="qkr_main",file="interrupts.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/qkr_interrupts/interrupts.c",line="31"},frame={level="2",addr="0x000000000000bff0",func="load_modules_and_run_kernel",file="loader.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/loader.c",line="182"},frame={level="3",addr="0x000000000000cc67",func="_start",file="long_mode_main.c",fullname="/cygdrive/e/gilad/sos-git2/sos/stage1/Qube/bootloader/long_mode_main.c",line="150"}]
+<-- (gdb) 
+--> 1030-stack-list-arguments 2 0 3
+<-- 1030^done,stack-args=[frame={level="0",args=[]},frame={level="1",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"}]},frame={level="2",args=[{name="kgd",type="KernelGlobalData *",value="0xfffff00000000000"},{name="boot_modules",type="struct STAGE0BootModule *",value="0x2c28"},{name="boot_loader_allocator",type="BootLoaderAllocator *",value="0x3f88"},{name="num_of_modules",type="int",value="0x5"}]},frame={level="3",args=[]}]
+<-- (gdb) 
+--> 1031-var-create - * "!$lineinfo"
+<-- 1031^done,name="var7",numchild="0",value="0x1",type="int",has_more="0"
+<-- (gdb) 
+--> 1032-stack-list-variables 0
+<-- 1032^done,variables=[{name="gs"},{name="idx"},{name="pcb"}]
+<-- (gdb) 
+--> 1033-var-create - * "gs"
+<-- 1033^done,name="var8",numchild="2",value="0xfffff000000000a0",type="GS *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1034-var-create - * "idx"
+<-- 1034^done,name="var9",numchild="0",value="0x0",type="uint8",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1035-var-create - * "pcb"
+<-- 1035^done,name="var10",numchild="4",value="0xf0000001001",type="ProcessorControlBlock *",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1036-var-create - * "lapic_get_this_processor_index"
+<-- 1036^done,name="var11",numchild="0",value="{char ()} 0xfffff00000728231 <lapic_get_this_processor_index>",type="char ()",has_more="0"
+<-- (gdb) 
+--> 1037-var-create - * "0x10"
+<-- 1037^done,name="var12",numchild="0",value="0x10",type="int",has_more="0"
+<-- (gdb) 
+--> 1038-var-create - * "0x10"
+<-- 1038^done,name="var13",numchild="0",value="0x10",type="int",has_more="0"
+<-- (gdb) 
+--> 1039-var-create - * "idx"
+<-- 1039^done,name="var14",numchild="0",value="0x0",type="uint8",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1040-var-create - * "idx"
+<-- 1040^done,name="var15",numchild="0",value="0x0",type="uint8",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1041-var-create - * "idx"
+<-- 1041^done,name="var16",numchild="0",value="0x0",type="uint8",thread-id="1",has_more="0"
+<-- (gdb) 
+--> 1042kill
 <-- &"kill\n"
 <-- ~"Kill the program being debugged? (y or n) [answered Y; input not from terminal]\n"
 <-- =thread-group-exited,id="i1"
-<-- 1022^done
+<-- 1042^done
 <-- (gdb) 
 --> -gdb-exit
 <-- ^exit
 --> logout
-
-Microsoft DiskPart version 10.0.10586
-
-Copyright (C) 1999-2013 Microsoft Corporation.
-On computer: GILAD-PC
-
-DiskPart successfully selected the virtual disk file.
-
-  100 percent completed
-
-DiskPart successfully attached the virtual disk file.
-
-Partition 1 is now the selected partition.
-
-DiskPart has encountered an error: The directory is not empty.
-See the System Event Log for more information.
-
-Microsoft DiskPart version 10.0.10586
-
-Copyright (C) 1999-2013 Microsoft Corporation.
-On computer: GILAD-PC
-
-DiskPart successfully selected the virtual disk file.
-
-Partition 1 is now the selected partition.
-
-DiskPart successfully detached the virtual disk file.
-
-Microsoft DiskPart version 10.0.10586
-
-Copyright (C) 1999-2013 Microsoft Corporation.
-On computer: GILAD-PC
-
-DiskPart successfully selected the virtual disk file.
-
-  100 percent completed
-
-DiskPart successfully attached the virtual disk file.
-
-Partition 1 is now the selected partition.
-
-DiskPart has encountered an error: The directory is not empty.
-See the System Event Log for more information.
-
-Microsoft DiskPart version 10.0.10586
-
-Copyright (C) 1999-2013 Microsoft Corporation.
-On computer: GILAD-PC
-
-DiskPart successfully selected the virtual disk file.
-
-Partition 1 is now the selected partition.
-
-DiskPart successfully detached the virtual disk file.
