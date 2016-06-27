@@ -12,6 +12,7 @@ typedef struct {
 
 static void def_hd_read_raw_sectors(uint32 LBA, uint8 numOfSectors, void *out_buf) {
 	uint8 read_status;
+	uint32 i;
 	__out8(0x1f6, (LBA >> 24) | 0b11100000);
 	__out8(0x1f2, numOfSectors);
 	__out8(0x1f3, (int8)LBA);
@@ -19,10 +20,12 @@ static void def_hd_read_raw_sectors(uint32 LBA, uint8 numOfSectors, void *out_bu
 	__out8(0x1f5, (int8)(LBA >> 16));
 
 	__out8(0x1f7, 0x20); //command port. read with retry
-	do {
-		read_status = __in8(0x1f7);
-	} while (!(read_status & 8));
-	__insw(0x1f0, numOfSectors * 0x100, out_buf);
+	for (i = 0; i < numOfSectors; i++) {
+		do {
+			read_status = __in8(0x1f7);
+		} while (!(read_status & 8));
+		__insw(0x1f0, 0x100, (void*)((char*)out_buf + 0x200 * i));
+	}
 }
 
 QResult qkr_main(KernelGlobalData * kgd) {
@@ -80,14 +83,13 @@ QHandle def_hd_create_qbject(void* qnode_context, char* path, ACCESS access, uin
 	return NULL;
 }
 
-QResult def_hd_read(QHandle qbject_a, uint8* out_buf, uint64 position, uint64 num_of_bytes_to_read, uint64* res_num_read){
-	Qbject* qbject = (Qbject*)qbject_a;
+QResult def_hd_read(QHandle qbject, uint8* out_buf, uint64 position, uint64 num_of_bytes_to_read, uint64* res_num_read){
 	uint32 num_of_sectors;
 	uint32 first_sector;
 	uint8* temp_buf;
 	first_sector = position / 0x200;
 	num_of_sectors = (position + num_of_bytes_to_read + (0x200 - 1)) / 0x200 - first_sector;
-	first_sector += ((DefHdQNodeContext*)qbject->associated_qnode->qnode_context)->first_sector_lba;
+	first_sector += ((DefHdQNodeContext*)get_qbject_associated_qnode(qbject)->qnode_context)->first_sector_lba;
 	if (((position&(0x200 - 1)) == 0) && ((num_of_bytes_to_read&(0x200 - 1)) == 0)) {
 		def_hd_read_raw_sectors(first_sector, num_of_sectors, out_buf);
 		*res_num_read = num_of_bytes_to_read;
