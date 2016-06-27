@@ -50,7 +50,7 @@
     <OutDir>../_output/bootloader</OutDir>
     <NMakeBuildCommandLine>make all</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
-    <NMakeCleanCommandLine>make cleen</NMakeCleanCommandLine>
+    <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
     <IntDir>../_output/bootloader/inter</IntDir>
     <NMakeOutput>
     </NMakeOutput>

@@ -4,6 +4,7 @@
 #include "../Common/intrinsics.h"
 #include "../MemoryManager/memory_manager.h"
 #include "../Common/spin_lock.h"
+#include "lapic.h"
 #include "processors.h"
 #ifdef DEBUG
 #include "../screen/screen.h"
@@ -49,10 +50,8 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	
 
 
-	// apic_timer_init
-	while (1) {
 
-	}
+	
 	if (ret) {
 		return QSuccess;
 	}
@@ -101,8 +100,10 @@ void handle_interrupts(ProcessorContext * regs) {
 	screen_printf("Interrupt called: %d\n", regs->interrupt_vector,0,0,0);
 #endif
 	switch (regs->interrupt_vector) {
-	
+	case APIC_TIMER:
+		this_processor_control_block()->timer_callback();
 	}
+	g_lapic_regs->EOI = 1;
 	return;
 }
 

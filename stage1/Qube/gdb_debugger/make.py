@@ -8,8 +8,9 @@ DISK_FILEPATH = os.path.abspath("../_output/_disk/disk.vhd")
 BOOTLOADER_OUT = os.path.abspath("../_output/bootloader/boot.bin")
 
 def mount():
-    import code
-    code.interact(local = locals())
+    #import code
+    #code.interact(local = locals())
+    print "mount called"
     os.system("md mount")
 
     open("diskpartscript","wb").write(
@@ -33,6 +34,7 @@ def install_boot():
     f.seek(0x10000+90)
     f.write(open(BOOTLOADER_OUT,"rb").read()[90:])
     f.close()
+    print "here"
 
 def write_to_disk(offset, data, letter = 'q'):
     disk = open(r"\\.\%s:"%letter,"r+b")
@@ -52,7 +54,8 @@ def write_to_disk(offset, data, letter = 'q'):
     disk.close()
 
 if sys.argv[1] in ('build','rebuild'):
-	####
+	#import pdb
+	#pdb.set_trace()
 	CUR_DIR = os.path.abspath('.')
 	LAST_COMPILE_TIMES_FILE = os.path.abspath('last_compile_times.txt')
 
@@ -114,7 +117,8 @@ if sys.argv[1] in ('build','rebuild'):
 	print system_files
 	# copy the system files to the disk:
 	for file in system_files:
-		if len(file[:file.find('.')])>8: open(os.path.join(SYSTEM_PATH, file[:6]+"~1"+file[file.find("."):]),"wb").write(open(os.path.join(SYSTEM_PATH, file),"rb").read())
+		print "debug: ", file
+		#if len(file[:file.find('.')])>8: open(os.path.join(SYSTEM_PATH, file[:6]+"~1"+file[file.find("."):]),"wb").write(open(os.path.join(SYSTEM_PATH, file),"rb").read())
 		if '~' in file: continue
 		open(os.path.join(DISK_FOLDER_MOUNT, file),"wb").write(open(os.path.join(SYSTEM_PATH, file),"rb").read())
 		print "write file %s!"%file

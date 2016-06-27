@@ -32,7 +32,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="lapic_timer_low_level_api.xsd">
+    <Xsd Include="lapic_timer_low_level_api.h">
       <Filter>api_documentation</Filter>
     </Xsd>
   </ItemGroup>

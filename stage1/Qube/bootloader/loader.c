@@ -35,7 +35,7 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 	// First - load the segments, handle exports, and reloacations
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
 		boot_module->symbols_start_index = kgd->bootloader_symbols.index;
-		DBG_PRINTF1("Load the segments, handle exports and relocations of module %d", i); ENTER;
+		DBG_PRINTF2("Load the segments, handle exports and relocations of module %d (%s)", i, boot_modules[i].file_name); ENTER;
 		// Calc the size of virtual memory we need to reserve:
 		// Iterate over the program header tables:
 		Elf64_Xword reserved_start = 0xffffffffffffffff;
@@ -119,7 +119,7 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 	// Now handle the imports and the rela sections:
 	//int num_of_rela_sections = 0;
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
-		DBG_PRINTF1("Handle relocations (and imports) of module %d", i); ENTER;
+		DBG_PRINTF2("Handle relocations (and imports) of module %d (%s)", i, boot_modules[i].file_name); ENTER;
 		int start_index = 0;
 		//struct Elf64SectionHeader * sh = (struct Elf64SectionHeader *) (((char *)boot_module) + boot_module->file_data->e_shoff);
 		struct Elf64Symbol * dynsym_table = (struct Elf64Symbol *) find_section_by_type(boot_module, SHT_DYNSYM, NULL, &size);
@@ -175,10 +175,10 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 	for (i = 0, boot_module = boot_modules; i < num_of_modules; i++, boot_module++) {
 		
 		if (!boot_module->entry_point) {
-			DBG_PRINTF1("No entry point to module %d", i); ENTER;
+			DBG_PRINTF2("No entry point to module %d (%s)", i, boot_modules[i].file_name); ENTER;
 			continue;
 		}
-		DBG_PRINTF1("Call entry point of module %d", i); ENTER;
+		DBG_PRINTF3("Call entry point of module %d (%s), 0x%x", i, boot_modules[i].file_name, boot_module->entry_point); ENTER;
 		if ((ret2 = boot_module->entry_point(kgd)) != 0) {
 			DBG_PRINTF("    ERROR: entry point return non zero!"); ENTER;
 			return i * 0x10000000 + ret2;

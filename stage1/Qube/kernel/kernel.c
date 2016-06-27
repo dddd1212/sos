@@ -3,6 +3,8 @@
 #include "../Common/Qube.h"
 #include "../MemoryManager/memory_manager.h"
 #include "../QbjectManager/Qbject.h"
+#include "../qkr_interrupts/lapic.h"
+#include "../qkr_interrupts/processors.h"
 void kernel_main(KernelGlobalData * kgd) {
 	// This is the main kernel function.
 	// The function should not return.
@@ -16,13 +18,28 @@ void kernel_main(KernelGlobalData * kgd) {
 	//*a= 1;
 	//while (TRUE);
 }
-
-
+uint64 count;
+void my_cb() {
+	count++;
+	screen_printf("timer jumped! %d", count, 0, 0, 0);
+	if (count == 10) lapic_timer_start(1000 * 1000 * 10 , FALSE);
+}
 QResult qkr_main(KernelGlobalData * kgd) {
+	count = 0;
 	kernel_main(kgd);
 	void* x = NULL;
 	void* y = NULL;
 	void* z = NULL;
+	lapic_timer_set_callback_function(my_cb);
+	lapic_timer_start(1000*1000 * 2, TRUE);
+	screen_write_string("asdfa",TRUE);
+	while (1) {
+		if (g_lapic_regs->current_count > 0) {
+			//screen_printf("cur: %x, initial: %x", g_lapic_regs->current_count, g_lapic_regs->initial_count, 0, 0);
+			//lapic_timer_start(1000 * 1000, -1);
+			//screen_new_line();
+		}
+	}
 	x = kheap_alloc(0x253);
 	y = kheap_alloc(0x1652);
 	z = kheap_alloc(0x100253);

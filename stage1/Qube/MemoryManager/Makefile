@@ -9,5 +9,5 @@ memory_manager:
 all: memory_manager
 
 clean:
-	rm -f memory_manager.o
-	rm -f memory_manager.qmo
+	rm -f *.o
+	rm -f $(OUT_DIR)/memory_manager.qkr
