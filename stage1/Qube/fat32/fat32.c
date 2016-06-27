@@ -177,7 +177,7 @@ static QResult fat32_read(QHandle qbject, uint8* buffer, uint64 position, uint64
 	uint32 byte_to_read;
 	uint32 cluster_size;
 	uint64 num_read;
-	FAT32QnodeContext* qnode_context = (FAT32QnodeContext*)(((Qbject*)qbject)->associated_qnode->qnode_context);
+	FAT32QnodeContext* qnode_context = (FAT32QnodeContext*)(get_qbject_associated_qnode(qbject)->qnode_context);
 	spin_lock(&qnode_context->lock);
 	QHandle raw_disk = qnode_context->raw_disk;
 

@@ -60,6 +60,11 @@ EXPORT QResult set_qnode_attributes(char* path, QNodeAttributes* attr);
 EXPORT QbjectContent get_qbject_content(QHandle handle) {
 	return (void*)(&((Qbject*)handle)->content);
 }
+
+EXPORT QNode* get_qbject_associated_qnode(QHandle qhandle) {
+	return ((Qbject*)qhandle)->associated_qnode;
+}
+
 #define QNODE_TYPE_ROOT (0)
 #define QNODE_TYPE_GENERIC (1)
 #define CREATE_QBJECT_FLAGS_SECOND_CHANCE (1)
