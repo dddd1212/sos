@@ -40,6 +40,9 @@
     <None Include="gdb_proxy.py">
       <Filter>gdb_files</Filter>
     </None>
+    <None Include="qube_gdb_vmware.bat">
+      <Filter>gdb_files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme\readme.html">
