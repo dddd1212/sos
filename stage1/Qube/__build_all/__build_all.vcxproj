@@ -41,7 +41,7 @@
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
@@ -82,6 +82,11 @@
     <NMakeReBuildCommandLine>python make.py rebuild</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>python make.py clean</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>VS_EDITOR</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <NMakeBuildCommandLine>python make.py build</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine>python make.py rebuild</NMakeReBuildCommandLine>
+    <NMakeCleanCommandLine>python make.py clean</NMakeCleanCommandLine>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>

@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B4E8403D-6507-48F9-876B-E66D9A108C92}</ProjectGuid>
+    <ProjectGuid>{62E315EF-9DE0-4A80-8BF6-FB7DC6881F88}</ProjectGuid>
     <Keyword>MakeFileProj</Keyword>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -63,24 +63,24 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeOutput>qkr_interrupts.exe</NMakeOutput>
+    <NMakeOutput>qkr_acpi.exe</NMakeOutput>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakeOutput>qkr_interrupts.exe</NMakeOutput>
+    <NMakeOutput>qkr_acpi.exe</NMakeOutput>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <NMakePreprocessorDefinitions>__attribute__(x) ; __attribute__((packed))</NMakePreprocessorDefinitions>
     <NMakeBuildCommandLine>make all</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
+    <NMakePreprocessorDefinitions>__attribute__(x) ; __attribute__((packed))</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeBuildCommandLine>make all</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
-    <NMakePreprocessorDefinitions>VS_EDITOR</NMakePreprocessorDefinitions>
+    <NMakePreprocessorDefinitions>__attribute__(x) ; VS_EDITOR</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
@@ -88,19 +88,11 @@
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lapic.h" />
-    <ClInclude Include="interrupts.h" />
-    <ClInclude Include="processors.h" />
+    <ClInclude Include="acpi.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="lapic.c" />
-    <ClCompile Include="interrupts.c" />
+    <ClCompile Include="acpi.c" />
     <ClCompile Include="Makefile" />
-    <ClCompile Include="processors.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="generate_isr.py" />
-    <None Include="isrs.S" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

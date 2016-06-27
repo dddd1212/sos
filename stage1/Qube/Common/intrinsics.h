@@ -8,7 +8,7 @@ typedef int volatile SpinLock;
 static inline int8 __in8(uint16 port) __attribute__((always_inline));
 static inline void __out8(uint16 port, uint8 data) __attribute__((always_inline));
 static inline void __insw(uint16 port, uint32 count, void *addr) __attribute__((always_inline));
-static inline BOOL __qube_sync_bool_compare_and_swap(SpinLock* p, int old_val, int new_val) __attribute__((always_inline));
+static inline BOOL __qube_sync_bool_compare_and_swap(SpinLock * p, int old_val, int new_val) __attribute__((always_inline));
 static inline void __qube_mm_pause() __attribute__((always_inline));
 static inline void __qube_memory_barrier() __attribute__((always_inline));
 static inline void __cpuid(int code, uint32 * eax_out, uint32 * edx_out)  __attribute__((always_inline));
@@ -18,11 +18,13 @@ static inline void __wrmsr(uint32 msr_id, uint64 msr_value) __attribute__((alway
 static inline void __invlpg(void* addr) __attribute__((always_inline));
 static inline void __lidt(void* addr) __attribute__((always_inline));
 static inline void io_wait() __attribute__((always_inline));
+
 // #define __int(N) // implements later in the file.
 
-
-
-
+#define ___HELP_READ_FROM_GS_STRINGIFY(a) #a
+#define __READ_FROM_GS(ret, offset) { asm("mov %%gs:" ___HELP_READ_FROM_GS_STRINGIFY(offset) ",%0" : "=A" (ret)); }
+#define __SET_GS(value)
+							
 static inline void __qube_memory_barrier() {
 	asm volatile (""); // acts as a memory barrier.
 }
@@ -31,7 +33,7 @@ static inline void __qube_mm_pause() {
 	__asm__("pause;");
 }
 
-static inline BOOL __qube_sync_bool_compare_and_swap(SpinLock* p, int old_val, int new_val) {
+static inline BOOL __qube_sync_bool_compare_and_swap(SpinLock * p, int old_val, int new_val) {
 	return __sync_bool_compare_and_swap(p, old_val, new_val);
 }
 

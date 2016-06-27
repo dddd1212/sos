@@ -4,7 +4,7 @@ import time
 
 def create():
     file("diskpartscript","wb").write(
-r"""create vdisk file="%s\disk.vhd" maximum=520
+r"""create vdisk file="%s\disk.vhd" maximum=100
 attach vdisk
 create partition primary
 format FS=FAT32 QUICK
@@ -45,6 +45,8 @@ def install_boot(boot_path):
     f.close()
     
 def main(argv):
+    #print len(argv)
+    #print argv[1],argv[2]
     if not ((len(argv)==2 and argv[1] in ["create","mount","unmount"]) or (len(argv)==3 and argv[1] in ["install_boot"])):
         print "usage: createhd.py create/mount/unmount/install_boot <bootfile>"
         exit(0)
