@@ -27,9 +27,11 @@ int read_sectors(uint32 LBA, uint8 numOfSectors, void *out_buf){
 	__out8(0x1f5, (int8)(LBA>>16));
 
 	__out8(0x1f7, 0x20); //command port. read with retry
-	do{
-		read_status = __in8(0x1f7);
-	}while (!(read_status&8));
-	__insw(0x1f0, numOfSectors*0x100, out_buf);
+	for (uint32 i = 0; i < numOfSectors; i++) {
+		do{
+			read_status = __in8(0x1f7);
+		}while (!(read_status&8));
+		__insw(0x1f0, 0x100, (void*)((char*)out_buf+0x200*i));
+	}
 	return 0; //success
 }
