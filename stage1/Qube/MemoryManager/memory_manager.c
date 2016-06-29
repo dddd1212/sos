@@ -153,9 +153,7 @@ static void add_physical_page(MemoryRegion* region, void* v_address, uint64 spec
 		*PTE(v_address) = pop_physical_page()|3;
 	}
 	else {
-		uint64* t1 = PTE(v_address);
-		uint64 t2 = specific_physical_addr | (3 | FLAG_OWNED_PAGE);
-		*t1 = t2;
+		*PTE(v_address) = specific_physical_addr | (3 | FLAG_OWNED_PAGE);
 	}
 	region->PDE_use_count[pde_offset]++;
 }
