@@ -97,3 +97,5 @@
 /~WRL3687.tmp
 /stage1/Qube/fat32/x64/Release/fat32.log
 /stage1/Qube/gdb_debugger/x64/bochs/gdb_debugger.log
+/stage1/Qube/gdb_debugger/x64/vmware/gdb_debugger.log
+/stage1/Qube/gdb_debugger/log.txt

@@ -102,6 +102,31 @@ static void set_bitmap(KernelGlobalData* kgd, REGION_TYPE region_type, MemoryReg
 		for (i = i + 1; i < region->bitmap_size; i++) {
 			region->free_pages_bitmap[i] = 0;
 		}
+		i = 0;
+		while (i < num_of_pages) {
+			if (0 == (i % (0x200 * 0x200))) {
+				// ppe start
+				if (!*PPE((uint8*)region->start + 0x1000 * i)) {
+					i += 0x200 * 0x200;
+					continue;
+				}
+			}
+			if(0 == (i % 0x200)) {
+				// pde start
+				if (!*PDE((uint8*)region->start + 0x1000 * i)) {
+					i += 0x200;
+					continue;
+				}
+				else {
+					region->PPE_use_count[i / (0x200*0x200)]++;
+				}
+			}
+			// pte start
+			if (*PTE((uint8*)region->start + 0x1000 * i)) {
+				region->PDE_use_count[i / (0x200)]++;
+			}
+			i++;
+		}
 		return;
 	case KHEAP:
 		for (uint32 i = 0; i < region->bitmap_size; i++) {
@@ -128,7 +153,9 @@ static void add_physical_page(MemoryRegion* region, void* v_address, uint64 spec
 		*PTE(v_address) = pop_physical_page()|3;
 	}
 	else {
-		*PTE(v_address) = specific_physical_addr|(3| FLAG_OWNED_PAGE);
+		uint64* t1 = PTE(v_address);
+		uint64 t2 = specific_physical_addr | (3 | FLAG_OWNED_PAGE);
+		*t1 = t2;
 	}
 	region->PDE_use_count[pde_offset]++;
 }
@@ -234,7 +261,7 @@ void assign_committed_(void* addr, uint32 size, uint64 specific_physical) {
 	spin_lock(&g_mem_lock);
 	// TODO: handle out of physical pages case.
 	MemoryRegion* region = &g_regions[0];
-	while (addr < region->start || addr > (void*)(((uint8*)region->start) + REGION_BITMAP_MAX_SIZE)) {
+	while (addr < region->start || addr > (void*)(((uint8*)region->start) + (uint64)REGION_BITMAP_MAX_SIZE*0x8000)) {
 		region++;
 	}
 	for (uint8* cur = addr; cur < ((uint8*)addr) + size; cur += 0x1000) {
