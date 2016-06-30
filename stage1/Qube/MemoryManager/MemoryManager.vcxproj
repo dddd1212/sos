@@ -58,11 +58,13 @@
   <ItemGroup>
     <ClInclude Include="heap.h" />
     <ClInclude Include="memory_manager.h" />
+    <ClInclude Include="physical_memory.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="heap.c" />
     <ClCompile Include="Makefile" />
     <ClCompile Include="memory_manager.c" />
+    <ClCompile Include="physical_memory.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

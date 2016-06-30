@@ -30,12 +30,18 @@
     <ClCompile Include="heap.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="physical_memory.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="memory_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="heap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="physical_memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
