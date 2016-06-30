@@ -43,6 +43,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
+    <Text Include="readme.txt" />
     <Text Include="Readme\readme.html" />
     <Text Include="Readme\stylesheet.css" />
     <None Include=".gdbinit" />

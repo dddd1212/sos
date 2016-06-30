@@ -51,6 +51,9 @@
     <Text Include="Readme\stylesheet.css">
       <Filter>Readme</Filter>
     </Text>
+    <Text Include="readme.txt">
+      <Filter>gdb_files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
