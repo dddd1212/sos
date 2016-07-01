@@ -5,6 +5,7 @@ install VS15
  * run VC_IoT.vsix from tools\gdb_for_vc
 install Cygwin and compile cross compiler according to http://wiki.osdev.org/GCC_Cross-Compiler
 add python, Cygwin64\bin, C:\cygwin64\home\=YOUR_USER=\opt\cross\bin to the enviroment variable "Path"
+install gdb package at Cygwin
 
 compile all:
 create empty hd with the createhd.py script at tools directory and put it at "../_output/_disk/disk.vhd"
