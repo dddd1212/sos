@@ -117,8 +117,8 @@ if sys.argv[1] in ('build','rebuild'):
     print system_files
     # copy the system files to the disk:
     open(os.path.join(SYSTEM_PATH, "tmplongname.fil"),"wb").write("Magic482554427352")
-    if os.isfile(os.path.join(SYSTEM_PATH, "tmplongname.fil")):
-        assert (open(os.path.join(SYSTEM_PATH, "tmplon~1.fil"),"wb").read() == "Magic482554427352")
+    if os.path.isfile(os.path.join(SYSTEM_PATH, "tmplon~1.fil")):
+        assert (open(os.path.join(SYSTEM_PATH, "tmplon~1.fil"),"rb").read() == "Magic482554427352")
         create8dot3name = False
     else:
         create8dot3name = True
