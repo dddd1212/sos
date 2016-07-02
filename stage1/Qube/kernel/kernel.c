@@ -30,6 +30,25 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	void* x = NULL;
 	void* y = NULL;
 	void* z = NULL;
+	x = commit_pages(MODULES, 0x1000 * 0x1000);
+	assign_committed(x, 0x1000 * 0x1000, 0xf0000000);
+	/*
+	for (uint32 i = 0; i < 0x1000000; i++) {
+		uint32 t = *(uint8*)((uint8*)x + i);
+		if (t != 0xff) {
+			*(uint8*)x = 9;
+		}
+	}
+	*/
+	/*
+	for (uint32 i = 0; i < 0x1000 * 0x1000; i += 16) {
+		if (*(uint64*)((uint8*)x + i) == 0x2052545020445352) {
+			*(uint8*)x = 9;
+		}
+	}*/
+	//unassign_committed(x, 0x1000 * 0x1000);
+	free_pages(x);
+
 	lapic_timer_set_callback_function(my_cb);
 	lapic_timer_start(1000*1000 * 2, TRUE);
 	screen_write_string("asdfa",TRUE);
