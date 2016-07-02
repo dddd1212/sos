@@ -16,8 +16,8 @@ you need to compile bochs with gdb stub.
 create enviroment variable named %BOCHSGDB% that points to the bochs.exe with the gdb stub.
 
 debugging with vmware:
-1. Install VMWare-VIX
-2. Create new VM and the first line in qube_gdb_vmware.bat to it's location.
+1. Install VMWare-VIX (not sure if needed)
+2. Create new VM and edit the first line in qube_gdb_vmware.bat to it's location.
 3. change the HD of the VM to this:
 """
 # Disk DescriptorFile
