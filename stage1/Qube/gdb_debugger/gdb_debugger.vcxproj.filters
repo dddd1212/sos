@@ -46,6 +46,9 @@
     <None Include="native_gdb.bat">
       <Filter>gdb_files</Filter>
     </None>
+    <None Include="wait_for_con.py">
+      <Filter>gdb_files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme\readme.html">

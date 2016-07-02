@@ -51,6 +51,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
+    <None Include="wait_for_con.py" />
     <Text Include="readme.txt" />
     <Text Include="Readme\readme.html" />
     <Text Include="Readme\stylesheet.css" />
