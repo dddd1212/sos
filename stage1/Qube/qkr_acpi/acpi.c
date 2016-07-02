@@ -23,8 +23,8 @@ QResult checksum(uint8 * addr, uint64 size) {
 QResult init_acpi() {
 	PhysicalMemory pmem;
 	PhysicalMemory pmem2;
-	physical_memory_init(&pmem);
-	physical_memory_init(&pmem2);
+	if (physical_memory_init(&pmem) == QFail) return QFail;
+	if (physical_memory_init(&pmem2) == QFail) return QFail;
 	QResult ret = QSuccess;
 	uint32 ver;
 	char * first_mb = physical_memory_get_ptr(&pmem, 0, MEGABYTE);
@@ -127,7 +127,11 @@ QResult init_acpi() {
 		}
 		//screen_printf("TABLE Found at: %x!\n", desc_addr, 0, 0, 0);
 		ACPISDTHeader * table = physical_memory_get_ptr(&pmem2, desc_addr, sizeof(ACPISDTHeader));
+		table = physical_memory_get_ptr(&pmem2, desc_addr, sizeof(ACPISDTHeader));
+		table = physical_memory_get_ptr(&pmem2, desc_addr, sizeof(ACPISDTHeader));
+		//screen_printf("TABLE Found at: $x. name: $x. len: $d\n", 0, 0, 0, 0);
 		screen_printf("TABLE Found at: %x. name: %x. len: %d\n", desc_addr, *((int*)table->Signature), table->Length, 0);
+		
 	}
 
 	

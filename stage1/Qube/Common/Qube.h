@@ -41,6 +41,7 @@ typedef int32 QResult;
 #define PAGE_SIZE 0x1000
 #define NUM_OF_PAGES(bytes) ((bytes + PAGE_SIZE-1)/PAGE_SIZE)
 #define ALIGN_UP(addr) (((uint64)addr + PAGE_SIZE-1)/PAGE_SIZE*PAGE_SIZE)
+#define ALIGN_DOWN(addr) (((uint64)addr)/PAGE_SIZE*PAGE_SIZE)
 
 #define MAX_LOADED_MODULES 0x100
 ///// We need to split this file to couple of files...

@@ -9,3 +9,4 @@ commands
 	eval "add-symbol-file /Qube/_output/system/%s 0x%lx", module_file_name, entry
 	c
 end
+break acpi.c:131

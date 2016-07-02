@@ -3,10 +3,13 @@
 
 #define PHYSICAL_MAX_SIZE 0x100000
 typedef struct {
-	void * virtual_address;
-	uint64 physical_start;
-	uint64 physical_end;
-	BOOL is_allocated;
+	void * addr; // the virtual address the user should use.
+	
+	// Actual allocated pointers:
+	void * _virtual_start;
+	uint64 _physical_start;
+	uint64 _size;
+	BOOL _is_allocated;
 } PhysicalMemory;
 
 QResult _physical_alloc(PhysicalMemory * pmem, uint64 phys_addr, uint64 size);
@@ -23,7 +26,7 @@ QResult _physical_alloc(PhysicalMemory * pmem, uint64 phys_addr, uint64 size);
 // You cannot get pointer larger then PHYSICAL_MAX_SIZE.
 //
 // PhysicalMemory is not thread safe!
-EXPORT void physical_memory_init(PhysicalMemory * pmem);
+EXPORT QResult physical_memory_init(PhysicalMemory * pmem);
 EXPORT void physical_memory_fini(PhysicalMemory * pmem);
 EXPORT void * physical_memory_get_ptr(PhysicalMemory * pmem, uint64 phys_addr, uint64 size);
 
