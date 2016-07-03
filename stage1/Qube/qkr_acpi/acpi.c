@@ -3,6 +3,8 @@
 #include "../libc/string.h"
 #include "../MemoryManager/memory_manager.h"
 #include "../MemoryManager/physical_memory.h"
+#include "../MemoryManager/heap.h"
+ACPITable * g_tables_head;
 QResult qkr_main(KernelGlobalData * kgd) {
 	init_acpi();
 	return QSuccess;
@@ -63,8 +65,8 @@ QResult init_acpi() {
 	}
 
 	// Validate acpi version 1 or 2:
-	ver = rsdp_desc->firstPart.Revision + 1;
-	if (!(ver - 1 <= 1)) { // ver must be 1 or 2.
+	ver = rsdp_desc->firstPart.Revision;
+	if (ver != 0 && ver != 2) { // ver must be 0 or 2.
 		screen_printf("ERROR: ACPI Revision not match: %d\n", (uint64)rsdp_desc->firstPart.Revision, 0, 0, 0);
 		ret = QFail;
 		goto end;
@@ -80,8 +82,8 @@ QResult init_acpi() {
 		goto end;
 	}
 	
-	if (ver == 1) {
-		rsdt_phys = (uint64)rsdp_desc->firstPart.RsdtAddress; // In version 1, we need to use this pointer.
+	if (ver == 0) {
+		rsdt_phys = (uint64)rsdp_desc->firstPart.RsdtAddress; // In ACPI1, we need to use this pointer.
 	} else { 
 		if (checksum(((uint8*)rsdp_desc) + sizeof(RSDPDescriptor), sizeof(RSDPDescriptor20) - sizeof(RSDPDescriptor)) != QSuccess) {
 			screen_printf("ERROR: RSDPDescriptor checksum is not 0!\n", 0, 0, 0, 0);
@@ -92,52 +94,99 @@ QResult init_acpi() {
 	}
 
 	screen_printf("Found rsdt at: %x!\n", (uint64)rsdt_phys, 0, 0, 0);
-
-	first_mb = NULL; // invalid now.
-	rsdt = physical_memory_get_ptr(&pmem, rsdt_phys, sizeof(ACPISDTHeader));
-	rsdt = physical_memory_get_ptr(&pmem, rsdt_phys, rsdt->Length);
-	screen_printf("rsdt len: %x!\n", rsdt->Length - sizeof(ACPISDTHeader), 0, 0, 0);
-	if (checksum((uint8*)rsdt, rsdt->Length) != QSuccess) {
-		screen_printf("ERROR: rsdt checksum is not 0!\n", 0, 0, 0, 0);
-		ret = QFail;
-		goto end;
-	}
-
-	if (memcmp(rsdt->Signature, "RSDT", 4) != 0) {
-		screen_printf("ERROR: rsdt signature error!\n", 0, 0, 0, 0);
-		ret = QFail;
-		goto end;
-	}
 	
+	ACPITable * head = alloc_and_copy_table(rsdt_phys, &pmem);
+	if (head == NULL) return QFail;
+	first_mb = NULL; // invalid now.
+	ACPITable * tail = head;
+	dump_table(head);
+	rsdt = &head->entry;
+	if (ver == 0 && memcmp(rsdt->Signature, "RSDT", 4) != 0 || ver == 2 && memcmp(rsdt->Signature, "XSDT", 4) != 0) {
+		screen_printf("ERROR: rsdt/xsdt signature error!\n", 0, 0, 0, 0);
+		ret = QFail;
+		goto end;
+	}
 	
 	uint64 desc_addr;
-	uint8 * ptr = (uint8*)(rsdt + 1);
+	uint8 * ptr = (uint8*)(&rsdt->data[0]);
 	uint32 descs_ptr_size;
-	if (ver == 1) {
+	ACPITable * entry;
+	if (ver == 0) {
 		descs_ptr_size = 4;
 	} else {
 		descs_ptr_size = 8;
 	}
 	screen_printf("rsdt length: %d\n", rsdt->Length, 0, 0, 0);
 	for (uint32 i = 0; i < rsdt->Length - sizeof(ACPISDTHeader); i += descs_ptr_size) {
-		if (ver == 1) {
+		if (ver == 0) {
 			desc_addr = (uint64)(*((uint32*)(ptr + i)));
 		} else {
 			desc_addr = (uint64)(*((uint64*)(ptr + i)));
 		}
-		//screen_printf("TABLE Found at: %x!\n", desc_addr, 0, 0, 0);
-		ACPISDTHeader * table = physical_memory_get_ptr(&pmem2, desc_addr, sizeof(ACPISDTHeader));
-		table = physical_memory_get_ptr(&pmem2, desc_addr, sizeof(ACPISDTHeader));
-		table = physical_memory_get_ptr(&pmem2, desc_addr, sizeof(ACPISDTHeader));
-		//screen_printf("TABLE Found at: $x. name: $x. len: $d\n", 0, 0, 0, 0);
-		screen_printf("TABLE Found at: %x. name: %x. len: %d\n", desc_addr, *((int*)table->Signature), table->Length, 0);
-		
+		entry = alloc_and_copy_table(desc_addr, &pmem);
+		if (entry == NULL) return QFail;
+		tail->next = entry;
+		entry->next = NULL;
+		tail = entry;
+		dump_table(entry);
 	}
-
-	
-	while (1) {}
+	g_tables_head = head;
 end:
 	physical_memory_fini(&pmem);
-	while (1) {}
 	return ret;
+}
+
+ACPITable * get_acpi_table(char * name) {
+	if (strlen(name) != 4) return NULL;
+	for (ACPITable * cur = g_tables_head; cur != NULL; cur = cur->next) {
+		if (memcmp(name, cur->entry.Signature, 4) == 0) return cur;
+	}
+	return NULL;
+}
+
+ACPITable * alloc_and_copy_table(uint64 phys_mem_table, PhysicalMemory * pmem) {
+	if (pmem == NULL) { // if the user didn't give an object, the function will be slower.
+		PhysicalMemory pmem_s;
+		physical_memory_init(&pmem_s);
+		ACPITable * ret = alloc_and_copy_table(phys_mem_table, &pmem_s);
+		physical_memory_fini(&pmem_s);
+		return ret;
+	}
+	ACPISDTHeader * entry = physical_memory_get_ptr(pmem, phys_mem_table, sizeof(ACPISDTHeader));
+	if (entry == NULL) return NULL;
+	entry = physical_memory_get_ptr(pmem, phys_mem_table, entry->Length);
+	if (entry == NULL) return NULL;
+	if (checksum((uint8*)entry, entry->Length) != QSuccess) {
+		screen_printf("ERROR: table checksum is not 0!\n", 0, 0, 0, 0);
+		return NULL;
+	}
+	ACPITable * ret = kheap_alloc(sizeof(ACPITable) + entry->Length - sizeof(ACPISDTHeader));
+	if (ret == NULL) return NULL;
+	ret->next = NULL;
+	memcpy(&ret->entry, entry, entry->Length);
+	return ret;
+}
+
+void dump_table(ACPITable * table) {
+	table->entry.CreatorID;
+	table->entry.CreatorRevision;
+	table->entry.Length;
+	table->entry.OEMID;
+	table->entry.OEMRevision;
+	table->entry.OEMTableID;
+	table->entry.Revision;
+	table->entry.Signature;
+	char temp[10], temp2[10];
+	memcpy(temp, table->entry.Signature, sizeof(table->entry.Signature));
+	temp[sizeof(table->entry.Signature)] = '\0';
+	screen_printf("ACPITable: name=%s. Revision: %d, Length: %d.\n", (uint64)&temp[0], table->entry.Revision, table->entry.Length, 0);
+	memcpy(temp, table->entry.OEMID, sizeof(table->entry.OEMID));
+	temp[sizeof(table->entry.OEMID)] = '\0';
+	memcpy(temp2, table->entry.OEMTableID, sizeof(table->entry.OEMTableID));
+	temp2[sizeof(table->entry.OEMTableID)] = '\0';
+	screen_printf("    (OEM: id:%s, table_id:%s, revision:%d)\n", (uint64)&temp[0], (uint64)&temp2[0], table->entry.OEMRevision, 0);
+	memcpy(temp, &table->entry.CreatorID, sizeof(table->entry.CreatorID));
+	temp[sizeof(table->entry.CreatorID)] = '\0';
+	screen_printf("    (Creator: id:%s, revision:%d).\n", (uint64)&temp[0], table->entry.CreatorRevision, 0, 0);
+	return;
 }

@@ -6,6 +6,7 @@
 #include "../Common/spin_lock.h"
 #include "lapic.h"
 #include "processors.h"
+#include "../qkr_acpi/acpi.h"
 #ifdef DEBUG
 #include "../screen/screen.h"
 #endif
@@ -26,6 +27,8 @@ BOOL init_interrupts() {
 QResult qkr_main(KernelGlobalData * kgd) {
 	// TODO: do it with the new memory module, and change the lapic_init interface to get on param.
 	lapic_init(kgd->APIC_base);
+	ACPITable * apic_table = get_acpi_table("APIA");
+	dump_table(apic_table);
 	BOOL ret = (
 		// initialize the processors' specific data areas
 		init_processors_data() &&
@@ -43,7 +46,6 @@ QResult qkr_main(KernelGlobalData * kgd) {
 		//       We have 2 options: 1. To assumes that it exist in the default address.
 		//							2. Using the ACPI to determine if it exist and where.
 		//		 For now, we will assume the default address.
-
 		init_interrupts()
 	);
 

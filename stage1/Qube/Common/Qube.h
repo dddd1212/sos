@@ -110,6 +110,8 @@ QResult qkr_main(KernelGlobalData * kgd);
 //static inline uint8 get_) __attribute__((always_inline));
 
 
+
+
 #include "intrinsics.h"
 
 
