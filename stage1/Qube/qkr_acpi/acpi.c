@@ -101,8 +101,8 @@ QResult init_acpi() {
 	ACPITable * tail = head;
 	dump_table(head);
 	rsdt = &head->entry;
-	if (memcmp(rsdt->Signature, "RSDT", 4) != 0) {
-		screen_printf("ERROR: rsdt signature error!\n", 0, 0, 0, 0);
+	if (ver == 0 && memcmp(rsdt->Signature, "RSDT", 4) != 0 || ver == 2 && memcmp(rsdt->Signature, "XSDT", 4) != 0) {
+		screen_printf("ERROR: rsdt/xsdt signature error!\n", 0, 0, 0, 0);
 		ret = QFail;
 		goto end;
 	}
