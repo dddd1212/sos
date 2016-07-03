@@ -7,8 +7,8 @@
 QResult _physical_alloc(PhysicalMemory * pmem, uint64 phys_addr, uint64 size) {
 	if (pmem->_is_allocated) {
 		unassign_committed(pmem->_virtual_start, pmem->_size);
-		physical_memory_fini(pmem);
-		if (physical_memory_init(pmem) == QFail) return QFail;
+		//physical_memory_fini(pmem);
+		//if (physical_memory_init(pmem) == QFail) return QFail;
 	}
 	assign_committed(pmem->_virtual_start, size, phys_addr);
 	pmem->_is_allocated = TRUE;
