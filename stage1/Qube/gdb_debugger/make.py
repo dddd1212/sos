@@ -19,7 +19,7 @@ attach vdisk
 select partition=1
 assign mount=%s\mount
 """%(os.path.abspath(DISK_FOLDER ),os.path.abspath(DISK_FOLDER)))
-    os.system("diskpart /s %s >> %s"%(os.path.abspath("diskpartscript"),os.path.abspath("log.txt")))
+    os.system("diskpart /s %s >> %s"%(os.path.abspath("diskpartscript"),os.path.abspath("diskpartscriptlog.txt")))
 
 def unmount():
     open("diskpartscript","wb").write(
@@ -27,7 +27,7 @@ r"""select vdisk file="%s\disk.vhd"
 select partition=1
 detach vdisk
 """%(os.path.abspath(DISK_FOLDER)))
-    os.system("diskpart /s %s >> %s"%(os.path.abspath("diskpartscript"),os.path.abspath("log.txt")))
+    os.system("diskpart /s %s >> %s"%(os.path.abspath("diskpartscript"),os.path.abspath("diskpartscriptlog.txt")))
 
 def install_boot():
     f = open(DISK_FILEPATH,"r+b")
