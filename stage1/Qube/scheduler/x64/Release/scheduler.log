@@ -1,0 +1,4 @@
+﻿  rm -f scheduler.o
+  rm -f scheduler.qmo
+  x86_64-elf-gcc.exe -c *.c -Wall -fpic -fvisibility=hidden -g -o scheduler.o
+  x86_64-elf-ld.exe -fpic -fvisibility=hidden -shared scheduler.o -o ../_output/system/scheduler.qkr
