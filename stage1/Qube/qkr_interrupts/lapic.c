@@ -150,8 +150,6 @@ BOOL _configure_LAPIC() {
 	uint32 counts_elapsed = 0xffffffff - apic->current_count;
 	g_bus_freq = counts_elapsed * 16 * 100; // * 16 because we divide the APIC by 16. * 100 because we measure just 10ms.
 																		  // g_bus_freq = number of ticks per second.
-	uint64 ggg = g_bus_freq;
-
 	return TRUE;
 }
 

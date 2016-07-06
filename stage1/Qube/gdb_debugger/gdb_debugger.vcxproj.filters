@@ -43,6 +43,18 @@
     <None Include="qube_gdb_vmware.bat">
       <Filter>gdb_files</Filter>
     </None>
+    <None Include="native_gdb.bat">
+      <Filter>gdb_files</Filter>
+    </None>
+    <None Include="wait_for_con.py">
+      <Filter>gdb_files</Filter>
+    </None>
+    <None Include="vmware_files\MS-DOS.vmdk">
+      <Filter>vmware_files</Filter>
+    </None>
+    <None Include="vmware_files\MS-DOS.vmx">
+      <Filter>vmware_files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme\readme.html">
@@ -50,6 +62,9 @@
     </Text>
     <Text Include="Readme\stylesheet.css">
       <Filter>Readme</Filter>
+    </Text>
+    <Text Include="readme.txt">
+      <Filter>gdb_files</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +82,9 @@
     </Filter>
     <Filter Include="Source Files">
       <UniqueIdentifier>{e3aa692a-caa6-4d75-ace3-0e90cf018690}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vmware_files">
+      <UniqueIdentifier>{2822f934-21db-4faa-8a42-b17f45edd848}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

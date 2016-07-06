@@ -100,4 +100,14 @@
 /stage1/Qube/gdb_debugger/x64/vmware/gdb_debugger.log
 /stage1/Qube/gdb_debugger/log.txt
 /stage1/Qube/qkr_acpi/x64/Release/qkr_acpi.log
+/stage1/Qube/gdb_debugger/vmware_files/MS-DOS.nvram
+/stage1/Qube/gdb_debugger/vmware_files/MS-DOS.vmsd
+/stage1/Qube/gdb_debugger/vmware_files/MS-DOS.vmxf
+/stage1/Qube/gdb_debugger/vmware_files/vmware.log
+/stage1/Qube/gdb_debugger/vmware_files/vmware-2.log
+/stage1/Qube/gdb_debugger/vmware_files/vmware-1.log
+/stage1/Qube/gdb_debugger/vmware_files/vmware-0.log
+/stage1/Qube/gdb_debugger/diskpartscriptlog.txt
+/stage1/Qube/qkr_acpi/x64/Debug/qkr_acpi.log
+/stage1/Qube/qkr_interrupts/x64/Debug/qkr_interrupts.log
 /stage1/bochs/obj-release

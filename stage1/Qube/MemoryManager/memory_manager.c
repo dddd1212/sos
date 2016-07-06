@@ -12,7 +12,7 @@
 #define KHEAP_START_ADDRESS (0xffffe00000000000)
 
 #define MODULES_BITMAP_SIZE (0x10000)
-#define KHEAP_BITMAP_SIZE (0x400)
+#define KHEAP_BITMAP_SIZE (0x10000)
 
 
 SpinLock g_mem_lock;
@@ -153,7 +153,8 @@ static void add_physical_page(MemoryRegion* region, void* v_address, uint64 spec
 		*PTE(v_address) = pop_physical_page()|3;
 	}
 	else {
-		*PTE(v_address) = specific_physical_addr | (3 | FLAG_OWNED_PAGE);
+		uint64* x = PTE(v_address);
+		*x = specific_physical_addr | (3 | FLAG_OWNED_PAGE);
 	}
 	region->PDE_use_count[pde_offset]++;
 }
@@ -165,11 +166,18 @@ static void remove_physical_page(MemoryRegion* region, void* v_address) {
 		push_physical_page(*PTE(v_address));
 	}
 	*PTE(v_address) = 0;
+	__invlpg(v_address);
 	region->PDE_use_count[pde_offset]--;
 	if (region->PDE_use_count[pde_offset] == 0) {
 		push_physical_page(*PDE(v_address));
 		*PDE(v_address) = 0;
+		__invlpg(PTE(v_address));
 		region->PPE_use_count[ppe_offset]--;
+		if (region->PPE_use_count[ppe_offset] == 0) {
+			push_physical_page(*PPE(v_address));
+			*PPE(v_address) = 0;
+			__invlpg(PDE(v_address));
+		}
 	}
 }
 
@@ -274,7 +282,7 @@ void assign_committed_(void* addr, uint32 size, uint64 specific_physical) {
 void unassign_committed_(void* addr, uint32 size) {
 	spin_lock(&g_mem_lock);
 	MemoryRegion* region = &g_regions[0];
-	while (addr < region->start || addr > (void*)(((uint8*)region->start) + REGION_BITMAP_MAX_SIZE)) {
+	while (addr < region->start || addr > (void*)(((uint8*)region->start) + (uint64)REGION_BITMAP_MAX_SIZE * 0x8000)) {
 		region++;
 	}
 	for (uint8* cur = addr; cur < ((uint8*)addr) + size; cur += 0x1000) {
@@ -293,9 +301,11 @@ void free_pages_(void* addr) {
 	start_bit = ((uint64)addr - (uint64)region->start) / 0x1000;
 	uint8* cur_page = (uint8*)addr;
 	for (uint32 cur_bit = start_bit; get_bit(region->free_pages_bitmap, cur_bit); cur_bit++,cur_page+=0x1000) {
-		remove_physical_page(region, (void*)cur_page);
 		set_bit(region->free_pages_bitmap, cur_bit, 0);
-		__invlpg(cur_page);
+		if ((*PPE(cur_page)&FLAG_VALID_PAGE) && (*PDE(cur_page)&FLAG_VALID_PAGE) && (*PTE(cur_page)&FLAG_VALID_PAGE)) {
+			// TODO: this is not so efficient
+			remove_physical_page(region, (void*)cur_page);
+		}
 	}
 	spin_unlock(&g_mem_lock);
 	return;

@@ -1,7 +1,8 @@
 #ifndef MEMORY_MANAGER
 #define MEMORY_MANAGER
 #include "../Common/Qube.h"
-#define REGION_BITMAP_MAX_SIZE 0x100000
+#define REGION_BITMAP_MAX_SIZE 0x1000000
+#define FLAG_VALID_PAGE (1)
 #define FLAG_OWNED_PAGE (1<<9)
 #include "heap.h"
 
