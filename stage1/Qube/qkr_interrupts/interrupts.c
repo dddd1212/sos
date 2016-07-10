@@ -7,13 +7,21 @@
 #include "lapic.h"
 #include "processors.h"
 #include "../qkr_acpi/acpi.h"
+#include "ioapic.h"
+#include "../libc/string.h"
 #ifdef DEBUG
 #include "../screen/screen.h"
 #endif
 
 InterruptDescriptor IDT[0x100];
 
+ISR g_isrs[0x100];
+
+
+
+
 BOOL init_interrupts() {
+	memset(g_isrs, 0, sizeof(g_isrs));
 	return (
 		// Prepare the IDTs
 	    init_IDTs() &&
@@ -27,8 +35,8 @@ BOOL init_interrupts() {
 QResult qkr_main(KernelGlobalData * kgd) {
 	// TODO: do it with the new memory module, and change the lapic_init interface to get on param.
 	lapic_init(kgd->APIC_base);
-	ACPITable * apic_table = get_acpi_table("APIA");
-	dump_table(apic_table);
+	//ACPITable * apic_table = get_acpi_table("APIA");
+	//dump_table(apic_table);
 	BOOL ret = (
 		// initialize the processors' specific data areas
 		init_processors_data() &&
@@ -40,6 +48,7 @@ QResult qkr_main(KernelGlobalData * kgd) {
 		lapic_start() &&
 
 		// TODO: Init the IOAPIC, enable the IOAPIC. We probably need the ACPI first to use it properely
+		ioapic_start() && 
 		// 
 		// Check if IOAPIC exist:
 		// TODO: For now, we won't check it.
@@ -104,8 +113,19 @@ void handle_interrupts(ProcessorContext * regs) {
 	switch (regs->interrupt_vector) {
 	case APIC_TIMER:
 		this_processor_control_block()->timer_callback();
+		break;
+	default:
+		if (g_isrs[regs->interrupt_vector]) {
+			g_isrs[regs->interrupt_vector](regs);
+		} 
+#ifdef DEBUG
+		else {
+			screen_printf("Interrupt has no interrupt vector! (%d)", regs->interrupt_vector, 0, 0, 0);
+		}
+#endif
 	}
-	g_lapic_regs->EOI = 1;
+
+	g_lapic_regs->EOI = 0;
 	return;
 }
 
@@ -116,3 +136,8 @@ BOOL enable_interrupts() {
 }
 
 
+QResult register_isr(enum InterruptVectors isr_num, ISR isr) {
+	if (g_isrs[isr_num] != NULL) return QFail;
+	g_isrs[isr_num] = isr;
+	return QSuccess;
+}

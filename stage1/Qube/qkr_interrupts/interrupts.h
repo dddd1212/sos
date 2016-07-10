@@ -1,3 +1,5 @@
+#ifndef __INTERRUPTS_H__
+#define __INTERRUPTS_H__
 #include "../Common/Qube.h"
 
 //EXPORT QResult qkr_main(KernelGlobalData * kgd);
@@ -72,7 +74,7 @@ extern uint64 isrs_list[0x100] asm("isrs_list");
 #define SYSTEM_CALL_VECTOR 0x51 // 'Q'
 
 
-typedef enum {
+enum InterruptVectors {
 	// Lowest priority:
 	PIC1_IRQ0 = 0x20, // PIC timer
 	PIC1_IRQ1 = 0x21,
@@ -90,12 +92,28 @@ typedef enum {
 	PIC2_IRQ5 = 0x2d,
 	PIC2_IRQ6 = 0x2e,
 	PIC2_IRQ7 = 0x2f,
-	APIC_TIMER = 0x30,
-	APIC_SPURIOUS = 0x39,
-} InterruptVectors;
+	APIC_SPURIOUS = 0x30,
+	
+	APIC_USER_DEFINED_START = 0x31,
+	APIC_USER_DEFINED_END = 0xa0,
+
+	APIC_KEYBOARD_CONTROLLER = 0xa1,
+
+
+	
+
+	APIC_TIMER = 0xf0,
+	
+};
 
 BOOL init_interrupts();
 BOOL init_IDTs();
 
 BOOL enable_interrupts();
 BOOL init_IDT(uint8 vector, uint8 dpl, DescType type, uint64 handler_addr);
+
+typedef void(*ISR)(ProcessorContext * regs);
+
+EXPORT QResult register_isr(enum InterruptVectors isr_num, ISR isr);
+
+#endif // __INTERRUPTS_H__

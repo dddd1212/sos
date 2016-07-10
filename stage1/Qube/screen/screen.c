@@ -89,11 +89,20 @@ void screen_printf(char * fmt, uint64 param1, uint64 param2, uint64 param3, uint
 	char num_arr[21]; // max uint64 base10 size + null.
 	int num_arr_idx = 0;
 	int base = 0;
+	int32 padding = 0;
 	char one_char[2];
+	char * orig;
 	one_char[1] = '\x00';
 	while (*fmt != '\x00') {
 		if (*fmt == '%') {
+			orig = fmt;
+			padding = 0;
 			fmt++;
+			if (*fmt == '0') {
+				fmt++;
+				padding = *fmt - '0';
+				fmt++;
+			}
 			if (*fmt == 'd') {
 				base = 10;
 			}
@@ -107,7 +116,7 @@ void screen_printf(char * fmt, uint64 param1, uint64 param2, uint64 param3, uint
 				continue;
 			}
 			else {
-				fmt--;
+				fmt = orig;
 			}
 			if (base) { // handle %x, %d:
 				param = params[param_idx];
@@ -124,8 +133,12 @@ void screen_printf(char * fmt, uint64 param1, uint64 param2, uint64 param3, uint
 						num_arr[num_arr_idx] = 'A' - 10 + digit;
 					}
 					num_arr_idx--;
+					padding--;
 					param /= base;
 				} while (param != 0);
+				for (int32 p = 0; p < padding; p++) {
+					num_arr[num_arr_idx--] = '0';
+				}
 				screen_write_string(&num_arr[num_arr_idx + 1], FALSE);
 				fmt++;
 				continue;

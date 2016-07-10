@@ -5,6 +5,8 @@
 #include "../QbjectManager/Qbject.h"
 #include "../qkr_interrupts/lapic.h"
 #include "../qkr_interrupts/processors.h"
+#include "../qkr_interrupts/ioapic.h"
+#include "../qkr_interrupts/interrupts.h"
 void kernel_main(KernelGlobalData * kgd) {
 	// This is the main kernel function.
 	// The function should not return.
@@ -24,9 +26,28 @@ void my_cb() {
 	screen_printf("timer jumped! %d", count, 0, 0, 0);
 	if (count == 10) lapic_timer_start(1000 * 1000 * 10 , FALSE);
 }
+void my_test_handler(ProcessorContext * regs) {
+	screen_write_string("Here!", TRUE);
+}
 QResult qkr_main(KernelGlobalData * kgd) {
 	count = 0;
 	kernel_main(kgd);
+	
+	QResult ret = register_isr(APIC_KEYBOARD_CONTROLLER, my_test_handler);
+	if (ret == QFail) {
+		screen_write_string("ERROR1!", TRUE);
+		return QFail;
+	}
+	ret = configure_isa_interrupt(ISA_KEYBOARD_CONTROLLER, APIC_KEYBOARD_CONTROLLER, DM_FIXED, 0);
+	if (ret == QFail) {
+		screen_write_string("ERROR2!", TRUE);
+		return QFail;
+	}
+	enable_isa_interrupt(ISA_KEYBOARD_CONTROLLER);
+	while (1) {
+
+	}
+	
 	void* x = NULL;
 	void* y = NULL;
 	void* z = NULL;

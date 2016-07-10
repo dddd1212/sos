@@ -36,7 +36,7 @@ typedef struct {
 	uint32 OEMRevision;
 	uint32 CreatorID;
 	uint32 CreatorRevision;
-	char data[0]; // not part of the header.
+	uint8 data[0]; // not part of the header.
 } ACPISDTHeader;
 
 struct _ACPITable;
