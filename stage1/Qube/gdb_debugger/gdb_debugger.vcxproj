@@ -51,6 +51,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
+    <None Include="vmware_files\MS-DOS.vmdk" />
+    <None Include="vmware_files\MS-DOS.vmx" />
     <None Include="wait_for_con.py" />
     <Text Include="readme.txt" />
     <Text Include="Readme\readme.html" />
