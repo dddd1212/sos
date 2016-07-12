@@ -87,6 +87,10 @@ QResult write_qbject(QHandle qhandle, uint8* buffer, uint64 position, uint64 num
 	return ((Qbject*)qhandle)->associated_qnode->write((Qbject*)qhandle, buffer, position, num_of_bytes_to_read, res_num_write);
 }
 
+QResult get_qbject_property(QHandle qhandle, uint32 property_id, QbjectProperty* out) {
+	return ((Qbject*)qhandle)->associated_qnode->get_property((Qbject*)qhandle, property_id, out);
+}
+
 QResult create_qnode(char * path)
 {
 	spin_lock(&treelock);
