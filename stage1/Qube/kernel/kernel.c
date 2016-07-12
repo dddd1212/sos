@@ -5,6 +5,8 @@
 #include "../QbjectManager/Qbject.h"
 #include "../qkr_interrupts/lapic.h"
 #include "../qkr_interrupts/processors.h"
+#include "../qkr_acpi/acpi.h"
+#include "../libc/string.h"
 void kernel_main(KernelGlobalData * kgd) {
 	// This is the main kernel function.
 	// The function should not return.
@@ -27,11 +29,19 @@ void my_cb() {
 QResult qkr_main(KernelGlobalData * kgd) {
 	count = 0;
 	kernel_main(kgd);
-	void* x = NULL;
+	uint8* x = NULL;
 	void* y = NULL;
 	void* z = NULL;
-	x = commit_pages(MODULES, 0x1000 * 0x1000);
-	assign_committed(x, 0x1000 * 0x1000, 0xf0000000);
+	x = (uint8*)commit_pages(KHEAP, 16 * 0x1000 * 0x1000);
+	assign_committed(x, 16 * 0x1000 * 0x1000, 0xf0000000);
+	for (uint32 i = 0; i < (1 << 13); i++) {
+		uint32 q = *(uint32*)(x + (1 << 12)*i);
+		if ((uint16)q != 0xFFFF) {
+			char k[0x48];
+			memcpy(k, (x + (1 << 12)*i), 0x48);
+ 			screen_write_string("asdfa",k[0]!=0xFE);
+		}
+	}
 	/*
 	for (uint32 i = 0; i < 0x1000000; i++) {
 		uint32 t = *(uint8*)((uint8*)x + i);
@@ -52,6 +62,9 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	lapic_timer_set_callback_function(my_cb);
 	lapic_timer_start(1000*1000 * 2, TRUE);
 	screen_write_string("asdfa",TRUE);
+	ACPITable* mcfg = get_acpi_table("MCFG");
+	dump_table(mcfg);
+
 	while (1) {
 		if (g_lapic_regs->current_count > 0) {
 			//screen_printf("cur: %x, initial: %x", g_lapic_regs->current_count, g_lapic_regs->initial_count, 0, 0);
