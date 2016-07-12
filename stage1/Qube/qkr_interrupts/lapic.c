@@ -7,6 +7,8 @@
 LAPICRegisters * g_lapic_regs; // The pointer to the lapic registers for the current processor. For all the processor its the same address, because its not real address, but io-mapped physical address.
 uint64 g_bus_freq = 0; // 0 means uninitialized yet.
 
+
+
 void lapic_init(LAPICRegisters * regs) {
 	g_lapic_regs = regs;
 	return;

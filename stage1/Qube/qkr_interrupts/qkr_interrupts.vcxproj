@@ -102,11 +102,13 @@
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ioapic.h" />
     <ClInclude Include="lapic.h" />
     <ClInclude Include="interrupts.h" />
     <ClInclude Include="processors.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ioapic.c" />
     <ClCompile Include="lapic.c" />
     <ClCompile Include="interrupts.c" />
     <ClCompile Include="Makefile" />

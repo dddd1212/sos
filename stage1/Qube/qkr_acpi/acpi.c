@@ -188,5 +188,13 @@ void dump_table(ACPITable * table) {
 	memcpy(temp, &table->entry.CreatorID, sizeof(table->entry.CreatorID));
 	temp[sizeof(table->entry.CreatorID)] = '\0';
 	screen_printf("    (Creator: id:%s, revision:%d).\n", (uint64)&temp[0], table->entry.CreatorRevision, 0, 0);
+	for (uint32 i = 0; i < table->entry.Length - sizeof(ACPISDTHeader); i++) {
+		screen_printf("%02x ", (uint64)(table->entry.data[i]), 0, 0, 0);
+		if (i + 1 <= table->entry.Length - sizeof(ACPISDTHeader)) {
+			if (i % 16 == 7) screen_write_string("   ", FALSE);
+			if (i % 16 == 15) screen_new_line();
+		}
+	}
+	screen_new_line();
 	return;
 }

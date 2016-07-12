@@ -14,49 +14,18 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="build">
-      <UniqueIdentifier>{8d562f0a-3845-4bb8-bdd2-67c1621ad046}</UniqueIdentifier>
+      <UniqueIdentifier>{a8b6fa2e-6ed6-4d3c-a396-0676c9170d86}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="interrupts.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="processors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="lapic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ioapic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="interrupts.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Makefile">
+    <ClCompile Include="makefile">
       <Filter>build</Filter>
     </ClCompile>
-    <ClCompile Include="processors.c">
+    <ClCompile Include="scheduler.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="lapic.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ioapic.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="generate_isr.py">
-      <Filter>build</Filter>
-    </None>
-    <None Include="isrs.S">
-      <Filter>build</Filter>
-    </None>
   </ItemGroup>
 </Project>

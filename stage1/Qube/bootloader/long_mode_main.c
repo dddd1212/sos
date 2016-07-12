@@ -158,8 +158,9 @@ void _start() {
 }
 
 void STAGE0_suicide(int error) {
-	int * s = (int*)0xffffffffffffffff;
-	*s = 0;
+	while (1) {};
+	//int * s = (int*)0xffffffffffffffff;
+	//*s = 0;
 }
 
 
