@@ -29,9 +29,6 @@
     <ClCompile Include="libc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\qkr_acpi\acpi.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="bootscreen.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,9 +66,6 @@
     <None Include="bootloader_post_build.py">
       <Filter>Build</Filter>
     </None>
-    <None Include="real_mode.asm">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="linker.ld">
       <Filter>Build</Filter>
     </None>
@@ -80,6 +74,9 @@
     </None>
     <None Include="create_bochs_sym_file.sh">
       <Filter>Build</Filter>
+    </None>
+    <None Include="real_mode.asm">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

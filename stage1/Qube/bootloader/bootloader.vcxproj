@@ -135,7 +135,6 @@
     </BuildLog>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\qkr_acpi\acpi.c" />
     <ClCompile Include="bootfat32.c" />
     <ClCompile Include="libc.c" />
     <ClCompile Include="loader.c" />
