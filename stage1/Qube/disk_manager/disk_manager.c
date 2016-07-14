@@ -89,7 +89,7 @@ QResult def_hd_read(QHandle qbject, uint8* out_buf, uint64 position, uint64 num_
 	uint8* temp_buf;
 	first_sector = position / 0x200;
 	num_of_sectors = (position + num_of_bytes_to_read + (0x200 - 1)) / 0x200 - first_sector;
-	first_sector += ((DefHdQNodeContext*)get_qbject_associated_qnode(qbject)->qnode_context)->first_sector_lba;
+	first_sector += ((DefHdQNodeContext*)get_qbject_associated_qnode_context(qbject))->first_sector_lba;
 	if (((position&(0x200 - 1)) == 0) && ((num_of_bytes_to_read&(0x200 - 1)) == 0)) {
 		def_hd_read_raw_sectors(first_sector, num_of_sectors, out_buf);
 		*res_num_read = num_of_bytes_to_read;

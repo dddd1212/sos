@@ -111,3 +111,4 @@
 /stage1/Qube/qkr_acpi/x64/Debug/qkr_acpi.log
 /stage1/Qube/qkr_interrupts/x64/Debug/qkr_interrupts.log
 /stage1/bochs/obj-release
+/stage1/Qube/gdb_debugger/vmware_files/Other 64-bit.nvram
