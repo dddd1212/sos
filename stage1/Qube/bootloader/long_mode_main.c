@@ -5,7 +5,7 @@
 #include "loader.h"
 #include "libc.h"
 #include "screen.h"
-//#include "../qkr_acpi/acpi.h"
+
 // This file initialize the very first things in the kernel:
 // 1. init the KernelGlobalData struct.
 //    a. Init the symbols table. (The symbols table will be right after 
