@@ -2,6 +2,7 @@
 static QHandle fat32_create_qbject(void* qnode_context, char* path, ACCESS access, uint32 flags);
 static QResult fat32_read(QHandle qbject, uint8* buffer, uint64 position, uint64 num_of_bytes_to_read, uint64* res_num_read);
 static QResult fat32_write(QHandle qbject, uint8* buffer, uint64 position, uint64 num_of_bytes_to_write, uint64* res_num_written);
+static QResult fat32_get_property(QHandle qbject, uint32 id, QbjectProperty* out);
 typedef struct {
 	char name[11];
 	int8 attr;
@@ -144,7 +145,7 @@ static QResult get_child_directory_entry(FAT32QnodeContext* qnode_context, Direc
 static QResult fat32_get_property(QHandle qbject, uint32 id, QbjectProperty* out) {
 	if (id == FILE_SIZE_PROPERTY) {
 		FAT32QbjectContent* content = (FAT32QbjectContent*)get_qbject_content(qbject);
-		*out = content->file_entry.fileSize;
+		*(int64*)out = content->file_entry.fileSize;
 		return QSuccess;
 	}
 	return QFail;
