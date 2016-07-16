@@ -73,7 +73,7 @@ QResult create_fat32(QHandle * raw_disk, QNodeAttributes * fs_qnode_attrs)
 	read_qbject(raw_disk,(uint8*) qnode_context->FAT, 0x200*qnode_context->num_of_reserved_sectors, num_of_sectors*0x200, &num_read);
 
 	fs_qnode_attrs->create_qbject = fat32_create_qbject;
-	fs_qnode_attrs->get_property = NULL;
+	fs_qnode_attrs->get_property = fat32_get_property;
 	fs_qnode_attrs->qnode_context = (void*)qnode_context;
 	fs_qnode_attrs->read = fat32_read;
 	fs_qnode_attrs->write = fat32_write;
@@ -137,6 +137,15 @@ static QResult get_child_directory_entry(FAT32QnodeContext* qnode_context, Direc
 			}
 		}
 		cur_cluster = get_next_cluster(qnode_context, cur_cluster);
+	}
+	return QFail;
+}
+
+static QResult fat32_get_property(QHandle qbject, uint32 id, QbjectProperty* out) {
+	if (id == FILE_SIZE_PROPERTY) {
+		FAT32QbjectContent* content = (FAT32QbjectContent*)get_qbject_content(qbject);
+		*out = content->file_entry.fileSize;
+		return QSuccess;
 	}
 	return QFail;
 }

@@ -18,12 +18,13 @@ typedef struct {
 
 typedef void* QHandle;
 
+typedef void* QbjectProperty;
 //QbjectNode
 
 typedef QHandle (*CreateQbjectFunction)(void* qnode_context, char* path, ACCESS access, uint32 flags);
 typedef QResult(*QbjectReadFunction)(QHandle qbject, uint8* buffer, uint64 position, uint64 num_of_bytes_to_read, uint64* res_num_read);
 typedef QResult(*QbjectWriteFunction)(QHandle qbject, uint8* buffer, uint64 position, uint64 num_of_bytes_to_write, uint64* res_num_written);
-typedef QResult(*QbjectGetPropertyFunction)(Qbject* qbject, uint32 id, QbjectProperty* out);
+typedef QResult(*QbjectGetPropertyFunction)(QHandle* qbject, uint32 id, QbjectProperty* out);
 #define MAX_QNODE_NAME_LEN (0x20)
 typedef struct QNode_{
 	QNodeType type;
@@ -46,7 +47,6 @@ typedef struct {
 }
 QNodeAttributes;
 
-typedef void* QbjectProperty;
 
 EXPORT QResult create_qnode(char * path);
 
@@ -75,5 +75,5 @@ EXPORT void* get_qbject_associated_qnode_context(QHandle qhandle) {
 #define CREATE_QBJECT_FLAGS_SECOND_CHANCE (1)
 
 #define BUS_ENUM_PROPERTY (3)
-
+#define FILE_SIZE_PROPERTY (4)
 #endif
