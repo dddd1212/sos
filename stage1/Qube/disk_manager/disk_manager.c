@@ -110,3 +110,11 @@ QResult def_hd_read(QHandle qbject, uint8* out_buf, uint64 position, uint64 num_
 QResult def_hd_write(QHandle qbject, uint8* buffer, uint64 position, uint64 num_of_bytes_to_write, uint64* res_num_written) {
 	return QFail;
 }
+
+QResult get_file_size(QHandle qbject) {
+	uint64 res;
+	if (QSuccess != get_qbject_property(qbject, FILE_SIZE_PROPERTY, &res)) {
+		return -1;
+	}
+	return res;
+}

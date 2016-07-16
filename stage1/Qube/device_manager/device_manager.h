@@ -9,4 +9,8 @@
 typedef QResult(*BusEnumFunc)(QHandle h);
 EXPORT QResult qkr_main(KernelGlobalData* kgd);
 EXPORT QResult enum_bus(QHandle bus_qbject);
+
+#define CLASS_CODE_BRIDGE_DEVICE (0x6)
+#define SUBCLASS_CODE_PCI_TO_PCI_BRIDGE (0x4)
+
 #endif

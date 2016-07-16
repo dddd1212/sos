@@ -112,3 +112,4 @@
 /stage1/Qube/qkr_interrupts/x64/Debug/qkr_interrupts.log
 /stage1/bochs/obj-release
 /stage1/Qube/gdb_debugger/vmware_files/Other 64-bit.nvram
+/stage1/Qube/device_manager/x64/Release/device_manager.log
