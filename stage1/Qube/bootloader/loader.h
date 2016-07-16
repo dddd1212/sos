@@ -1,7 +1,7 @@
 #ifndef __LOADER_H__
 #define __LOADER_H__
+#include "../Common/Qube.h"
 
-typedef int(*EntryPoint)(KernelGlobalData * kgd);
 
 struct STAGE0BootModule {
 	char * file_name; // pointer to the module file name
