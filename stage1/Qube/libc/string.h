@@ -39,4 +39,8 @@ EXPORT int    memcmp(const void *, const void *, size_t); // GCC BUILT_IN
 //void * memchr(const void *, int, size_t);
 
 
+
+
+
+
 #endif // __STRING_H__

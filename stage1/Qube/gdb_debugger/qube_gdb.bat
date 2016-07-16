@@ -1,4 +1,4 @@
-rem start "" "%BOCHSGDB%" -q -f bochsrc_gdb.bxrc
+start "" "%BOCHSGDB%" -q -f bochsrc_gdb.bxrc
 rem gdb %1 %2
 rem start python gdb_proxy.py %1 %2
 rem sleep 5

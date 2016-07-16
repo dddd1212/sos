@@ -1,3 +1,4 @@
+#include "stdarg.h"
 #include "string.h"
 
 char * strcpy(char * dst, const char * src) {
@@ -82,7 +83,5 @@ int memcmp(const void * src, const void * dst, size_t count) {
 	for (int i = 0; i < count; i++, csrc++, cdst++) if (*csrc != *cdst) return *csrc - *cdst;
 	return 0;
 }
-
-
 
 

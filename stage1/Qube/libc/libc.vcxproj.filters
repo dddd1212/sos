@@ -27,12 +27,21 @@
     <ClCompile Include="string.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stdio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="string.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdarg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

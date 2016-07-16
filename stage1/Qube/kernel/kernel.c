@@ -9,6 +9,7 @@
 #include "../qkr_interrupts/interrupts.h"
 #include "../qkr_acpi/acpi.h"
 #include "../libc/string.h"
+#include "../libc/stdio.h"
 void kernel_main(KernelGlobalData * kgd) {
 	// This is the main kernel function.
 	// The function should not return.
@@ -18,6 +19,11 @@ void kernel_main(KernelGlobalData * kgd) {
 	screen_write_string("COOL! The loader works, the screen works, and the bootloader done successfully!", TRUE);
 	screen_set_color(B_CYAN, BLACK);
 	screen_write_string("We actually can start to initialize the kernel!", TRUE);
+	int8 out[0x1000];
+	sprintf(out, "hello! this is int: %08d. Str%%in%123g is: %08s!\n hex:%04x, %04X, %x, %X", 1234,"aaa", 0x10a,0x23b,0x10c,0x99d);
+	screen_write_string(out, TRUE);
+
+
 	//char * a = 0xffffffffffffffff;
 	//*a= 1;
 	//while (TRUE);

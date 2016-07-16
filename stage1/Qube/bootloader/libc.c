@@ -1,3 +1,4 @@
+
 #include "libc.h"
 #include "../Common/Qube.h"
 
@@ -37,3 +38,4 @@ void strcpy(char * dst, char * src) {
 	*dst = '\x00';
 	return;
 }
+
