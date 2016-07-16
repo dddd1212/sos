@@ -56,7 +56,7 @@ QResult qkr_main(KernelGlobalData * kgd) {
 
 	}
 	
-	void* x = NULL;
+	uint8* x = NULL;
 	void* y = NULL;
 	void* z = NULL;
 	x = (uint8*)commit_pages(KHEAP, 16 * 0x1000 * 0x1000);
