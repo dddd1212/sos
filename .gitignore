@@ -113,3 +113,14 @@
 /stage1/bochs/obj-release
 /stage1/Qube/gdb_debugger/vmware_files/Other 64-bit.nvram
 /stage1/Qube/device_manager/x64/Release/device_manager.log
+/stage1/Qube/disk_manager/x64/native/disk_manager.tlog
+/stage1/Qube/disk_manager/x64/native/disk_manager.log
+/stage1/Qube/disk_manager/x64/native/vc140.pdb
+/stage1/Qube/fat32/x64/native
+/stage1/Qube/kernel/x64/native
+/stage1/Qube/libc/x64/native
+/stage1/Qube/MemoryManager/x64/native
+/stage1/Qube/QbjectManager/x64/native
+/stage1/Qube/qkr_acpi/x64/native
+/stage1/Qube/qkr_interrupts/x64/native
+/stage1/Qube/screen/x64/native

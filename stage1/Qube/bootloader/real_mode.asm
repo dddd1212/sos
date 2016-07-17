@@ -6,6 +6,8 @@
 #			   you will be able to use the keyword "include" and include header files.
 #			   Also, is there a way to choose this number after compiling the bootloader?
 .set NUM_OF_BOOT_PAGES, 7 # not including first two sectors! 7 is the maximum value because we have the physical pages list at 0xF000 (if we want more we need to mode that list to other address).
+.set PHYSICAL_PAGES_ENTRIES_PHY_ADDR, 0xF000 # here we put the entries of the physical pages of the system
+
 .intel_syntax noprefix#
 # org 0x7C00 # boot sector address
 .text
@@ -15,41 +17,49 @@ real_mode:
     jmp Boot
     . = real_mode + 90 # space for file system
 Boot:
-	mov bl,dl # BL: DriveNum
-	mov ah,0x08
+# the BIOS read the first sector. we need to read the next sectors of the boot code.
 	# CR - Gilad - add a comment before every syscall that say what the call is, what the params are and what are the returnd values.
-	int 0x13 # DH: number of heads - 1.
+	# CR ANSWER - Dror: Done.
 	# CR - Gilad - dh is the num of heads or the num of heads - 1?
-	mov bh,dh # BH: NumOfHeads
-	and ecx,0x3f # ECX: sectors per track
-	xor edx,edx
+	# CR ANSWER - Dror: Not relevant anymore
 	# CR - Gilad - explain what is this magic number 28. is it confiruable? if so, put it in the h file.
-	mov eax,[0x7c00+28]
-	inc eax
-	div ecx # EAX=LBA/(SectorsPerTrack), EDX=SectorNumber-1
-	inc edx
-
-	mov cl,bh # CL: NumOfHeads
-	mov bh,dl # BL: DriveNum, BH: SectorNumber
-
-	xor edx,edx
-	div ecx # now: bh=SectorNumber, EDX=HeadNumber, EAX=CylinderNumber
-
-	mov ch,al    # cylinder number
-	shr ax,2
-	and al,0xC0
-    mov cl,bh    # starting sector number.
-
-	or cl,al
-    mov dh,dl    # head number
-    mov dl,bl    # drive number
+	# CR ANSWER - Dror: Done
 	# CR - Gilad - you need to EXPLAIN what you want to do in the above code.. I had enough reversereverse engineering.
+	# CR ANSWER - Dror: Not rlevant anymore
 
-    mov ah,0x02    # read sectors into memory
-    mov al,2+8*NUM_OF_BOOT_PAGES    # number of sectors to read (80 = 10 pages)
-    mov bx, offset Main    # address to load to
-    int 0x13    # call the interrupt routine
+# first, verify that int 13h extensions are supported.
+	mov ah, 0x41
+	mov bx, 0x55aa
+	mov dl, 0x80
+	int 0x13 # check if the extensions exists
+	jc Error
+
+# now we read the sectors
+	mov eax,[0x7c00+28] # num of hidden sectors (in FAT32). 0x7c00 is where the first sector loaded to.
+	inc eax
+	mov [DISK_ADDRESS_PACKET_LBA], eax
+	xor bx, bx
+	mov ds, bx
+	mov si, offset DISK_ADDRESS_PACKET
+	mov ah, 0x42
+	int 0x13 # read sectors.
+
     jmp Main
+
+DISK_ADDRESS_PACKET:
+.byte 0x10 # const
+.byte 0 # const
+.word 2+8*NUM_OF_BOOT_PAGES # number of sectors to read
+.word offset Main # read to this address.
+.word 0 # address segment
+DISK_ADDRESS_PACKET_LBA:
+.long 0 # LBA. we set this value in code
+.long 0 # LBA hish bits.
+
+
+Error:
+	hlt
+	jmp Error
 
 PadOutWithZeroesSectorOne:
     . = real_mode + (0x200 - 2)
@@ -60,7 +70,7 @@ BootSectorSignature:
 # From here is the code that we read in the above code
 Main:
 	# CR - Gilad - is this comment correct? We saw that int instrcutions work if the interrupts are disabled..
-    #
+    # CR ANSWER - Dror: Don't know. your code...
     # set the display to VGA text mode now
     # because interrupts must be disabled
     #
@@ -73,26 +83,34 @@ Main:
     # set up data for entering protected mode
     #
 	# CR - Gilad - What are these magic numbers?
-	mov edi, 0xF000
-	mov edx, 0x534D4150
+	# CR ASNWER - Dror: Fixed.
+
+##################################################################################
+# we loop with the bios function (int 0x15) to get the list of the physical pages.
+	mov edi, PHYSICAL_PAGES_ENTRIES_PHY_ADDR
+	mov edx, 0x534D4150 # magic number for bios function
 	xor ebx, ebx
 	mov es, bx
-
 # CR - Gilad - you have to explain what you do here and why..	
 phy_pages_loop:
 # CR - Gilad - magic numbers..
-	mov eax, 0xE820
-	mov ecx,24
+# CR ANSWER - Dror: added comment..
+	mov eax, 0xE820 # BIOS function magic
+	mov ecx,24 # size of entry
 	int 0x15
-	add edi, 24
+	add edi, 24 # next entry
 	test ebx, ebx
 	jnz phy_pages_loop
 	mov eax, 0xFFFFFFFF
 	cld
 	# CR - Gilad - is this a bug (2 stosd)?
+	# CR ASNWER - Dror: No. we set 0xFFFFFFFFFFFFFFFF
+	# mark end of entries with 0xFFFFFFFFFFFFFFFF
 	stosd
 	stosd
 	# CR - Gilad - add comment that this is the end of the phy_pages_loop loop.
+	# CR ANSWER - Dror: marked with #
+##################################################################################
 
     lgdt [GlobalDescriptorTable] # load the GDT
     mov eax,cr0 # eax = machine status word (MSW)
@@ -115,7 +133,7 @@ prot_mode:
 	# CR - Gilad - you need to explain the details of what is going on here.
 	#		       Every number need to get out of here or at least be explained in details..
 	#			   Also - what about ASLR?
-	#
+	# CR ANSWER - Dror: the usage of physical pages explained below, and in more details in the docx file.
     # zero the root PXE page.
     #
     mov edi, 0x60000
@@ -154,21 +172,24 @@ map_boot_pages:
     loop map_boot_pages
     
     # CR - Gilad - chchchchchchch you copy the comments from somewhere...
-
+	# CR ASNWER - Dror: so it seems
 	# CR - Gilad - breif what this code do
+	# CR ANSWER - Dror: it's already says
     mov eax, cr4                 # Set the A-register to control register 4.
     or eax, 1 << 5               # Set the PAE-bit, which is the 6th bit (bit 5).
     mov cr4, eax                 # Set control register 4 to the A-register.
     
 	# CR - Gilad - breif what this code do
+	# CR ANSWER - Dror: it's already says
     mov ecx, 0xC0000080          # Set the C-register to 0xC0000080, which is the EFER MSR.
     rdmsr                        # Read from the model-specific register.
     or eax, 1 << 8               # Set the LM-bit which is the 9th bit (bit 8).
     wrmsr                        # Write to the model-specific register.
     
 	# CR - Gilad - breif what this code do
+	# CR ANSWER - Dror: Done.
     mov eax, cr0
-    or eax, 0x80000000
+    or eax, 0x80000000 # enable paging
     mov cr0, eax
     
     lgdt [GDT64_Pointer]
@@ -186,6 +207,7 @@ mode64:
 	# CR - Gilad - you need to explain the details of what is going on here.
 	#		       Every number need to get out of here or at least be explained in details..
 	#			   Also - what about ASLR?
+	# CR ANSWER - Dror: the usage of physical pages explained below, and in more details in the docx file. no ASLR for now.
     # map the stack. (maximum of 4 pages)
     mov rax, 0xFFFFF68000000000 # 4 pages of stack, starting at 0
     mov qword ptr [rax], 0x23003
@@ -205,9 +227,12 @@ mode64:
     #                           volatile area is anything under the PXE at 0xFFFFF6FB7DBED800
 
 # CR - Gilad - add here a comment that states that this is the table for protected mode and that this is just temporary table beacuse we switch to long-mode
+# CR ANSWER - Dror: Done
+# this is the table for protected mode and this is just a temporary table beacuse we switch to long-mode.
 GlobalDescriptorTable: 
 NULL_DESC: # Not really NULL. no one use it so we use it.
 # CR - Gilad - write here that here we write the data that we need to point to get the lgdt opcode works (with size and pointer).
+# CR ANSWER - Dror: it's your code, and it says it in the above line
     .word GlobalDescriptorTableEnd - GlobalDescriptorTable - 1 
     # segment address bits 0-15, 16-23
     .word GlobalDescriptorTable 
@@ -260,6 +285,7 @@ GDT64_Pointer:						# The GDT-pointer.
     .quad GDT64                     # Base.
     
 #===========================================
-# CR - Gilad - why you pad? and to 0x2000?                                
+# CR - Gilad - why you pad? and to 0x2000?
+# CR ANSWER - Dror: Don't know. I think it's your code                       
 PadOutWithZeroesSectorsAll:
     . = real_mode + 0x2000

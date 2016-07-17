@@ -34,7 +34,7 @@ BOOL init_interrupts() {
 
 QResult qkr_main(KernelGlobalData * kgd) {
 	// TODO: do it with the new memory module, and change the lapic_init interface to get on param.
-	lapic_init(kgd->APIC_base);
+ 	lapic_init(kgd->APIC_base);
 	//ACPITable * apic_table = get_acpi_table("APIA");
 	//dump_table(apic_table);
 	BOOL ret = (
