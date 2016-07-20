@@ -55,6 +55,9 @@
     <None Include="vmware_files\MS-DOS.vmx">
       <Filter>vmware_files</Filter>
     </None>
+    <None Include="qube_gdb_vmware_native.bat">
+      <Filter>gdb_files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme\readme.html">

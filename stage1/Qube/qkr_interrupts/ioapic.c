@@ -51,12 +51,12 @@ QResult parse_apic_table(IOAPICControl * ioapic) {
 			uint32 global_system_int = *((uint32*)(&data[idx + 4]));
 			ioapic->isa_map[source] = global_system_int;
 			uint16 flags = *((uint16*)(&data[idx + 8]));
-			if (flags != 0) {
-				screen_printf("ERROR! NOT IMPLEMENTED! flags not 0!", 0, 0, 0, 0);
+			if (flags != 0 && flags != 5) { // 0 is the default, 5 is edge-triggerd, active-high - that is the ISA interrupt regular config.
+				screen_printf("ERROR! NOT IMPLEMENTED! flags not 0 or 5!\n", 0, 0, 0, 0);
 				return QFail;
 			}
 		} else if (type != TT_PROCESSOR_LOCAL_APIC) {
-			screen_printf("WARNING! got APIC table with unknown type: %d", type, 0, 0, 0);
+			screen_printf("WARNING! got APIC table with unknown type: %d\n", type, 0, 0, 0);
 		}
 		idx += len;
 	}
@@ -118,6 +118,7 @@ QResult configure_ioapic_interrupt(uint32 global_system_interrupt, enum Interrup
 	}
 	// configure it (do not enable it)!
 	write_to_ioapic_register(ioapic, IOAPIC_REDTBL_START_HIGH + 2 * index, cpu_id << 24);
+	
 	write_to_ioapic_register(ioapic, IOAPIC_REDTBL_START_LOW + 2 * index, ((uint8)redirect_isr) | (((uint8)delivery_mode) << 8) | (0<<11) | (0<<12) | (0<<13) | (0<<14) | (0<<15));
 	return QSuccess;
 }

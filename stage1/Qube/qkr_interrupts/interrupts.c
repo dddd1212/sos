@@ -17,9 +17,6 @@ InterruptDescriptor IDT[0x100];
 
 ISR g_isrs[0x100];
 
-
-
-
 BOOL init_interrupts() {
 	memset(g_isrs, 0, sizeof(g_isrs));
 	return (
@@ -59,10 +56,6 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	);
 
 	
-
-
-
-	
 	if (ret) {
 		return QSuccess;
 	}
@@ -87,10 +80,7 @@ BOOL init_IDT(uint8 vector, uint8 dpl, DescType type, uint64 handler_addr) {
 
 BOOL init_IDTs() {
 	// Init all of the vectors to be interrupts:
-	//screen_printf("isrs_list = 0x%x, 0x%x", &isrs_list, isrs_list,0,0);
 	for (int i = 0; i < 0x100; i++) {
-		//screen_printf("isrs_list[%d] = 0x%x", i, isrs_list[i],0,0);
-		
 		if (i == SYSTEM_CALL_VECTOR) {
 			init_IDT(i, 3, DESC_TYPE_INTERRUPT, isrs_list[i]); // User allow to use system call, so the dpl is 3.
 		} else {

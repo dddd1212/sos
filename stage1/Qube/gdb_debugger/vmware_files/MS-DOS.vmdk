@@ -7,7 +7,7 @@ isNativeSnapshot="no"
 createType="vmfs"
 
 # Extent description
-RW 1048576 VMFS "..\..\_output\_disk\disk.vhd"
+RW 100000 VMFS "..\..\_output\_disk\disk.vhd"
 
 # The Disk Data Base 
 #DDB
@@ -18,4 +18,4 @@ ddb.geometry.heads = "64"
 ddb.geometry.sectors = "32"
 ddb.longContentID = "e2f65ac84feef46a1815c03cc9b58254"
 ddb.uuid = "60 00 C2 9a 81 87 b4 5a-a0 59 e6 9d da b6 d0 47"
-ddb.virtualHWVersion = "11"
+ddb.virtualHWVersion = "12"

@@ -24,5 +24,13 @@
     <ClCompile Include="makefile">
       <Filter>build</Filter>
     </ClCompile>
+    <ClCompile Include="device_manager.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="device_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

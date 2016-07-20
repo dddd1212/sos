@@ -40,8 +40,9 @@ void my_test_handler(ProcessorContext * regs) {
 QResult qkr_main(KernelGlobalData * kgd) {
 	count = 0;
 	kernel_main(kgd);
-	
+	__int(100);
 	QResult ret = register_isr(APIC_KEYBOARD_CONTROLLER, my_test_handler);
+	
 	if (ret == QFail) {
 		screen_write_string("ERROR1!", TRUE);
 		return QFail;
@@ -50,6 +51,12 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	if (ret == QFail) {
 		screen_write_string("ERROR2!", TRUE);
 		return QFail;
+	}
+	lapic_timer_set_callback_function(my_cb);
+	lapic_timer_start(1000 * 1000*10, TRUE);
+	screen_write_string("asdfa", TRUE);
+	while (1) {
+
 	}
 	enable_isa_interrupt(ISA_KEYBOARD_CONTROLLER);
 	while (1) {

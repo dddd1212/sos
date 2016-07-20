@@ -17,6 +17,7 @@ static inline uint64 __rdmsr(uint32 msr_id) __attribute__((always_inline));
 static inline void __wrmsr(uint32 msr_id, uint64 msr_value) __attribute__((always_inline));
 static inline void __invlpg(void* addr) __attribute__((always_inline));
 static inline void __lidt(void* addr) __attribute__((always_inline));
+static inline void __sidt(void* addr) __attribute__((always_inline));
 static inline void io_wait() __attribute__((always_inline));
 
 // #define __int(N) // implements later in the file.
@@ -87,6 +88,16 @@ static inline void __lidt(void* addr) {
 	__asm__(
 		".intel_syntax noprefix;"
 		"lidt [%0];"
+		".att_syntax;"
+		:
+	: "r"(addr)
+		);
+	return;
+}
+static inline void __sidt(void * addr) {
+	__asm__(
+		".intel_syntax noprefix;"
+		"sidt [%0];"
 		".att_syntax;"
 		:
 	: "r"(addr)

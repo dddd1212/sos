@@ -41,6 +41,7 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 		Elf64_Xword reserved_start = 0xffffffffffffffff;
 		Elf64_Xword reserved_end = 0;
 		for (j = 0, ph = (struct Elf64ProgramHeader*)(((char *)boot_module->file_data) + boot_module->file_data->e_phoff); j < boot_module->file_data->e_phnum; j++, ph++) {
+			if (ph->p_type != PT_LOAD) continue;
 			if (ph->p_vaddr < reserved_start) reserved_start = ph->p_vaddr;
 			if (ph->p_vaddr + ph->p_memsz > reserved_end) reserved_end = ph->p_vaddr + ph->p_memsz;
 		}
@@ -56,6 +57,7 @@ int load_modules_and_run_kernel(KernelGlobalData * kgd, struct STAGE0BootModule 
 		// Load the program headers to the memory:
 		// Iterate over the program header tables:
 		for (j = 0, ph = (struct Elf64ProgramHeader*)(((char *)boot_module->file_data) + boot_module->file_data->e_phoff); j < boot_module->file_data->e_phnum; j++, ph++) {
+			if (ph->p_type != PT_LOAD) continue;
 			DBG_PRINTF1("    Load segment #%d", j); ENTER;
 			uint64 seg_start = (uint64)(module_base - reserved_start + ph->p_vaddr);
 			// Now align the start to page:
