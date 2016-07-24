@@ -29,35 +29,67 @@ void kernel_main(KernelGlobalData * kgd) {
 	//while (TRUE);
 }
 uint64 count;
+BOOL g_schedule_needed;
 void my_cb() {
-	count++;
-	screen_printf("timer jumped! %d", count, 0, 0, 0);
-	if (count == 10) lapic_timer_start(1000 * 1000 * 10 , FALSE);
+	g_schedule_needed = TRUE;
+	//screen_printf("timer jumped! %d", count, 0, 0, 0);
+	while (1) {
+		count++;
+		if (count % 0x30000000 == 0) {
+			//screen_printf("timer! %x\n", count, 0, 0, 0);
+			return;
+		}
+	}
 }
 void my_test_handler(ProcessorContext * regs) {
-	screen_write_string("Here!", TRUE);
+	screen_write_string("Here in 100 a!", TRUE);
+	
+	screen_write_string("Here in 100 b!", TRUE);
 }
+
+void schedule_test(ProcessorContext * regs) {
+	g_schedule_needed = FALSE;
+	while (1) {
+		count++;
+		if (count % 0x10000000 == 0) {
+			//screen_printf("timer! %x\n", count, 0, 0, 0);
+			return;
+		}
+	}
+}
+
+BOOL is_schedule_needed() {
+	return g_schedule_needed;
+}
+
+void interrupts_test() {
+	
+	disable_interrupts(); // enter critical section
+	lapic_timer_set_callback_function(my_cb); // set timer callback.
+	lapic_timer_start(1000 * 1000 * 3, TRUE); // charge the timer to run every 3 seconds.
+	register_isr(INT_SCHEDULER, schedule_test); // register the scheduler isr.
+	register_is_shcedule_needed_function(is_schedule_needed); // register the is schedule needed function.
+	// Not that we also have the keyboard interrupt running when you press a key.
+	enable_interrupts(); // exit critical section
+	screen_write_string("asdfa", TRUE);
+	int count = 0;
+	while (1) {
+		count += 1;
+		if (count % 0x50000 == 0) {
+			screen_set_color(2, 0);
+			screen_printf("kernel! %x\r", count, 0, 0, 0);
+		}
+	}
+}
+
+
 QResult qkr_main(KernelGlobalData * kgd) {
 	count = 0;
 	kernel_main(kgd);
-	__int(100);
-	QResult ret = register_isr(APIC_KEYBOARD_CONTROLLER, my_test_handler);
-	
-	if (ret == QFail) {
-		screen_write_string("ERROR1!", TRUE);
-		return QFail;
-	}
-	ret = configure_isa_interrupt(ISA_KEYBOARD_CONTROLLER, APIC_KEYBOARD_CONTROLLER, DM_FIXED, 0);
-	if (ret == QFail) {
-		screen_write_string("ERROR2!", TRUE);
-		return QFail;
-	}
-	lapic_timer_set_callback_function(my_cb);
-	lapic_timer_start(1000 * 1000*10, TRUE);
-	screen_write_string("asdfa", TRUE);
-	while (1) {
+	interrupts_test();
+	while (1) {}
 
-	}
+
 	enable_isa_interrupt(ISA_KEYBOARD_CONTROLLER);
 	while (1) {
 

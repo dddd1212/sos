@@ -1,7 +1,7 @@
 
 isr_asm:
 	// manual push registers:
-	sub $0x98, %rsp   // make room for the manual-pushed registers.
+	sub $0xa0, %rsp   // make room for the manual-pushed registers.
 	movq	%r15, 0x90(%rsp)//
 	movq	%r14, 0x88(%rsp)//
 	movq	%r13, 0x80(%rsp)//
@@ -30,7 +30,7 @@ isr_asm:
 	// Call the C handle routine
 	//push %rsp // move the Registers struct as parameter.
 	movq    %rsp, %rdi // move the Registers struct as parameter.
-	add $8, %rdi
+	//add $8, %rdi
 	cld // /* C code following the sysV ABI requires DF to be clear on function entry */
 	call handle_interrupts // C routine
 	//add $8, %rsp//
@@ -60,7 +60,7 @@ isr_asm:
 	movq	0x80(%rsp), %r13 //
 	movq	0x88(%rsp), %r14 //
 	movq	0x90(%rsp), %r15 //
-	add $0x98, %rsp   // restore %rsp
+	add $0xa0, %rsp   // restore %rsp
 	ret //
 
 .local   isr_wrapper0

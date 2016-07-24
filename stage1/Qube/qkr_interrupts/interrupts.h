@@ -4,6 +4,7 @@
 
 //EXPORT QResult qkr_main(KernelGlobalData * kgd);
 typedef struct {
+	
 	uint64 DS;
 	uint64 ES;
 	uint64 FS;
@@ -24,6 +25,8 @@ typedef struct {
 	uint64 R14;
 	uint64 R15;
 
+	uint64 task_priority; // the function handle_interrupts fill this field (the task priority).
+	uint64 specific_isr_return_address; // the return address to the isr_wrapperXXX.
 	// must be the last ones
 	uint64 interrupt_vector; // This is pushed by software in isrs.S in isr_wrapperXXX functions.
 	uint64 error_code; // This may be push by the software or by the hardware, depends on the exception.
@@ -69,9 +72,6 @@ typedef enum {
 // implements in isrs.S
 extern uint64 isrs_list[0x100] asm("isrs_list");
 
-// TODO: If we will use for system-call the opcode sysenter, so we won't need it.
-//	     So change it to 0x101 or remove it and fix the code that using it.
-#define SYSTEM_CALL_VECTOR 0x51 // 'Q'
 
 
 enum InterruptVectors {
@@ -93,26 +93,37 @@ enum InterruptVectors {
 	PIC2_IRQ6 = 0x2e,
 	PIC2_IRQ7 = 0x2f,
 	APIC_SPURIOUS = 0x30,
+
 	
-	APIC_USER_DEFINED_START = 0x31,
+	INT_SCHEDULER = 0x40,
+	
+	APIC_USER_DEFINED_START = 0x41,
 	APIC_USER_DEFINED_END = 0xa0,
 
-	APIC_KEYBOARD_CONTROLLER = 0xa1,
+
+
+	APIC_KEYBOARD_CONTROLLER = 0xa3,
 
 
 	
 
-	APIC_TIMER = 0xf0,
+	APIC_TIMER = 0xf2,
 	
 };
 
 BOOL init_interrupts();
 BOOL init_IDTs();
 
-BOOL enable_interrupts();
+typedef BOOL(*IsScheduleNeededFunction)();
+EXPORT void register_is_shcedule_needed_function(IsScheduleNeededFunction f);
+
+EXPORT void enable_interrupts();
+EXPORT void disable_interrupts();
 BOOL init_IDT(uint8 vector, uint8 dpl, DescType type, uint64 handler_addr);
 
 typedef void(*ISR)(ProcessorContext * regs);
+
+
 
 EXPORT QResult register_isr(enum InterruptVectors isr_num, ISR isr);
 

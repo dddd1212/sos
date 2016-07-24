@@ -161,6 +161,9 @@ BOOL _enable_LAPIC() {
 }
 
 // Timer api //
+void _timer_isr(ProcessorContext * regs) {
+	this_processor_control_block()->timer_callback();
+}
 
 BOOL _lapic_timer_init() {
 	ProcessorControlBlock * pcb = this_processor_control_block();
@@ -169,11 +172,11 @@ BOOL _lapic_timer_init() {
 	pcb->is_timer_run = FALSE; // the timer is in stop state.
 	spin_init(&pcb->timer_lock); // init te lock.
 	pcb->timer_inited = TRUE; // mark inited.
+	register_isr(APIC_TIMER, _timer_isr);
 	return TRUE;
 }
 
 BOOL lapic_is_timer_inited() {
-
 	return this_processor_control_block()->timer_inited;
 }
 

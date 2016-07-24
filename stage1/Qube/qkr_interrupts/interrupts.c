@@ -13,6 +13,9 @@
 #include "../screen/screen.h"
 #endif
 
+
+IsScheduleNeededFunction g_is_schedule_call_needed = NULL;
+
 InterruptDescriptor IDT[0x100];
 
 ISR g_isrs[0x100];
@@ -21,10 +24,7 @@ BOOL init_interrupts() {
 	memset(g_isrs, 0, sizeof(g_isrs));
 	return (
 		// Prepare the IDTs
-	    init_IDTs() &&
-
-		// enable the interrupts in the current cpu
-		enable_interrupts()
+	    init_IDTs()
 
 	);
 }
@@ -35,28 +35,24 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	//ACPITable * apic_table = get_acpi_table("APIA");
 	//dump_table(apic_table);
 	BOOL ret = (
+		init_interrupts() &&
 		// initialize the processors' specific data areas
 		init_processors_data() &&
 
 		// We run from the boot-strap processor,so we need to initialize its pcb:
 		init_this_processor_control_block() &&
 
-		// enable the local apic:
+		// enable the local apic and the timer:
 		lapic_start() &&
 
-		// TODO: Init the IOAPIC, enable the IOAPIC. We probably need the ACPI first to use it properely
-		ioapic_start() && 
-		// 
-		// Check if IOAPIC exist:
-		// TODO: For now, we won't check it.
-		//       We have 2 options: 1. To assumes that it exist in the default address.
-		//							2. Using the ACPI to determine if it exist and where.
-		//		 For now, we will assume the default address.
-		init_interrupts()
+		ioapic_start()
+		
 	);
 
 	
 	if (ret) {
+		// enable the interrupts in the current cpu
+		enable_interrupts();
 		return QSuccess;
 	}
 	return QFail;
@@ -81,50 +77,84 @@ BOOL init_IDT(uint8 vector, uint8 dpl, DescType type, uint64 handler_addr) {
 BOOL init_IDTs() {
 	// Init all of the vectors to be interrupts:
 	for (int i = 0; i < 0x100; i++) {
-		if (i == SYSTEM_CALL_VECTOR) {
-			init_IDT(i, 3, DESC_TYPE_INTERRUPT, isrs_list[i]); // User allow to use system call, so the dpl is 3.
-		} else {
-			init_IDT(i, 0, DESC_TYPE_INTERRUPT, isrs_list[i]);
-		}
+		init_IDT(i, 0, DESC_TYPE_INTERRUPT, isrs_list[i]);
 	}
 	LIDT lidt;
 	lidt.base = (uint64)(&(IDT[0]));
-	lidt.limit = sizeof(IDT);
+	lidt.limit = sizeof(IDT) - sizeof(IDT[0]); // limit 0 means one entry.
 	__lidt((void*)&lidt);
 	return TRUE;
 }
 
+void register_is_shcedule_needed_function(IsScheduleNeededFunction f) {
+	g_is_schedule_call_needed = f;
+}
+
 // This function handle all of the interrupts.
 void handle_interrupts(ProcessorContext * regs) {
+
+	// *** mask the less priority interrupts and enable the rest:
+	// 1. Backup the TPR:
+	regs->task_priority = __get_cr8();
+
+start_handle_for_schedule_call: // We can replace it with {do while} but I think that this way is clearer.
 #ifdef DEBUG
-	//screen_write_string("Interrupt called!", TRUE);
-	screen_printf("Interrupt called: %d\n", regs->interrupt_vector,0,0,0);
+								//screen_write_string("Interrupt called!", TRUE);
+	screen_set_color(regs->interrupt_vector % 8, (regs->interrupt_vector % 8)+1);
+	screen_printf("Interrupt called: %d\n", regs->interrupt_vector, 0, 0, 0);
 #endif
-	switch (regs->interrupt_vector) {
-	case APIC_TIMER:
-		this_processor_control_block()->timer_callback();
-		break;
-	default:
-		if (g_isrs[regs->interrupt_vector]) {
-			g_isrs[regs->interrupt_vector](regs);
-		} 
+	// 2. set the TPR to be corellated to the vector:
+	// TODO: TO THINK - because the masking is determines by the max(TPR, highest ISRV priority), so in regular interrupt we do not need to set this.
+	//		 We need to do it just with interrupts that came not from the LAPIC: calls to the scheduler from the end of this function, and software interrupts(?).
+	//		 Maybe we can to something better then set the cr8.
+	__set_cr8(regs->interrupt_vector / 0x10);
+	
+	enable_interrupts();
+	// ***
+
+
+	if (g_isrs[regs->interrupt_vector]) {
+		g_isrs[regs->interrupt_vector](regs);
+	} 
 #ifdef DEBUG
-		else {
-			screen_printf("Interrupt has no interrupt vector! (%d)", regs->interrupt_vector, 0, 0, 0);
-		}
-#endif
+	else {
+		screen_set_color(regs->interrupt_vector % 8, (regs->interrupt_vector % 8) + 1);
+		screen_printf("Interrupt has no interrupt vector! (%d)", regs->interrupt_vector, 0, 0, 0);
 	}
+#endif
+
+	// disable interrupts, and call to schedule if needed
+	disable_interrupts();
+	
+	// This also clear the cur vector bit from the ISRV so may change the CR8 register.
+	g_lapic_regs->EOI = 0;
+
+	if (g_is_schedule_call_needed && regs->task_priority < (INT_SCHEDULER / 0x10) && g_is_schedule_call_needed()) {// if we need to call to the scheduler
+																							 //and we going to return to priority less then the scheduler
+		// call it:
+		regs->interrupt_vector = INT_SCHEDULER;
+		goto start_handle_for_schedule_call;
+
+	}
+	// restore cr8:
+	__set_cr8(regs->task_priority);
 
 	g_lapic_regs->EOI = 0;
+#ifdef DEBUG
+	//screen_write_string("Interrupt called!", TRUE);
+	screen_set_color(regs->interrupt_vector % 8, (regs->interrupt_vector % 8) + 1);
+	screen_printf("Interrupt returned: %d\n", regs->interrupt_vector, 0, 0, 0);
+#endif
 	return;
 }
 
 
-BOOL enable_interrupts() {
+void enable_interrupts() {
 	__sti();
-	return TRUE;
 }
-
+void disable_interrupts() {
+	__cli();
+}
 
 QResult register_isr(enum InterruptVectors isr_num, ISR isr) {
 	if (g_isrs[isr_num] != NULL) return QFail;

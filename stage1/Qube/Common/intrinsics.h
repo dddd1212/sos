@@ -13,6 +13,7 @@ static inline void __qube_mm_pause() __attribute__((always_inline));
 static inline void __qube_memory_barrier() __attribute__((always_inline));
 static inline void __cpuid(int code, uint32 * eax_out, uint32 * edx_out)  __attribute__((always_inline));
 static inline void __sti() __attribute__((always_inline));
+static inline void __cli() __attribute__((always_inline));
 static inline uint64 __rdmsr(uint32 msr_id) __attribute__((always_inline));
 static inline void __wrmsr(uint32 msr_id, uint64 msr_value) __attribute__((always_inline));
 static inline void __invlpg(void* addr) __attribute__((always_inline));
@@ -20,6 +21,8 @@ static inline void __lidt(void* addr) __attribute__((always_inline));
 static inline void __sidt(void* addr) __attribute__((always_inline));
 static inline void io_wait() __attribute__((always_inline));
 
+static inline uint64 __get_cr8() __attribute__((always_inline));
+static inline void __set_cr8(uint64 cr8) __attribute__((always_inline));
 // #define __int(N) // implements later in the file.
 
 #define ___HELP_READ_FROM_GS_STRINGIFY(a) #a
@@ -139,9 +142,26 @@ static inline void __sti() {
 	__asm__("sti");
 	return;
 }
+static inline void __cli() {
+	__asm__("cli");
+	return;
+}
+
 static inline void io_wait() {
 	// According to OSDev this is done like this in linux. We assumes that nobody uses this port.
 	asm volatile ("outb %%al, $0x80" : : "a"(0));
 }
+
+static inline uint64 __get_cr8() {
+	uint64 ret;
+	__asm__("movq %%cr8, %q[var]" : [var] "=q" (ret));
+	return ret;
+}
+static inline void __set_cr8(uint64 cr8) {
+	__asm__("movq %q[var], %%cr8" : [var] "=q" (cr8));
+}
+
+
+
 #define __int(n) __asm__("int %0" : : "N"((n)) : "cc", "memory");
 #endif
