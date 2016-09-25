@@ -4,6 +4,7 @@
 #define INTRINSICS_H
 
 #include "Qube.h"
+
 typedef int volatile SpinLock;
 static inline int8 __in8(uint16 port) __attribute__((always_inline));
 static inline void __out8(uint16 port, uint8 data) __attribute__((always_inline));
@@ -23,6 +24,7 @@ static inline void io_wait() __attribute__((always_inline));
 
 static inline uint64 __get_cr8() __attribute__((always_inline));
 static inline void __set_cr8(uint64 cr8) __attribute__((always_inline));
+static inline void* __get_processor_block() __attribute__((always_inline));
 // #define __int(N) // implements later in the file.
 
 #define ___HELP_READ_FROM_GS_STRINGIFY(a) #a
@@ -41,6 +43,7 @@ static inline BOOL __qube_sync_bool_compare_and_swap(SpinLock * p, int old_val, 
 	return __sync_bool_compare_and_swap(p, old_val, new_val);
 }
 
+// TODO: add Clobber List
 static inline int8 __in8(uint16 port){
 	int8 res;
 	__asm__(
@@ -161,7 +164,17 @@ static inline void __set_cr8(uint64 cr8) {
 	__asm__("movq %q[var], %%cr8" : [var] "=q" (cr8));
 }
 
-
+static inline void* __get_processor_block() {
+	void* pb;
+	__asm__(
+		".intel_syntax noprefix;"
+		"mov %0,gs:[0];"
+		".att_syntax;"
+		: "=r"(pb)
+		: 
+		);
+	return pb;
+}
 
 #define __int(n) __asm__("int %0" : : "N"((n)) : "cc", "memory");
 #endif

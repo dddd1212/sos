@@ -124,3 +124,4 @@
 /stage1/Qube/qkr_acpi/x64/native
 /stage1/Qube/qkr_interrupts/x64/native
 /stage1/Qube/screen/x64/native
+/stage1/Qube/gdb_debugger/vmware_files/vmware-vmx.dmp
