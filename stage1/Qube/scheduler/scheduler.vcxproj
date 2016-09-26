@@ -42,6 +42,7 @@
     <NMakeBuildCommandLine>make all</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>make clean</NMakeCleanCommandLine>
+    <NMakePreprocessorDefinitions>VS_EDITOR</NMakePreprocessorDefinitions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='vmware_native|x64'">
     <NMakeBuildCommandLine>make all</NMakeBuildCommandLine>
@@ -61,6 +62,9 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='vmware_native|x64'">true</DeploymentContent>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="scheduler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
