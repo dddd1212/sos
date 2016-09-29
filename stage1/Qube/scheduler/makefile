@@ -3,8 +3,9 @@ AS = x86_64-elf-as.exe
 LD = x86_64-elf-ld.exe
 OUT_DIR = ../_output/system
 scheduler:
+	$(AS) scheduler_asm.asm -g -o scheduler_asm.o
 	$(CC) -c *.c -Wall -fpic -fvisibility=hidden -g -o scheduler.o
-	$(LD) -fpic -fvisibility=hidden -shared scheduler.o -o $(OUT_DIR)/scheduler.qkr
+	$(LD) -fpic -fvisibility=hidden -shared *.o -o $(OUT_DIR)/scheduler.qkr
 
 all: scheduler
 

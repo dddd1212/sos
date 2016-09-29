@@ -1,12 +1,13 @@
-#ifndef QBJECT_H
-#define QBJECT_H
+#ifndef SCHEDULER_H
+#define SCHEDULER_H
 #include "../Common/Qube.h"
 typedef void(*ThreadStartFunction)(void);
 
 
 typedef enum {
-	RUN,
-	WAIT,
+	RUNNING,
+	READY,
+	WAITING,
 	KILLED
 } RunningState;
 
@@ -25,6 +26,8 @@ struct ThreadBlock {
 typedef struct {
 	ThreadBlock* cur_thread;
 	ThreadBlock* prev_thread;
+	RunningState prev_thread_new_state;
+	ThreadBlock* idle_thread;
 }SchedulerInfo;
 
 
@@ -35,4 +38,10 @@ struct ProcessorBlock {
 	ProcessorBlock* pointer_to_self;
 	SchedulerInfo scheduler_info;
 };
+
+ThreadBlock* get_current_thread_block();
+QResult set_thread_as_ready(ThreadBlock* waiter);
+QResult schedule_next(RunningState old_thread_new_state);
+
+
 #endif
