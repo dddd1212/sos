@@ -137,11 +137,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="makefile" />
+    <ClCompile Include="qqueue.c" />
     <ClCompile Include="stdio.c" />
     <ClCompile Include="string.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libc.h" />
+    <ClInclude Include="qqueue.h" />
     <ClInclude Include="stdarg.h" />
     <ClInclude Include="stdio.h" />
     <ClInclude Include="string.h" />

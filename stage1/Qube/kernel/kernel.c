@@ -10,6 +10,7 @@
 #include "../qkr_acpi/acpi.h"
 #include "../libc/string.h"
 #include "../libc/stdio.h"
+#include "../qkr_keyboard/keyboard.h"
 void kernel_main(KernelGlobalData * kgd) {
 	// This is the main kernel function.
 	// The function should not return.
@@ -86,6 +87,10 @@ void interrupts_test() {
 QResult qkr_main(KernelGlobalData * kgd) {
 	count = 0;
 	kernel_main(kgd);
+	while (1) {
+		uint64 a = (uint64)getch();
+		screen_printf("%s", &a,0,0,0);
+	}
 	interrupts_test();
 	while (1) {}
 
