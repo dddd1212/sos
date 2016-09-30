@@ -41,6 +41,8 @@ QResult wait_for_event(Event a_event) {
 		event->first_waiter = event->last_waiter = waiter;
 	}
 	spin_unlock(&event->lock);
+	schedule_next(WAITING);
+	return QSuccess;
 }
 
 QResult set_event(Event a_event) {
@@ -50,12 +52,21 @@ QResult set_event(Event a_event) {
 	waiter = event->first_waiter;
 	event->first_waiter = NULL;
 	event->last_waiter = NULL;
+	event->is_set = TRUE;
 	spin_unlock(&event->lock);
 	while (waiter) {
 		while(waiter->thread->thread_status.running_state == RUNNING); // busy wait in case the thread has registered to the event, but didn't swaped out yet.
 		set_thread_as_ready(waiter->thread);
 		waiter = waiter->next;
 	}
+	return QSuccess;
+}
+
+QResult unset_event(Event a_event) {
+	EventInternal* event = (EventInternal*)a_event;
+	spin_lock(&event->lock);
+	event->is_set = FALSE;
+	spin_unlock(&event->lock);
 }
 
 QResult delete_event(Event p_event) {
@@ -65,9 +76,4 @@ QResult delete_event(Event p_event) {
 
 QResult qkr_main(KernelGlobalData * kgd) {
 	return QSuccess;
-}
-
-QResult wait_for_event(Event a_event) {
-	EventInternal* event = (EventInternal*)a_event;
-	if (((Qbject*)event)->associated_qnode != )
 }

@@ -72,7 +72,7 @@ void _start() {
 		//DBG_PRINTF2("BOOT_TXT_FILE too big! (%d > %d)", boot_txt_file_size, BOOT_TXT_FILE_MAX_SIZE); ENTER;
 		STAGE0_suicide(0x1000);
 	}
-	if (boot_txt_file_size == 0) {
+ 	if (boot_txt_file_size == 0) {
 		//DBG_PRINTF2("BOOT_TXT_FILE size is zero!", boot_txt_file_size, BOOT_TXT_FILE_MAX_SIZE); ENTER;
 		STAGE0_suicide(0x2000);
 	}

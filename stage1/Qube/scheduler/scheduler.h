@@ -39,9 +39,9 @@ struct ProcessorBlock {
 	SchedulerInfo scheduler_info;
 };
 
-ThreadBlock* get_current_thread_block();
-QResult set_thread_as_ready(ThreadBlock* waiter);
-QResult schedule_next(RunningState old_thread_new_state);
-
+EXPORT ThreadBlock* get_current_thread_block();
+EXPORT QResult set_thread_as_ready(ThreadBlock* waiter);
+EXPORT QResult schedule_next(RunningState old_thread_new_state);
+EXPORT QResult start_new_thread(ThreadStartFunction start_addr);
 
 #endif

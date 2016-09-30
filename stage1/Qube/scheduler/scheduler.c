@@ -28,6 +28,7 @@ void idle() {
 }
 
 void thread_begin(ThreadStartFunction start_addr) {
+	finish_thread_swap_out();
 	start_addr();
 }
 
@@ -37,11 +38,17 @@ ThreadBlock* get_current_thread_block() {
 
 QResult qkr_main(KernelGlobalData * kgd) {
 	init_this_processor_idle_thread();
-	first_ready_thread = last_ready_thread = get_this_processor_idle_thread();
-	first_ready_thread->next = first_ready_thread->prev = NULL;
+	first_ready_thread = last_ready_thread = NULL;//get_this_processor_idle_thread();
+	//first_ready_thread->next = first_ready_thread->prev = NULL;
 	first_waiting_thread = last_waiting_thread = NULL; //TODO: is that needed?
 	spin_init(&ready_list_lock);
 	spin_init(&waiting_list_lock);
+	ProcessorBlock* processor_block = (ProcessorBlock*)__get_processor_block();
+	ThreadBlock* this_thread = (ThreadBlock*)kheap_alloc(sizeof(ThreadBlock));
+	this_thread->next = this_thread->prev = NULL;
+	this_thread->thread_status.running_state = RUNNING;
+	this_thread->thread_status.RSP = 0;
+	processor_block->scheduler_info.cur_thread = this_thread;
 	//schedule_next();
 	return QSuccess;
 }
@@ -143,8 +150,8 @@ void finish_thread_swap_out() {
 		if (old_thread == get_this_processor_idle_thread()) {
 			return;
 		}
-		old_thread->thread_status.running_state = READY;
 		spin_lock(&ready_list_lock);
+		old_thread->thread_status.running_state = READY;
 		if (first_ready_thread == NULL) {
 			first_ready_thread = last_ready_thread = old_thread;
 			old_thread->next = old_thread->prev = NULL;
@@ -158,8 +165,8 @@ void finish_thread_swap_out() {
 		spin_unlock(&ready_list_lock);
 		break;
 	case WAITING:
-		old_thread->thread_status.running_state = WAITING;
 		spin_lock(&waiting_list_lock);
+		old_thread->thread_status.running_state = WAITING;
 		if (first_waiting_thread == NULL) {
 			first_waiting_thread = last_waiting_thread = old_thread;
 			old_thread->next = old_thread->prev = NULL;
