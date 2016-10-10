@@ -27,7 +27,9 @@ QResult create_event(Event* p_event) {
 
 QResult wait_for_event(Event a_event) {
 	EventInternal* event = (EventInternal*)a_event;
+	set_scheduler_interrupt_in_service();
 	if (event->is_set) {
+		end_scheduler_interrupt();
 		return QSuccess;
 	}
 	Waiter* waiter = (Waiter*)kheap_alloc(sizeof(Waiter));
@@ -48,6 +50,7 @@ QResult wait_for_event(Event a_event) {
 QResult set_event(Event a_event) {
 	EventInternal* event = (EventInternal*)a_event;
 	Waiter* waiter;
+	set_scheduler_interrupt_in_service();
 	spin_lock(&event->lock);
 	waiter = event->first_waiter;
 	event->first_waiter = NULL;
@@ -59,14 +62,18 @@ QResult set_event(Event a_event) {
 		set_thread_as_ready(waiter->thread);
 		waiter = waiter->next;
 	}
+	end_scheduler_interrupt();
 	return QSuccess;
 }
 
 QResult unset_event(Event a_event) {
 	EventInternal* event = (EventInternal*)a_event;
+	set_scheduler_interrupt_in_service();
 	spin_lock(&event->lock);
 	event->is_set = FALSE;
 	spin_unlock(&event->lock);
+	end_scheduler_interrupt();
+	return QSuccess;
 }
 
 QResult delete_event(Event p_event) {

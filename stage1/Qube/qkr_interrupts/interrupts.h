@@ -115,7 +115,11 @@ BOOL init_interrupts();
 BOOL init_IDTs();
 
 typedef BOOL(*IsScheduleNeededFunction)();
-EXPORT void register_is_shcedule_needed_function(IsScheduleNeededFunction f);
+//EXPORT void register_is_shcedule_needed_function(IsScheduleNeededFunction f);
+EXPORT QResult set_scheduler_interrupt_in_service();
+EXPORT QResult end_scheduler_interrupt();
+EXPORT QResult issue_scheduler_interrupt();
+//static void serve_scheduling() { __int(INT_SCHEDULER); };
 
 EXPORT void enable_interrupts();
 EXPORT void disable_interrupts();

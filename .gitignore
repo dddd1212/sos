@@ -125,3 +125,5 @@
 /stage1/Qube/qkr_interrupts/x64/native
 /stage1/Qube/screen/x64/native
 /stage1/Qube/gdb_debugger/vmware_files/vmware-vmx.dmp
+/stage1/Qube/qkr_keyboard/x64/Release/qkr_keyboard.log
+/stage1/Qube/qkr_processors_manager/x64/Release/qkr_processors_manager.log

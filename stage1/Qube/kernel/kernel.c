@@ -31,6 +31,19 @@ void thread_b_loop() {
 		set_event(event2);
 	}
 }
+void thread_c_loop() {
+	while (TRUE) {
+		//wait_for_event(event1);
+		//unset_event(event1);
+		for (int i = 0; i < 100*1000*1000; i++) {
+			if (*(uint32*)screen_clear == i) {
+				*(uint32*)screen_clear = i*i;
+			}
+		}
+		screen_write_string("hello from thread c!", TRUE);
+		//set_event(event2);
+	}
+}
 void kernel_main(KernelGlobalData * kgd) {
 	// This is the main kernel function.
 	// The function should not return.
@@ -47,6 +60,7 @@ void kernel_main(KernelGlobalData * kgd) {
 	create_event(&event1);
 	create_event(&event2);
 	start_new_thread(thread_b_loop);
+	start_new_thread(thread_c_loop);
 	thread_a_loop();
 
 	//char * a = 0xffffffffffffffff;
@@ -86,7 +100,7 @@ void schedule_test(ProcessorContext * regs) {
 BOOL is_schedule_needed() {
 	return g_schedule_needed;
 }
-
+/*
 void interrupts_test() {
 	
 	disable_interrupts(); // enter critical section
@@ -105,7 +119,7 @@ void interrupts_test() {
 			screen_printf("kernel! %x\r", count, 0, 0, 0);
 		}
 	}
-}
+}*/
 
 
 QResult qkr_main(KernelGlobalData * kgd) {

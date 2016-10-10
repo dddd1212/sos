@@ -4,6 +4,7 @@
 #include "../Common/Qube.h"
 #include "../Common/intrinsics.h"
 #include "lapic.h"
+#include "../scheduler/scheduler.h"
 #define MAX_NUM_OF_PROCESSORS 15
 typedef struct {
 	LAPICRegisters * regs; // This field is just for convinence: It had to be APIC_REG_BASE for all of the processors.
@@ -15,6 +16,9 @@ typedef struct {
 	uint64 cur_divide_number; // the current divide number. saved to imporve running time.
 	SpinLock timer_lock; // used to sync timer operations.
 	APICTimerCallback timer_callback;
+	BOOL scheduler_interrupt_in_service;
+	BOOL scheduler_interrupt_pending;
+	SchedulerInfo scheduler_info;
 } ProcessorControlBlock;
 
 #define GS_OFFSET_PROCESSOR_CONTROL_BLOCK_PTR 0

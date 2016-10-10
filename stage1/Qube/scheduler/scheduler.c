@@ -4,6 +4,7 @@
 #include "../MemoryManager/memory_manager.h"
 #include "../Common/spin_lock.h"
 #include "../Common/intrinsics.h"
+#include "../qkr_interrupts/lapic.h"
 
 #define NEW_THREAD_STACK_SIZE 0x8000
 
@@ -16,24 +17,29 @@ SpinLock waiting_list_lock;
 ThreadBlock *first_waiting_thread, *last_waiting_thread;
 
 void push_swap_pop() __attribute__((noinline));
-void update_cur_and_prev_threads(ThreadBlock* new_thread, RunningState prev_thread_new_state);
+void update_cur_and_prev_threads(ThreadBlock* new_thread);
 void finish_thread_swap_out();
 void init_this_processor_idle_thread();
 void push_swap_pop(uint64 new_stack, uint64* old_stack);
+void scheduler_isr(ProcessorContext * regs);
+void timer_isr();
 ThreadBlock* get_this_processor_idle_thread();
 
 void idle() {
-	while (first_ready_thread == NULL); // TODO: halt.
-	schedule_next(READY);
+	while (1) {
+		while (first_ready_thread == NULL); // TODO: halt.
+		issue_scheduler_interrupt();
+	}
 }
 
 void thread_begin(ThreadStartFunction start_addr) {
 	finish_thread_swap_out();
+	end_scheduler_interrupt();
 	start_addr();
 }
 
 ThreadBlock* get_current_thread_block() {
-	return ((ProcessorBlock*)__get_processor_block())->scheduler_info.cur_thread;
+	return this_processor_control_block()->scheduler_info.cur_thread;
 }
 
 QResult qkr_main(KernelGlobalData * kgd) {
@@ -43,39 +49,50 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	first_waiting_thread = last_waiting_thread = NULL; //TODO: is that needed?
 	spin_init(&ready_list_lock);
 	spin_init(&waiting_list_lock);
-	ProcessorBlock* processor_block = (ProcessorBlock*)__get_processor_block();
 	ThreadBlock* this_thread = (ThreadBlock*)kheap_alloc(sizeof(ThreadBlock));
 	this_thread->next = this_thread->prev = NULL;
 	this_thread->thread_status.running_state = RUNNING;
 	this_thread->thread_status.RSP = 0;
+	ProcessorControlBlock* processor_block = this_processor_control_block();
+	
 	processor_block->scheduler_info.cur_thread = this_thread;
-	//schedule_next();
+	processor_block->scheduler_info.prev_thread_new_state = READY;
+	processor_block->scheduler_info.prev_thread = NULL;
+
+	register_isr(INT_SCHEDULER, scheduler_isr);
+	
+	lapic_timer_set_callback_function(timer_isr); // set timer callback.
+	lapic_timer_start(1000 * 1000, TRUE); // charge the timer to run every 3 seconds.
+
 	return QSuccess;
 }
 
-QResult schedule_next(RunningState old_thread_new_state) {
+
+
+void scheduler_isr(ProcessorContext * regs) {
+	//ProcessorBlock* processor_block = (ProcessorBlock*)__get_processor_block();
+	RunningState old_thread_new_state = this_processor_control_block()->scheduler_info.prev_thread_new_state;
 	ThreadBlock* new_thread, *current_thread;
 	current_thread = get_current_thread_block();
-	do {
-		new_thread = pop_next_thread();
-		if (new_thread == NULL) {
-			// check if we can resume current thread and if so, just return.
-			if (old_thread_new_state == READY) {
-				return QSuccess;
-			}
-			new_thread = get_this_processor_idle_thread();
+	
+	new_thread = pop_next_thread();
+	if (new_thread == NULL) {
+		// check if we can resume current thread and if so, just return.
+		if (old_thread_new_state == READY) {
+			return;
 		}
-	} while (new_thread == NULL);
+		new_thread = get_this_processor_idle_thread();
+	}
+	
 	uint64 new_stack = new_thread->thread_status.RSP;
 	/* push the status to the current stack, then swap to the new stack and pop the new status from there.
 	 * usually, the function push_swap_pop will return to here with the context of the new thread, where he stop last time.
 	 * in the case where the new thread runs for the first time, push_swap_pop will return to thread_begin function because 
 	 * when it was created with "fake" stack in create_new_thred.
 	*/
-	update_cur_and_prev_threads(new_thread, old_thread_new_state);
+	update_cur_and_prev_threads(new_thread);
 	push_swap_pop(new_stack, &current_thread->thread_status.RSP);
 	finish_thread_swap_out();
-	return QSuccess;
 }
 
 /*void push_swap_pop(uint64 new_stack, uint64* old_stack) {
@@ -133,16 +150,17 @@ ThreadBlock* pop_next_thread() {
 	return selected_thread;
 }
 
-void update_cur_and_prev_threads(ThreadBlock* new_thread, RunningState prev_thread_new_state) {
-	ProcessorBlock* processor_block = (ProcessorBlock*)__get_processor_block();
-	processor_block->scheduler_info.prev_thread = processor_block->scheduler_info.cur_thread;
-	processor_block->scheduler_info.prev_thread_new_state = prev_thread_new_state;
+void update_cur_and_prev_threads(ThreadBlock* new_thread) {
+	//ProcessorBlock* processor_block = (ProcessorBlock*)__get_processor_block();
+	ProcessorControlBlock* processor_block = this_processor_control_block();
+	processor_block->scheduler_info.prev_thread = this_processor_control_block()->scheduler_info.cur_thread;
+	//processor_block->scheduler_info.prev_thread_new_state = prev_thread_new_state;
 	processor_block->scheduler_info.cur_thread = new_thread;
 }
 
 void finish_thread_swap_out() {
 	ThreadBlock* old_thread;
-	ProcessorBlock* processor_block = (ProcessorBlock*)__get_processor_block();
+	ProcessorControlBlock* processor_block = this_processor_control_block();
 	old_thread = processor_block->scheduler_info.prev_thread;
 	switch (processor_block->scheduler_info.prev_thread_new_state) {
 	case READY:
@@ -186,10 +204,12 @@ void finish_thread_swap_out() {
 		// suicide
 		break;
 	}
+	processor_block->scheduler_info.prev_thread_new_state = READY;
 	// TODO: insert to
 }
 
 QResult set_thread_as_ready(ThreadBlock* thread) {
+	set_scheduler_interrupt_in_service();
 	spin_lock(&waiting_list_lock);
 	ThreadBlock *prev, *next;
 	prev = thread->prev;
@@ -198,13 +218,13 @@ QResult set_thread_as_ready(ThreadBlock* thread) {
 		prev->next = thread->next;
 	}
 	else {
-		first_ready_thread = next;
+		first_waiting_thread = next;
 	}
 	if (next) {
 		next->prev = thread->prev;
 	}
 	else{
-		last_ready_thread = prev;
+		last_waiting_thread = prev;
 	}
 	spin_unlock(&waiting_list_lock);
 	
@@ -220,6 +240,7 @@ QResult set_thread_as_ready(ThreadBlock* thread) {
 		first_ready_thread = last_ready_thread = thread;
 	}
 	spin_unlock(&ready_list_lock);
+	end_scheduler_interrupt();
 	return QSuccess;
 }
 
@@ -272,10 +293,19 @@ QResult start_new_thread(ThreadStartFunction start_addr) {
 
 void init_this_processor_idle_thread() {
 	ThreadBlock* idle_thread = create_new_thread_block(idle);
-	ProcessorBlock* processor_block = (ProcessorBlock*)__get_processor_block();
-	processor_block->scheduler_info.idle_thread = idle_thread;
+	//ProcessorBlock* processor_block = (ProcessorBlock*)__get_processor_block();
+	this_processor_control_block()->scheduler_info.idle_thread = idle_thread;
 }
 
 ThreadBlock* get_this_processor_idle_thread() {
-	return ((ProcessorBlock*)__get_processor_block())->scheduler_info.idle_thread;
+	return this_processor_control_block()->scheduler_info.idle_thread;
+}
+
+void schedule_next(RunningState current_thread_next_state) {
+	this_processor_control_block()->scheduler_info.prev_thread_new_state = current_thread_next_state;
+	__int(INT_SCHEDULER);
+}
+
+void timer_isr() {
+	issue_scheduler_interrupt();
 }

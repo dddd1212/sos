@@ -86,9 +86,37 @@ BOOL init_IDTs() {
 	return TRUE;
 }
 
-void register_is_shcedule_needed_function(IsScheduleNeededFunction f) {
-	g_is_schedule_call_needed = f;
+QResult set_scheduler_interrupt_in_service() {
+	this_processor_control_block()->scheduler_interrupt_in_service = TRUE;
+	return QSuccess;
 }
+
+QResult issue_scheduler_interrupt() {
+	if ((__get_cr8() >= (INT_SCHEDULER / 0x10)) || this_processor_control_block()->scheduler_interrupt_in_service) {
+		this_processor_control_block()->scheduler_interrupt_pending = TRUE;
+	}
+	else {
+		__int(INT_SCHEDULER);
+	}
+	return QSuccess;
+}
+
+QResult end_scheduler_interrupt() {
+	disable_interrupts();
+	this_processor_control_block()->scheduler_interrupt_in_service = FALSE;
+	if (this_processor_control_block()->scheduler_interrupt_pending) {
+		this_processor_control_block()->scheduler_interrupt_pending = FALSE;
+		set_scheduler_interrupt_in_service();
+		enable_interrupts();
+		__int(INT_SCHEDULER);
+	}
+	__set_cr8(0);
+	enable_interrupts();
+	return QSuccess;
+}
+/*void register_is_shcedule_needed_function(IsScheduleNeededFunction f) {
+	g_is_schedule_call_needed = f;
+}*/
 
 // This function handle all of the interrupts.
 void handle_interrupts(ProcessorContext * regs) {
@@ -107,8 +135,12 @@ start_handle_for_schedule_call: // We can replace it with {do while} but I think
 	// TODO: TO THINK - because the masking is determines by the max(TPR, highest ISRV priority), so in regular interrupt we do not need to set this.
 	//		 We need to do it just with interrupts that came not from the LAPIC: calls to the scheduler from the end of this function, and software interrupts(?).
 	//		 Maybe we can to something better then set the cr8.
-	__set_cr8(regs->interrupt_vector / 0x10);
 	
+	__set_cr8(regs->interrupt_vector / 0x10);
+	if (regs->interrupt_vector == INT_SCHEDULER) {
+		this_processor_control_block()->scheduler_interrupt_in_service = TRUE;
+	}
+
 	enable_interrupts();
 	// ***
 
@@ -129,17 +161,22 @@ start_handle_for_schedule_call: // We can replace it with {do while} but I think
 	// This also clear the cur vector bit from the ISRV so may change the CR8 register.
 	g_lapic_regs->EOI = 0;
 
-	if (g_is_schedule_call_needed && regs->task_priority < (INT_SCHEDULER / 0x10) && g_is_schedule_call_needed()) {// if we need to call to the scheduler
+	if (regs->task_priority < (INT_SCHEDULER / 0x10) && this_processor_control_block()->scheduler_interrupt_pending) {// if we need to call to the scheduler
 																							 //and we going to return to priority less then the scheduler
+		this_processor_control_block()->scheduler_interrupt_pending = FALSE;
+		// this_processor_control_block()->scheduler_interrupt_in_service = TRUE; //this is unnecessary because we set this flag after the goto.
 		// call it:
 		regs->interrupt_vector = INT_SCHEDULER;
 		goto start_handle_for_schedule_call;
 
 	}
+	if (regs->interrupt_vector == INT_SCHEDULER) {
+		this_processor_control_block()->scheduler_interrupt_in_service = FALSE;
+	}
 	// restore cr8:
 	__set_cr8(regs->task_priority);
 
-	g_lapic_regs->EOI = 0;
+	//g_lapic_regs->EOI = 0;
 #ifdef DEBUG
 	//screen_write_string("Interrupt called!", TRUE);
 	screen_set_color(regs->interrupt_vector % 8, (regs->interrupt_vector % 8) + 1);

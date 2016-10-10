@@ -35,6 +35,9 @@ BOOL init_this_processor_control_block() {
 	pcb->is_timer_run = FALSE;
 	spin_init(&pcb->timer_lock);
 	pcb->regs = g_lapic_regs;
+
+	pcb->scheduler_interrupt_in_service = FALSE;
+	pcb->scheduler_interrupt_pending = FALSE;
 	
 	
 	return TRUE;

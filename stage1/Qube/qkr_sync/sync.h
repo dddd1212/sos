@@ -2,6 +2,7 @@
 #define SYNC_H
 #include "../Common/Qube.h"
 #include "../QbjectManager/Qbject.h"
+#include "../qkr_interrupts/interrupts.h"
 typedef void* Event;
 EXPORT QResult create_event(Event* p_event);
 EXPORT QResult delete_event(Event p_event);
