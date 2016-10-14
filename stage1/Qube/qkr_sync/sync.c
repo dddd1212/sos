@@ -47,6 +47,11 @@ QResult wait_for_event(Event a_event) {
 	return QSuccess;
 }
 
+QResult set_event_in_system_task(Event a_event) {
+	add_system_task(set_event, a_event);
+	return QSuccess;
+}
+
 QResult set_event(Event a_event) {
 	EventInternal* event = (EventInternal*)a_event;
 	Waiter* waiter;

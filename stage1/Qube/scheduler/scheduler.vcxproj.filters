@@ -27,9 +27,15 @@
     <ClCompile Include="scheduler.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="system_tasks.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scheduler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="processor_scheduler_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

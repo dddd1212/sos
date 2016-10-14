@@ -58,6 +58,7 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	processor_block->scheduler_info.cur_thread = this_thread;
 	processor_block->scheduler_info.prev_thread_new_state = READY;
 	processor_block->scheduler_info.prev_thread = NULL;
+	processor_block->scheduler_info.first_system_task = processor_block->scheduler_info.last_system_task = NULL;
 
 	register_isr(INT_SCHEDULER, scheduler_isr);
 	
@@ -70,8 +71,21 @@ QResult qkr_main(KernelGlobalData * kgd) {
 
 
 void scheduler_isr(ProcessorContext * regs) {
-	//ProcessorBlock* processor_block = (ProcessorBlock*)__get_processor_block();
-	RunningState old_thread_new_state = this_processor_control_block()->scheduler_info.prev_thread_new_state;
+	// first, execute all the system tasks.
+	ProcessorControlBlock* processor_block = this_processor_control_block();
+	SYSTEM_TASK *cur_task, *next_task;
+	disable_interrupts();
+	cur_task = processor_block->scheduler_info.first_system_task;
+	processor_block->scheduler_info.first_system_task = processor_block->scheduler_info.last_system_task = NULL;
+	enable_interrupts();
+	while (cur_task) {
+		cur_task->func(cur_task->arg);
+		next_task = cur_task->next;
+		kheap_free(cur_task);
+		cur_task = next_task;
+	}
+
+	RunningState old_thread_new_state = processor_block->scheduler_info.prev_thread_new_state;
 	ThreadBlock* new_thread, *current_thread;
 	current_thread = get_current_thread_block();
 	

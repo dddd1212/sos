@@ -2,37 +2,13 @@
 #define SCHEDULER_H
 #include "../Common/Qube.h"
 
+#include "processor_scheduler_info.h"
+#include "../qkr_interrupts/interrupts.h"
+#include "../qkr_interrupts/processors.h"
 
 
 
 typedef void(*ThreadStartFunction)(void);
-
-
-typedef enum {
-	RUNNING,
-	READY,
-	WAITING,
-	KILLED
-} RunningState;
-
-typedef struct {
-	uint64 RSP;
-	RunningState running_state;
-} ThreadStatus;
-
-typedef struct ThreadBlock ThreadBlock;
-struct ThreadBlock {
-	ThreadStatus thread_status;
-	ThreadBlock* next;
-	ThreadBlock* prev;
-};
-
-typedef struct {
-	ThreadBlock* cur_thread;
-	ThreadBlock* prev_thread;
-	RunningState prev_thread_new_state;
-	ThreadBlock* idle_thread;
-}SchedulerInfo;
 
 
 
@@ -48,7 +24,6 @@ EXPORT QResult set_thread_as_ready(ThreadBlock* waiter);
 EXPORT QResult start_new_thread(ThreadStartFunction start_addr);
 EXPORT void schedule_next(RunningState current_thread_next_state);
 
+EXPORT QResult add_system_task(SystemTaskFunction func, void* arg);
 
-#include "../qkr_interrupts/interrupts.h"
-#include "../qkr_interrupts/processors.h"
 #endif

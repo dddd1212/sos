@@ -4,7 +4,7 @@
 #include "../Common/Qube.h"
 #include "../Common/intrinsics.h"
 #include "lapic.h"
-#include "../scheduler/scheduler.h"
+#include "../scheduler/processor_scheduler_info.h"
 #define MAX_NUM_OF_PROCESSORS 15
 typedef struct {
 	LAPICRegisters * regs; // This field is just for convinence: It had to be APIC_REG_BASE for all of the processors.

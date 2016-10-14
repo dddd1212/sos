@@ -62,8 +62,10 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='vmware_native|x64'">true</DeploymentContent>
     </ClCompile>
+    <ClCompile Include="system_tasks.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="processor_scheduler_info.h" />
     <ClInclude Include="scheduler.h" />
   </ItemGroup>
   <ItemGroup>
