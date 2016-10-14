@@ -16,5 +16,6 @@ QResult add_system_task(SystemTaskFunction func, void* arg) {
 		this_processor_control_block()->scheduler_info.first_system_task = this_processor_control_block()->scheduler_info.last_system_task = task;
 	}
 	enable_interrupts();
+	issue_scheduler_interrupt();
 	return QSuccess;
 }
