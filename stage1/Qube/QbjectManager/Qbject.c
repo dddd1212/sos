@@ -64,7 +64,7 @@ QHandle create_qbject(char * path, ACCESS access)
 		cur = child;
 	};
 
-	if (cur->create_qbject) {
+	if ((!h) && (cur->create_qbject)) {
 		h = cur->create_qbject(cur->qnode_context,start, access, CREATE_QBJECT_FLAGS_SECOND_CHANCE); // second chance
 	}
 

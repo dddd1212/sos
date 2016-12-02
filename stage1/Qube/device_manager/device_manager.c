@@ -1,4 +1,5 @@
 #include "device_manager.h"
+#include "../screen/screen.h"
 #include "../libc/stdio.h"
 typedef struct {
 	void* base_address;
@@ -55,13 +56,29 @@ typedef struct {
 	
 } __attribute__((packed)) PciConfigSpace;
 
+typedef struct {
+	uint64 pcie_configuration_space; //physical addres
+}PCIE_QNODE_CONTEXT;
+
 uint64 g_pcie_base_address;
+QResult pcie_create_qbject(void* qnode_context, char* path, ACCESS access, uint32 flags) {
+	QHandle qhandle = allocate_qbject(0);
+	return qhandle;
+}
+
+QResult pcie_get_property(QHandle qbject, uint32 id, void* out) {
+	if (id == PCIE_CONFIGURATION_SPACE) {
+		*((uint64*)out) = ((PCIE_QNODE_CONTEXT*)get_qbject_associated_qnode_context(qbject))->pcie_configuration_space;
+	}
+	return QSuccess;
+}
 
 QResult enum_devices();
 QResult qkr_main(KernelGlobalData* kgd) {
 	enum_devices(); // maybe we should call this function after the boot ends.
 	return QSuccess;
 }
+
 
 QResult pcie_bus_enum(uint32 bus_num) {
 	// TODO: we assuming that everything has already configed by the bios.
@@ -81,8 +98,18 @@ QResult pcie_bus_enum(uint32 bus_num) {
 					x[16] += device_num/10;
 					x[17] += device_num % 10;
 					x[20] += func_num;
+					screen_printf("QNode created: %s (deviceID=%d)\n", x, config_space->device_id,0,0);
 					//sprintf(x, "Devices/PCIe/%d_%d_%d", bus_num, device_num, func_num);
 					create_qnode(x);
+					PCIE_QNODE_CONTEXT* pcie_qnode_context = (PCIE_QNODE_CONTEXT*) kheap_alloc(sizeof(PCIE_QNODE_CONTEXT));
+					pcie_qnode_context->pcie_configuration_space = (uint64)(g_pcie_base_address + bus_num*(1 << 20) + device_num*(1 << 15) + func_num*(1 << 12));
+					QNodeAttributes attrs;
+					attrs.create_qbject = pcie_create_qbject;
+					attrs.read = NULL;
+					attrs.write = NULL;
+					attrs.qnode_context = pcie_qnode_context;
+					attrs.get_property = pcie_get_property;
+					set_qnode_attributes(x, &attrs);
 				}
 			}
 		}
@@ -91,11 +118,11 @@ QResult pcie_bus_enum(uint32 bus_num) {
 	return QSuccess;
 }
 
-void* pcie_bus_get_property(Qbject* qbject, uint32 id) {
+/*void* pcie_bus_get_property(Qbject* qbject, uint32 id) {
 	if (id == BUS_ENUM_PROPERTY) {
 		return (void*)pcie_bus_enum;
 	}
-}
+}*/
 
 QResult enum_devices() {
 	ACPITable* mcfg_table = get_acpi_table("MCFG");

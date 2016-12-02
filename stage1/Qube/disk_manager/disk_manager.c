@@ -113,7 +113,7 @@ QResult def_hd_write(QHandle qbject, uint8* buffer, uint64 position, uint64 num_
 
 QResult get_file_size(QHandle qbject) {
 	uint64 res;
-	if (QSuccess != get_qbject_property(qbject, FILE_SIZE_PROPERTY, (void*)&res)) {
+	if (QSuccess != get_qbject_property(qbject, FILE_SIZE_PROPERTY, (QbjectProperty*)&res)) {
 		return -1;
 	}
 	return res;

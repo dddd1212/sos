@@ -3,7 +3,7 @@ import os
 import sys
 
 DISK_FOLDER = os.path.abspath("../_output/_disk")
-DISK_FOLDER_MOUNT = os.path.abspath("../_output/_disk/mount")
+DISK_FOLDER_MOUNT = os.path.abspath("mount")
 DISK_FILEPATH = os.path.abspath("../_output/_disk/disk.vhd")
 BOOTLOADER_OUT = os.path.abspath("../_output/bootloader/boot.bin")
 
@@ -12,13 +12,12 @@ def mount():
     #code.interact(local = locals())
     print "mount called"
     os.system("md mount")
-
     open("diskpartscript","wb").write(
 r"""select vdisk file="%s\disk.vhd"
 attach vdisk
 select partition=1
-assign mount=%s\mount
-"""%(os.path.abspath(DISK_FOLDER ),os.path.abspath(DISK_FOLDER)))
+assign mount=%s
+"""%(os.path.abspath(DISK_FOLDER ),os.path.abspath("mount")))
     os.system("diskpart /s %s >> %s"%(os.path.abspath("diskpartscript"),os.path.abspath("diskpartscriptlog.txt")))
 
 def unmount():

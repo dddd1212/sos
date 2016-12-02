@@ -74,6 +74,6 @@ EXPORT void* get_qbject_associated_qnode_context(QHandle qhandle) {
 #define QNODE_TYPE_GENERIC (1)
 #define CREATE_QBJECT_FLAGS_SECOND_CHANCE (1)
 
-#define BUS_ENUM_PROPERTY (3)
+#define PCIE_CONFIGURATION_SPACE (3)
 #define FILE_SIZE_PROPERTY (4)
 #endif
