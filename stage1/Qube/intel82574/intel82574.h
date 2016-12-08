@@ -5,4 +5,5 @@
 #include "../MemoryManager/heap.h"
 #include "../MemoryManager/memory_manager.h"
 #include "../screen/screen.h"
+#include "../libc/string.h"
 #endif
