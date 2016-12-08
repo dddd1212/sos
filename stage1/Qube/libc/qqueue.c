@@ -19,6 +19,7 @@ QQueue * create_qqueue(uint32 num_of_elements, uint32 element_size) {
 
 void destroy_qqueue(QQueue * qq) {
 	kheap_free((void*)qq);
+	return;
 }
 BOOL enqqueue(QQueue * qq, void * data) {
 	if (qq->queue_cur_size == qq->queue_max_size) return FALSE;
