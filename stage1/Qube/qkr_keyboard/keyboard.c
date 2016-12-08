@@ -38,6 +38,7 @@ void keyboard_handler(ProcessorContext * regs) {
 	}
 	screen_printf("Key pressed: %x\n", byte,0,0,0);
 	// Now we want to handle the key. When threads will be here, we should do the most of the work in DPC-thread.
+	enqqueue(g_scancodes_queue, &byte);
 
 }
 uint8 getch() {

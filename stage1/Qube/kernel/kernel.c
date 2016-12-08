@@ -47,6 +47,7 @@ void thread_c_loop() {
 void kernel_main(KernelGlobalData * kgd) {
 	// This is the main kernel function.
 	// The function should not return.
+	
 	screen_clear();
 	screen_write_string("Hello! This is the kernel talking to you!", TRUE);
 	screen_set_color(B_GREEN, MAGNETA);
@@ -56,7 +57,7 @@ void kernel_main(KernelGlobalData * kgd) {
 	int8 out[0x1000];
 	sprintf(out, "hello! this is int: %08d. Str%%in%123g is: %08s!\n hex:%04x, %04X, %x, %X", 1234,"aaa", 0x10a,0x23b,0x10c,0x99d);
 	screen_write_string(out, TRUE);
-	
+	return;
 	create_event(&event1);
 	create_event(&event2);
 	start_new_thread(thread_b_loop);
