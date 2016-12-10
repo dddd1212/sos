@@ -24,9 +24,6 @@
     <ClCompile Include="Makefile">
       <Filter>build</Filter>
     </ClCompile>
-    <ClCompile Include="ether.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -39,7 +36,19 @@
     <ClCompile Include="qnet_packet.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qnet_layer2.c">
+    <ClCompile Include="qnet_ether.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qnet_ip.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qnet_ipv6.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qnet_arp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qnet_socket.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -59,7 +68,19 @@
     <ClInclude Include="qnet_packet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="qnet_layer2.h">
+    <ClInclude Include="qnet_arp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qnet_ip.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qnet_ipv6.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qnet_ether.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qnet_socket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

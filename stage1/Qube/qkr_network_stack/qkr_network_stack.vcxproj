@@ -35,7 +35,7 @@
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Makefile</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
@@ -85,20 +85,27 @@
     <Text Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ether.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="Makefile" />
     <ClCompile Include="qnetstack.c" />
-    <ClCompile Include="qnet_layer2.c" />
+    <ClCompile Include="qnet_arp.c" />
+    <ClCompile Include="qnet_ether.c" />
+    <ClCompile Include="qnet_ip.c" />
+    <ClCompile Include="qnet_ipv6.c" />
     <ClCompile Include="qnet_packet.c" />
+    <ClCompile Include="qnet_socket.c" />
     <ClCompile Include="qnet_stats.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="qnet_layer2.h" />
+    <ClInclude Include="qnet_arp.h" />
+    <ClInclude Include="qnet_ip.h" />
+    <ClInclude Include="qnet_ipv6.h" />
+    <ClInclude Include="qnet_ether.h" />
     <ClInclude Include="qnet_defs.h" />
     <ClInclude Include="qnet_os.h" />
     <ClInclude Include="qnetstack.h" />
     <ClInclude Include="qnet_packet.h" />
+    <ClInclude Include="qnet_socket.h" />
     <ClInclude Include="qnet_stats.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
