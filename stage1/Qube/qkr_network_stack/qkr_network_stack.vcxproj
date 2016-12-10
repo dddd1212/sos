@@ -84,11 +84,18 @@
     <ClCompile Include="ether.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="Makefile" />
+    <ClCompile Include="qnetstack.c" />
+    <ClCompile Include="qnet_layer2.c" />
+    <ClCompile Include="qnet_packet.c" />
+    <ClCompile Include="qnet_stats.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="qnet_layer2.h" />
     <ClInclude Include="qnet_defs.h" />
     <ClInclude Include="qnet_os.h" />
-    <ClInclude Include="qstack.h" />
+    <ClInclude Include="qnetstack.h" />
+    <ClInclude Include="qnet_packet.h" />
+    <ClInclude Include="qnet_stats.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

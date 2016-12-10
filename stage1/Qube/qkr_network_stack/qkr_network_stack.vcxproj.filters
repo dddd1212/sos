@@ -30,15 +30,36 @@
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="qnetstack.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qnet_stats.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qnet_packet.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qnet_layer2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="qstack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="qnet_os.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="qnet_defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qnetstack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qnet_stats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qnet_packet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qnet_layer2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

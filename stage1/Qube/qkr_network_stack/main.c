@@ -1,10 +1,11 @@
 #include "../Common/Qube.h"
 #include "../MemoryManager/heap.h"
-#include "qstack.h"
+#include "qnetstack.h"
 
-QResult get_first_interface(QNetInterface * out) {
+QResult get_first_interface(QNetInterface * iface_out) {
 	// TODO.
-	// This function shoule fill the 'out' variable.
+	// This function shoule fill the 'iface_out' variable.
+	
 	return QFail;
 }
 
@@ -17,7 +18,7 @@ QResult qkr_main(KernelGlobalData *kgd) {
 
 	if (qnet_register_interface(qstk, iface) == QFail) goto fail2;
 
-	iface->send_frame_func();
+	//iface->send_frame_func();
 	return QSuccess;
 
 

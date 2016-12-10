@@ -11,7 +11,7 @@
 struct QNetOsInterface;
 
 // function to start a new thread.
-QResult qnet_start_thread(QnetThreadFunc * thread_func);
+QResult qnet_start_thread(QnetThreadFunc * thread_func, void * param);
 
 // function that allocate buffer to save packets data.
 uint8 * qnet_alloc_packet(uint32 size);
@@ -21,6 +21,6 @@ void qnet_free_packet(uint8 * addr);
 
 // General Functions for allocate and free memory (not for packets data).
 uint8 * qnet_alloc(uint32);
-uint8 * qnet_free(uint32);
+void qnet_free(uint8 *);
 
 #endif // __QNET_OS__

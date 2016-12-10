@@ -4,5 +4,8 @@
 typedef void (*QnetThreadFunc)(void * param);
 
 
+struct _Layer2Listener;
+typedef struct _Layer2Listener Layer2Listener;
+
 
 #endif // __QNET_DEFS__
