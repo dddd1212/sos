@@ -22,10 +22,10 @@ enum Layer2ProtocolType {
 
 struct _Layer2Listener {
 	struct _Layer2Listener * next;
-	void (*handle_frame)();
+	QResult (*handle_frame)();
 };
 
-void qnet_ether_handle_frame(QNetStack * qstk, QNetInterface * iface, QnetFrameToRecv * frame);
+QResult qnet_ether_handle_frame(QNetStack * qstk, QNetInterface * iface, QNetFrameToRecv * frame);
 
 
 

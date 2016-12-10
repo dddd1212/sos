@@ -23,8 +23,7 @@ QResult qnet_deregister_layer2_listener(QNetStack * qstk, QNetInterface * iface,
 		goto end;
 	}
 	Layer2Listener * prev = iface->layer2_raw_listeners;
-	for (Layer2Listener * prev = iface->layer2_raw_listeners, 
-		Layer2Listener * i = prev->next; i != NULL; prev = i, i = i->next) {
+	for (Layer2Listener * i = prev->next; i != NULL; prev = i, i = i->next) {
 		if (i == listener) {
 			prev->next = i->next;
 			listener->next = NULL;
@@ -48,7 +47,7 @@ QResult qnet_ether_handle_frame(QNetStack * qstk, QNetInterface * iface, QNetFra
 
 	// Then, move the frame the next layer:
 	Packet * pkt = frame->pkt;
-	uint32 pkt_size = get_packet_size(pkt);
+	uint32 pkt_size = qnet_pkt_get_size(pkt);
 	if (pkt_size < ETHER_SIZE) return QFail;
 	if (qnet_pkt_same_buf_arrange(pkt, ETHER_SIZE) != QSuccess) return QFail;
 	Ethernet * ether = (Ethernet *) qnet_pkt_get_ptr(pkt, 0);

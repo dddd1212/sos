@@ -17,9 +17,9 @@ typedef struct {
 
 typedef struct {
 	Packet * pkt;
-} QnetFrameToRecv;
+} QNetFrameToRecv;
 
-typedef void (*QNetRecvFrameFunc)(QnetFrameToRecv * frame);
+typedef void (*QNetRecvFrameFunc)(QNetFrameToRecv * frame);
 typedef void (*QNetSendFrameFunc)(QnetFrameToSend * frame);
 // About packets memory management:
 // To minimize the packets copies, we give the memory contorl to the stack-client. that means, that the operation system need to supply the 

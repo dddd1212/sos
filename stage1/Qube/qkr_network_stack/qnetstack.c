@@ -36,7 +36,7 @@ QResult qnet_register_interface(QNetStack * qstk, QNetInterface * iface) {
 }
 
 void qnet_frame_listener_func(QNetFrameListenerFuncParams * param) {
-	QnetFrameToRecv frame;
+	QNetFrameToRecv frame;
 	
 	QNetStack * qstk = param->qstk;
 	QNetInterface * iface = param->iface;
@@ -48,6 +48,6 @@ void qnet_frame_listener_func(QNetFrameListenerFuncParams * param) {
 		frame.pkt = NULL;
 		iface->recv_frame_func(&frame);
 		qnet_stats_pkt_arrive(qstk, iface, &frame);
-		qnet_layer2_handle_frame(qstk, iface, &frame);
+		qnet_ether_handle_frame(qstk, iface, &frame);
 	}
 }
