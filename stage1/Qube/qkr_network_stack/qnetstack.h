@@ -39,6 +39,7 @@ struct _QNetInterface {
 	struct QNetOsInterface * os_iface;
 	enum IfaceState state;
 	
+	QNetMutex * layer2_raw_listeners_mutex;
 	Layer2Listener * layer2_raw_listeners;
 
 	// statistics:
@@ -52,6 +53,7 @@ typedef struct _QNetInterface QNetInterface;
 
 // This struct is the general context of the network stack. It contains everything.
 typedef struct {
+	QNetMutex * ifaces_mutex;
 	QNetInterface * ifaces;
 } QNetStack;
 

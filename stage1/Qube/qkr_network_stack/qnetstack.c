@@ -1,7 +1,8 @@
 #include "qnetstack.h"
-#include "qnet_layer2.h"
+#include "qnet_ether.h"
 #include "qnet_stats.h"
 QResult qnet_create_stack(QNetStack * qstk) {
+	if (QSuccess != (qstk->ifaces_mutex = qnet_create_mutex(TRUE))) return QFail;
 	qstk->ifaces = NULL;
 	return QSuccess;
 }
@@ -11,16 +12,20 @@ QResult qnet_init_iface(QNetInterface * iface, QNetRecvFrameFunc recv_frame_func
 	iface->os_iface = os_iface;
 	iface->next = NULL;
 	iface->state = IFACE_STATE_DOWN;
+	
+	if ((iface->layer2_raw_listeners_mutex = qnet_create_mutex(TRUE)) == NULL) return QFail;
 	iface->layer2_raw_listeners = NULL;
+	
 	return QSuccess;
 }
 
 QResult qnet_register_interface(QNetStack * qstk, QNetInterface * iface) {
 	QNetFrameListenerFuncParams * param;
 	// Register the interface in the interfaces list:
+	qnet_acquire_mutex(qstk->ifaces_mutex);
 	iface->next = qstk->ifaces->next;
 	qstk->ifaces = iface;
-
+	qnet_release_mutex(qstk->ifaces_mutex);
 	// Start the listener thread:
 	param = (QNetFrameListenerFuncParams *) qnet_alloc(sizeof(param)); // The thread need to free this struct.
 	param->qstk = qstk;

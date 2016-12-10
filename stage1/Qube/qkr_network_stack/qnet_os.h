@@ -10,6 +10,12 @@
 // os specific interface struct. This struct is member of QnetInterface.
 struct QNetOsInterface;
 
+struct _QNetMutex; // mutex that could be held for long time.
+struct _QNetFastMutex; // mutex that held for short time.
+typedef struct _QNetMutex QNetMutex;
+typedef struct _QNetFastMutex QNetFastMutex;
+
+
 // function to start a new thread.
 QResult qnet_start_thread(QnetThreadFunc * thread_func, void * param);
 
@@ -22,5 +28,22 @@ void qnet_free_packet(uint8 * addr);
 // General Functions for allocate and free memory (not for packets data).
 uint8 * qnet_alloc(uint32);
 void qnet_free(uint8 *);
+
+// endian swapping. In big endian machines these functions does nothing.
+uint16 qnet_swap16(uint16);
+uint32 qnet_swap32(uint32);
+
+
+// return NULL in failure
+QNetMutex * qnet_create_mutex(BOOL is_fast);
+
+// panic on failure
+void qnet_acquire_mutex(QNetMutex * mutex);
+
+// panic on failure
+void qnet_release_mutex(QNetMutex * mutex);
+
+// panic on failure
+void qnet_delete_mutex(QNetMutex * mutex);
 
 #endif // __QNET_OS__
