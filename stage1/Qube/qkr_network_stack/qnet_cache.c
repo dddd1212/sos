@@ -1,44 +1,16 @@
 #include "qnetstack.h"
 #include "qnet_os.h"
-struct _QNetCacheEntryCommon {
-	struct _QNetCacheEntryCommon * next;
-	struct _QNetCacheEntryCommon * prev;
-	uint64 timeout; // in seconds
-							// Here you should put the entry itself.
-							// You need to create a struct with the CacheEntryCommon in it start and call the functions with cast.
-};
-void qnet_cache_copy_common_data(QNetCache * qcache, QNetCacheEntryCommon * dst, QNetCacheEntryCommon * src) {
-	dst->next = NULL;
-	dst->prev = NULL;
-	dst->timeout = src->timeout;
-	return;
-}
-typedef struct _QNetCacheEntryCommon QNetCacheEntryCommon;
 
-typedef BOOL(*QNetCacheSearchFunc)(QNetCache *qcache, QNetCacheEntryCommon * entry, void * user_defined_struct);
-typedef uint32(*QNetCacheCompareFunc)(QNetCache *qcache, QNetCacheEntryCommon * first, QNetCacheEntryCommon * second);
-typedef BOOL (*QNetCacheCopyFunc)(QNetCache *qcache, QNetCacheEntryCommon * dst, QNetCacheEntryCommon * src); // copy all the user struct.
-typedef BOOL(*QNetCacheFreeEntryFunc)(QNetCache *qcache, QNetCacheEntryCommon * dst); // free the user data of the entry.
-struct _QNetCache {
-	uint32 max_size;
-	uint32 actual_size;
-	uint64 last_check_time;
-	QNetCacheSearchFunc search_func;
-	QNetCacheCompareFunc compare_func;
-	QNetCacheCopyFunc copy_func;
-	QNetCacheFreeEntryFunc free_func;
-	struct _QNetCacheEntryCommon * first;
-	struct _QNetCacheEntryCommon * last;
-	QNetMutex * cache_mutex;
-};
-typedef struct _QNetCache QNetCache;
+
+
 // creation:
-QResult qnet_cache_create(QNetCache * qcache, uint32 real_entry_size, QNetCacheSearchFunc search_func, 
+QNetCache * qnet_cache_create(uint32 real_entry_size, QNetCacheSearchFunc search_func, 
 																	  QNetCacheCompareFunc compare_func, 
 																	  QNetCacheCopyFunc copy_func, 
 																	  QNetCacheFreeEntryFunc free_func,
 					      uint32 max_size) {
-	qcache = (QNetCache *)qnet_alloc(sizeof(QNetCache));
+	QNetCache * qcache = (QNetCache *)qnet_alloc(sizeof(QNetCache));
+	if (qcache == NULL) return NULL;
 	qcache->max_size = max_size;
 	qcache->actual_size = 0;
 	qcache->search_func = search_func;
@@ -50,23 +22,28 @@ QResult qnet_cache_create(QNetCache * qcache, uint32 real_entry_size, QNetCacheS
 	qcache->cache_mutex = qnet_create_mutex(TRUE); // fast mutex.
 	qcache->last_check_time = qnet_get_cur_time();
 	qcache->real_entry_size = real_entry_size;
+	return qcache;
 }
 QResult qnet_cache_destroy(QNetCache * qcache) {
 	qnet_acquire_mutex(qcache->cache_mutex);
-	qnet_cache_entries_free(qcache, qcache->first);
+	_qnet_cache_entries_free(qcache, qcache->first);
 	qnet_free((void*)qcache);
 	qnet_delete_mutex(qcache->cache_mutex);
 	return QSuccess;
 }
 QNetCacheEntryCommon * qnet_cache_create_entry(QNetCache * qcache) {
-	return (QNetCacheEntryCommon * )qnet_alloc(qcache->real_entry_size);
+	QNetCacheEntryCommon * ret = (QNetCacheEntryCommon * )qnet_alloc(qcache->real_entry_size);
+	ret->next = NULL;
+	ret->prev = NULL;
+	ret->timeout = 0;
 }
+
 // insertion:
 QResult qnet_cache_add_entry(QNetCache * qcache, QNetCacheEntryCommon * entry, uint32 timeout) {
 	uint64 now = qnet_get_cur_time();
 	entry->timeout = now + timeout;
 	qnet_acquire_mutex(qcache->cache_mutex);
-	QNetCacheEntryCommon * ret = qnet_cache_iterate(qcache, qnet_cache_check_ident, (void*)entry);
+	QNetCacheEntryCommon * ret = _qnet_cache_iterate(qcache, _qnet_cache__iter_func__check_ident, (void*)entry);
 	if (ret != NULL) { // Out entry already in the cache!
 		ret->timeout = now + timeout;
 	}
@@ -78,7 +55,7 @@ QResult qnet_cache_add_entry(QNetCache * qcache, QNetCacheEntryCommon * entry, u
 	*/
 	if (qcache->max_size == qcache->actual_size) {
 		// remove the last one:
-		qnet_cache_remove_entry(qcache, qcache->last);
+		_qnet_cache_remove_entry(qcache, qcache->last);
 	}
 
 	if (qcache->first == NULL) {
@@ -94,62 +71,44 @@ QResult qnet_cache_add_entry(QNetCache * qcache, QNetCacheEntryCommon * entry, u
 	qcache->actual_size += 1;
 	qnet_delete_mutex(qcache->cache_mutex);
 }
-QResult qnet_cache_remove_entry(QNetCache * qcache, QNetCacheEntryCommon * entry) {
-	qnet_acquire_mutex(qcache->cache_mutex);
-	qcache->last = qcache->last->prev;
-	qnet_cache_entries_free(qcache, qcache->last->next); // free the last one.
-	qcache->last->next = NULL;
-	qnet_release_mutex(qcache->cache_mutex);
+void _qnet_cache_remove_entry(QNetCache * qcache, QNetCacheEntryCommon * entry) {
+	if (entry == qcache->first) {
+		qcache->first = entry->next;
+	}
+	else {
+		entry->prev->next = entry->next;
+	}
+	if (entry == qcache->last) {
+		qcache->last = entry->prev;
+	}
+	else {
+		entry->next->prev = entry->prev;
+	}
+	entry->next = NULL;
+	entry->prev = NULL;
+	_qnet_cache_entries_free(qcache, entry);
+	return;
+}
+QResult _qnet_cache_entries_free(QNetCache qcache, QNetCacheEntryCommon * entries) {
+	QNetCacheEntryCommon * entry;
+	QNetCacheEntryCommon * next = NULL;
+	for (entry = entries; entry; entry = next) {
+		next = entry->next;
+		qcache->free_func(qcache, entry);
+		qnet_free(entry);
+	}
+	return QSuccess;
 }
 
-QNetCacheEntryCommon * qnet_cache__iter_func__remove_invalids(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
-	return NULL; // We just want to go over every entry and reomve the invalids.
+void _qnet_cache_copy_common_data(QNetCache * qcache, QNetCacheEntryCommon * dst, QNetCacheEntryCommon * src) {
+	dst->next = NULL;
+	dst->prev = NULL;
+	dst->timeout = src->timeout;
+	return;
 }
-
-QNetCacheEntryCommon * qnet_cache__iter_func__copy(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
-	QNetCacheEntryCommon ** entries_ptr = (QNetCacheEntryCommon **) param;
-	QNetCacheEntryCommon  * temp = qnet_cache_create_entry(qcache);
-	if (temp == NULL) { // not enough memory.
-		qnet_cache_entries_free(qcache, *entries_ptr);
-		*entries_ptr = NULL;
-		return (QNetCacheEntryCommon*)1; // error. stop iterate.
-	}
-	qnet_cache_copy_common_data(qcache, temp, entry);
-	qcache->copy_func(qcache, temp, entry);
-	if (*entries_ptr == NULL) {
-		*entries_ptr = temp;
-	} else {
-		(*entries_ptr)->next = temp;
-		temp->prev = (*entries_ptr);
-	}
-	return NULL; // continue iterate.
-}
-
-QNetCacheEntryCommon * qnet_cache__iter_func__find(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
-	if (qcache->search_func(qcache, entry, param) == TRUE) return entry;
-	return NULL;
-}
-QNetCacheEntryCommon * qnet_cache__iter_func__find_and_remove(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
-	if (qcache->search_func(qcache, entry, param) == TRUE) {
-		qnet_cache_remove_entry(qcache, entry);
-		return (QNetCacheEntryCommon *) 1;
-	}
-	return NULL;
-}
-QNetCacheEntryCommon * qnet_cache__iter_func__find_and_remove_all(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
-	if (qcache->search_func(qcache, entry, param) == TRUE) {
-		qnet_cache_remove_entry(qcache, entry);
-	}
-	return NULL;
-}
-
-QNetCacheEntryCommon * qnet_cache__iter_func__check_ident(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
-	QNetCacheEntryCommon * new_entry = (QNetCacheEntryCommon *)param;
-	if (qcache->compare_func(qcache, entry, param) == 0) return entry;
-	return NULL;
-}
+// iteration and search:
 typedef QNetCacheEntryCommon * (*QNetCacheIterateFunc)(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param);
-QNetCacheEntryCommon * qnet_cache_iterate(QNetCache * qcache, QNetCacheIterateFunc func, void * param) {
+QNetCacheEntryCommon * _qnet_cache_iterate(QNetCache * qcache, QNetCacheIterateFunc func, void * param) {
 	QNetCacheEntryCommon * entry;
 	QNetCacheEntryCommon * next;
 	QNetCacheEntryCommon * ret = NULL;
@@ -160,7 +119,7 @@ QNetCacheEntryCommon * qnet_cache_iterate(QNetCache * qcache, QNetCacheIterateFu
 	for (entry = qcache->first; entry != NULL; entry = next) {
 		next = entry->next;
 		if (now > entry->timeout) {
-			qnet_cache_remove_entry(qcache, entry);
+			_qnet_cache_remove_entry(qcache, entry);
 		}
 		ret = func(qcache, entry, param);
 		if (ret != NULL) {
@@ -173,36 +132,65 @@ QNetCacheEntryCommon * qnet_cache_iterate(QNetCache * qcache, QNetCacheIterateFu
 	return ret;
 }
 
+QNetCacheEntryCommon * qnet_cache__iter_func__remove_invalids(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
+	return NULL; // We just want to go over every entry and reomve the invalids.
+}
+
+QNetCacheEntryCommon * _qnet_cache__iter_func__copy(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
+	QNetCacheEntryCommon ** entries_ptr = (QNetCacheEntryCommon **)param;
+	QNetCacheEntryCommon  * temp = qnet_cache_create_entry(qcache);
+	if (temp == NULL) { // not enough memory.
+		_qnet_cache_entries_free(qcache, *entries_ptr);
+		*entries_ptr = NULL;
+		return (QNetCacheEntryCommon*)1; // error. stop iterate.
+	}
+	_qnet_cache_copy_common_data(qcache, temp, entry);
+	qcache->copy_func(qcache, temp, entry);
+	if (*entries_ptr == NULL) {
+		*entries_ptr = temp;
+	}
+	else {
+		(*entries_ptr)->next = temp;
+		temp->prev = (*entries_ptr);
+	}
+	return NULL; // continue iterate.
+}
+
+QNetCacheEntryCommon * _qnet_cache__iter_func__find(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
+	if (qcache->search_func(qcache, entry, param) == TRUE) return entry;
+	return NULL;
+}
+QNetCacheEntryCommon * _qnet_cache__iter_func__find_and_remove(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
+	if (qcache->search_func(qcache, entry, param) == TRUE) {
+		_qnet_cache_remove_entry(qcache, entry);
+		return (QNetCacheEntryCommon *)1;
+	}
+	return NULL;
+}
+QNetCacheEntryCommon * _qnet_cache__iter_func__find_and_remove_all(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
+	if (qcache->search_func(qcache, entry, param) == TRUE) {
+		_qnet_cache_remove_entry(qcache, entry);
+	}
+	return NULL;
+}
+
+QNetCacheEntryCommon * _qnet_cache__iter_func__check_ident(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
+	QNetCacheEntryCommon * new_entry = (QNetCacheEntryCommon *)param;
+	if (qcache->compare_func(qcache, entry, param) == 0) return entry;
+	return NULL;
+}
+
 QResult qnet_cache_remove_invalids(QNetCache * qcache) {
 	qnet_acquire_mutex(qcache->cache_mutex);
-	qnet_cache_iterate(qcache, qnet_cache__iter_func__remove_invalids, NULL);
+	_qnet_cache_iterate(qcache, qnet_cache__iter_func__remove_invalids, NULL);
 	qnet_release_mutex(qcache->cache_mutex);
 	return QSuccess;
 }
 
-void qnet_cache_remove_entry(QNetCache * qcache, QNetCacheEntryCommon * entry) {
-	qnet_acquire_mutex(qcache->cache_mutex);
-	if (entry == qcache->first) {
-		qcache->first = entry->next;
-	} else {
-		entry->prev->next = entry->next;
-	}
-	if (entry == qcache->last) {
-		qcache->last = entry->prev;
-	} else {
-		entry->next->prev = entry->prev;
-	}
-	entry->next = NULL;
-	entry->prev = NULL;
-	qnet_cache_entries_free(qcache, entry);
-	qnet_release_mutex(qcache->cache_mutex);
-	return;
-}
 
-// iteration and search:
 QNetCacheEntryCommon * qnet_cache_get_copy(QNetCache * qcache) {
 	QNetCacheEntryCommon * ret = NULL;
-	uint32 ret_val = (uint32) qnet_cache_iterate(qcache, qnet_cache__iter_func__copy, (void*)(&ret));
+	uint32 ret_val = (uint32) _qnet_cache_iterate(qcache, _qnet_cache__iter_func__copy, (void*)(&ret));
 	if (ret_val == 1) { // error!
 		return NULL;
 	}
@@ -210,21 +198,13 @@ QNetCacheEntryCommon * qnet_cache_get_copy(QNetCache * qcache) {
 }
 
 BOOL qnet_cache_find(QNetCache * qcache, void * user_define_struct) {
-	return qnet_cache_iterate(qcache, qnet_cache__iter_func__find, user_define_struct);
+	return _qnet_cache_iterate(qcache, _qnet_cache__iter_func__find, user_define_struct)?TRUE:FALSE;
 }
 BOOL qnet_cache_find_and_remove(QNetCache * qcache, void * user_define_struct) {
-	return qnet_cache_iterate(qcache, qnet_cache__iter_func__find_and_remove, user_define_struct);
+	return _qnet_cache_iterate(qcache, _qnet_cache__iter_func__find_and_remove, user_define_struct)?TRUE:FALSE;
 }
-void qnet_cache_find_and_remove_all(QNetCache * qcache, void * user_define_struct) {
-	return qnet_cache_iterate(qcache, qnet_cache__iter_func__find_and_remove_all, user_define_struct);
+QResult qnet_cache_find_and_remove_all(QNetCache * qcache, void * user_define_struct) {
+	return _qnet_cache_iterate(qcache, _qnet_cache__iter_func__find_and_remove_all, user_define_struct)?QSuccess:QFail;
 }
-QResult qnet_cache_entries_free(QNetCache qcache, QNetCacheEntryCommon * entries) {
-	QNetCacheEntryCommon * entry;
-	QNetCacheEntryCommon * next = NULL;
-	for (entry = entries; entry; entry = next) {
-		next = entry->next;
-		qcache->free_func(qcache, entry);
-		qnet_free(entry);
-	}
-	return QSuccess;
-}
+
+
