@@ -46,4 +46,6 @@ void qnet_release_mutex(QNetMutex * mutex);
 // panic on failure
 void qnet_delete_mutex(QNetMutex * mutex);
 
+
+uint64 qnet_get_cur_time();
 #endif // __QNET_OS__

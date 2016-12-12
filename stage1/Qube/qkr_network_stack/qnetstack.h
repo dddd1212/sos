@@ -45,6 +45,10 @@ struct _QNetInterface {
 	// statistics:
 	uint32 recv_pkts_count;
 	uint32 recv_bytes_count;
+
+	// Per protocol fields:
+	// ARP:
+	ArpCache * arp_cache;
 };
 typedef struct _QNetInterface QNetInterface;
 

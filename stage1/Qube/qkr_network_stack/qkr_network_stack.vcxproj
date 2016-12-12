@@ -89,6 +89,7 @@
     <ClCompile Include="Makefile" />
     <ClCompile Include="qnetstack.c" />
     <ClCompile Include="qnet_arp.c" />
+    <ClCompile Include="qnet_cache.c" />
     <ClCompile Include="qnet_ether.c" />
     <ClCompile Include="qnet_ip.c" />
     <ClCompile Include="qnet_ipv6.c" />
@@ -98,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="qnet_arp.h" />
+    <ClInclude Include="qnet_cache.h" />
     <ClInclude Include="qnet_ip.h" />
     <ClInclude Include="qnet_ipv6.h" />
     <ClInclude Include="qnet_ether.h" />
