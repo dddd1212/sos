@@ -145,7 +145,11 @@ QNetCacheEntryCommon * _qnet_cache__iter_func__copy(QNetCache * qcache, QNetCach
 		return (QNetCacheEntryCommon*)1; // error. stop iterate.
 	}
 	_qnet_cache_copy_common_data(qcache, temp, entry);
-	qcache->copy_func(qcache, temp, entry);
+	if (FALSE == qcache->copy_func(qcache, temp, entry)) {
+		_qnet_cache_entries_free(qcache, *entries_ptr);
+		*entries_ptr = NULL;
+		return (QNetCacheEntryCommon*)1; // error. stop iterate.
+	}
 	if (*entries_ptr == NULL) {
 		*entries_ptr = temp;
 	}

@@ -46,10 +46,10 @@ typedef struct _QNetCacheEntryCommon QNetCacheEntryCommon;
 
 // The 4 funtions that the user need to implement (see documentation above).
 // Also, see the documentation of the functions qnet_cache_find* to see how to use the user_defined_struct.
-typedef BOOL(*QNetCacheSearchFunc)(struct _QNetCache *qcache, QNetCacheEntryCommon * entry, void * user_defined_struct);
-typedef uint32(*QNetCacheCompareFunc)(struct _QNetCache *qcache, QNetCacheEntryCommon * first, QNetCacheEntryCommon * second);
-typedef BOOL(*QNetCacheCopyFunc)(struct _QNetCache *qcache, QNetCacheEntryCommon * dst, QNetCacheEntryCommon * src); // copy all the user struct.
-typedef BOOL(*QNetCacheFreeEntryFunc)(struct _QNetCache *qcache, QNetCacheEntryCommon * dst); // free the user data of the entry.
+typedef BOOL(*QNetCacheEntrySearchFunc)(struct _QNetCache *qcache, QNetCacheEntryCommon * entry, void * user_defined_struct);
+typedef uint32(*QNetCacheEntryCompareFunc)(struct _QNetCache *qcache, QNetCacheEntryCommon * first, QNetCacheEntryCommon * second);
+typedef BOOL(*QNetCacheEntryCopyFunc)(struct _QNetCache *qcache, QNetCacheEntryCommon * dst, QNetCacheEntryCommon * src); // copy all the user struct.
+typedef BOOL(*QNetCacheEntryFreeFunc)(struct _QNetCache *qcache, QNetCacheEntryCommon * dst); // free the user data of the entry.
 
 // This struct is the 
 struct _QNetCache {
@@ -59,10 +59,10 @@ struct _QNetCache {
 							// This parameter does nothing right now.
 	
 	// 4 user functions to search entry, compare entries, copy entry and free entry.
-	QNetCacheSearchFunc search_func;
-	QNetCacheCompareFunc compare_func;
-	QNetCacheCopyFunc copy_func;
-	QNetCacheFreeEntryFunc free_func;
+	QNetCacheEntrySearchFunc search_func;
+	QNetCacheEntryCompareFunc compare_func;
+	QNetCacheEntryCopyFunc copy_func;
+	QNetCacheEntryFreeFunc free_func;
 	
 	// The list of the entries:
 	struct _QNetCacheEntryCommon * first;
