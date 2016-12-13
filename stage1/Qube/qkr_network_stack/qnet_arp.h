@@ -4,12 +4,21 @@
 #include "qnet_cache.h"
 // defines the cache struct and 4 functions:
 struct _ArpCacheEntry {
-	struct _QNetCacheEntryCommon;
+	struct _QNetCacheEntryCommon common;
 	// The entry:
 	uint32 ip;
 	char mac[6];
 };
 typedef struct _ArpCacheEntry ArpCacheEntry;
+struct _ArpCacheSearchEntity {
+	uint32 ip;
+	char mac[6];
+	BOOL match_ip;
+	BOOL match_mac;
+	BOOL found;
+};
+typedef struct _ArpCacheSearchEntity ArpCacheSearchEntity;
+
 BOOL _qnet_arp_cache_entry_search(struct _QNetCache * qcache, QNetCacheEntryCommon * entry, void * user_defined_struct);
 uint32 _qnet_arp_cache_entry_compare(struct _QNetCache *qcache, QNetCacheEntryCommon * first, QNetCacheEntryCommon * second);
 BOOL _qnet_arp_cache_entry_copy(struct _QNetCache *qcache, QNetCacheEntryCommon * dst, QNetCacheEntryCommon * src); 

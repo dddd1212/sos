@@ -1,13 +1,13 @@
 #include "qnetstack.h"
 #include "qnet_os.h"
-
+#include "qnet_cache.h"
 
 
 // creation:
-QNetCache * qnet_cache_create(uint32 real_entry_size, QNetCacheSearchFunc search_func, 
-																	  QNetCacheCompareFunc compare_func, 
-																	  QNetCacheCopyFunc copy_func, 
-																	  QNetCacheFreeEntryFunc free_func,
+QNetCache * qnet_cache_create(uint32 real_entry_size, QNetCacheEntrySearchFunc search_func, 
+																	  QNetCacheEntryCompareFunc compare_func, 
+																	  QNetCacheEntryCopyFunc copy_func, 
+																	  QNetCacheEntryFreeFunc free_func,
 					      uint32 max_size) {
 	QNetCache * qcache = (QNetCache *)qnet_alloc(sizeof(QNetCache));
 	if (qcache == NULL) return NULL;

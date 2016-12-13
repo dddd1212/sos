@@ -26,7 +26,8 @@ struct _Layer2Listener {
 };
 
 QResult qnet_ether_handle_frame(QNetStack * qstk, QNetInterface * iface, QNetFrameToRecv * frame);
-
+void qnet_ether_copy_mac(char * dst, char * src);
+uint32 qnet_ether_compare_mac(char * first, char * second);
 
 
 

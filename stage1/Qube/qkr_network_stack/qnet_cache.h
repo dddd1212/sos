@@ -57,7 +57,7 @@ struct _QNetCache {
 	uint32 actual_size; // current number of elements.
 	uint64 last_check_time; // last time we iterate the cache (and try to remove invalid records).
 							// This parameter does nothing right now.
-	
+	unit32 real_entry_size;
 	// 4 user functions to search entry, compare entries, copy entry and free entry.
 	QNetCacheEntrySearchFunc search_func;
 	QNetCacheEntryCompareFunc compare_func;
@@ -80,10 +80,10 @@ typedef struct _QNetCache QNetCache;
 	// This function create an empty cache. You should tell the function what is the size of your
 	// extended entry struct, and also pass the 4 user-functions.
 	// you also need to pass the wanted max_size (number of entries) allowed in the cache.
-	QNetCache * qnet_cache_create(uint32 real_entry_size, QNetCacheSearchFunc search_func,
-		QNetCacheCompareFunc compare_func,
-		QNetCacheCopyFunc copy_func,
-		QNetCacheFreeEntryFunc free_func,
+	QNetCache * qnet_cache_create(uint32 real_entry_size, QNetCacheEntrySearchFunc search_func,
+		QNetCacheEntryCompareFunc compare_func,
+		QNetCacheEntryCopyFunc copy_func,
+		QNetCacheEntryFreeFunc free_func,
 		uint32 max_size);
 
 	// Destroies an existing cache.
