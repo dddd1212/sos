@@ -1,4 +1,4 @@
-#ifndef __QNET_CACHE__
+﻿#ifndef __QNET_CACHE__
 #define __QNET_CACHE__
 
 #include "qnetstack.h"
@@ -57,7 +57,7 @@ struct _QNetCache {
 	uint32 actual_size; // current number of elements.
 	uint64 last_check_time; // last time we iterate the cache (and try to remove invalid records).
 							// This parameter does nothing right now.
-	unit32 real_entry_size;
+	uint32 real_entry_size; // The size of the user QNetCacheEntryCommon extended struct.
 	// 4 user functions to search entry, compare entries, copy entry and free entry.
 	QNetCacheEntrySearchFunc search_func;
 	QNetCacheEntryCompareFunc compare_func;
@@ -114,7 +114,7 @@ typedef struct _QNetCache QNetCache;
 	// the function free list of entries.
 	// The function free every extended struct with the user-defined free function and then
 	// free the entry struct itself.
-	QResult _qnet_cache_entries_free(QNetCache qcache, QNetCacheEntryCommon * entries);
+	QResult _qnet_cache_entries_free(QNetCache * qcache, QNetCacheEntryCommon * entries);
 	
 	// The function copies the common fields (the base struct QNetCacheEntryCommon) from pre-allocated struct 'src'
 	// to pre-allocated struct 'dst'.

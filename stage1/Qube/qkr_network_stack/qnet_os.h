@@ -26,14 +26,17 @@ uint8 * qnet_alloc_packet(uint32 size);
 void qnet_free_packet(uint8 * addr);
 
 // General Functions for allocate and free memory (not for packets data).
-uint8 * qnet_alloc(uint32);
-void qnet_free(uint8 *);
+uint8 * qnet_malloc(uint32 size);
+uint8 * qnet_realloc(uint8 * ptr, uint32 size);
+void qnet_free(uint8 * addr);
 
 // endian swapping. In big endian machines these functions does nothing.
 uint16 qnet_swap16(uint16);
 uint32 qnet_swap32(uint32);
 
-
+uint8 * qnet_memcpy(uint8 * dst, uint8 * src, uint32 size);
+uint8 * qnet_memset(uint8 * dst, char c, uint32 size);
+uint32 qnet_memcmp(uint8 * first, uint8 * second, uint32 size);
 // return NULL in failure
 QNetMutex * qnet_create_mutex(BOOL is_fast);
 

@@ -49,9 +49,25 @@ BOOL _qnet_arp_cache_entry_free(struct _QNetCache *qcache, QNetCacheEntryCommon 
 	return TRUE;
 }
 
+
+
 /////////////////////////////
+QResult qnet_arp_resolve(QNetStack * qstk, QNetInterface * iface, uint32 ip, char * mac_out) {
+	ArpCacheSearchEntity s;
+	s.ip = ip;
+	s.match_ip = TRUE;
+	s.match_mac = FALSE;
+	s.found = FALSE;
+	if (FALSE == qnet_arp_cache_find(iface->arp_cache, &s)) { // need to send arp packet:
+		
+		qnet_arp_send_packet(QNetStack * qstk, QNetInterface * iface, QNetFrameToSend * frame);
+	}
 
-
+	
+}
+QResult qnet_arp_send_packet(QNetStack * qstk, QNetInterface * iface, QNetFrameToSend * frame) {
+	
+}
 
 
 QResult qnet_arp_handle_packet(QNetStack * qstk, QNetInterface * iface, QNetFrameToRecv * frame) {

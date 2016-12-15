@@ -9,7 +9,7 @@ QNetCache * qnet_cache_create(uint32 real_entry_size, QNetCacheEntrySearchFunc s
 																	  QNetCacheEntryCopyFunc copy_func, 
 																	  QNetCacheEntryFreeFunc free_func,
 					      uint32 max_size) {
-	QNetCache * qcache = (QNetCache *)qnet_alloc(sizeof(QNetCache));
+	QNetCache * qcache = (QNetCache *)qnet_malloc(sizeof(QNetCache));
 	if (qcache == NULL) return NULL;
 	qcache->max_size = max_size;
 	qcache->actual_size = 0;
@@ -32,10 +32,11 @@ QResult qnet_cache_destroy(QNetCache * qcache) {
 	return QSuccess;
 }
 QNetCacheEntryCommon * qnet_cache_create_entry(QNetCache * qcache) {
-	QNetCacheEntryCommon * ret = (QNetCacheEntryCommon * )qnet_alloc(qcache->real_entry_size);
+	QNetCacheEntryCommon * ret = (QNetCacheEntryCommon * )qnet_malloc(qcache->real_entry_size);
 	ret->next = NULL;
 	ret->prev = NULL;
 	ret->timeout = 0;
+	return ret;
 }
 
 // insertion:
@@ -70,6 +71,7 @@ QResult qnet_cache_add_entry(QNetCache * qcache, QNetCacheEntryCommon * entry, u
 	}
 	qcache->actual_size += 1;
 	qnet_delete_mutex(qcache->cache_mutex);
+	return QSuccess;
 }
 void _qnet_cache_remove_entry(QNetCache * qcache, QNetCacheEntryCommon * entry) {
 	if (entry == qcache->first) {
@@ -89,13 +91,13 @@ void _qnet_cache_remove_entry(QNetCache * qcache, QNetCacheEntryCommon * entry) 
 	_qnet_cache_entries_free(qcache, entry);
 	return;
 }
-QResult _qnet_cache_entries_free(QNetCache qcache, QNetCacheEntryCommon * entries) {
+QResult _qnet_cache_entries_free(QNetCache * qcache, QNetCacheEntryCommon * entries) {
 	QNetCacheEntryCommon * entry;
 	QNetCacheEntryCommon * next = NULL;
 	for (entry = entries; entry; entry = next) {
 		next = entry->next;
 		qcache->free_func(qcache, entry);
-		qnet_free(entry);
+		qnet_free((uint8 *)entry);
 	}
 	return QSuccess;
 }
@@ -179,7 +181,6 @@ QNetCacheEntryCommon * _qnet_cache__iter_func__find_and_remove_all(QNetCache * q
 }
 
 QNetCacheEntryCommon * _qnet_cache__iter_func__check_ident(QNetCache * qcache, QNetCacheEntryCommon * entry, void * param) {
-	QNetCacheEntryCommon * new_entry = (QNetCacheEntryCommon *)param;
 	if (qcache->compare_func(qcache, entry, param) == 0) return entry;
 	return NULL;
 }
@@ -194,7 +195,7 @@ QResult qnet_cache_remove_invalids(QNetCache * qcache) {
 
 QNetCacheEntryCommon * qnet_cache_get_copy(QNetCache * qcache) {
 	QNetCacheEntryCommon * ret = NULL;
-	uint32 ret_val = (uint32) _qnet_cache_iterate(qcache, _qnet_cache__iter_func__copy, (void*)(&ret));
+	uint64 ret_val = (uint64) _qnet_cache_iterate(qcache, _qnet_cache__iter_func__copy, (void*)(&ret));
 	if (ret_val == 1) { // error!
 		return NULL;
 	}

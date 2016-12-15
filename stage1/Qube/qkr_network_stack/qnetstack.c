@@ -6,13 +6,13 @@ QResult qnet_create_stack(QNetStack * qstk) {
 	qstk->ifaces = NULL;
 	return QSuccess;
 }
-QResult qnet_init_iface(QNetInterface * iface, QNetRecvFrameFunc recv_frame_func, QNetSendFrameFunc send_frame_func, struct QNetOsInterface * os_iface) {
+QResult qnet_init_iface(QNetInterface * iface, QNetRecvFrameFunc recv_frame_func, QNetSendFrameFunc send_frame_func, uint8 * mac_address, struct QNetOsInterface * os_iface) {
 	iface->recv_frame_func = recv_frame_func;
 	iface->send_frame_func = send_frame_func;
 	iface->os_iface = os_iface;
 	iface->next = NULL;
 	iface->state = IFACE_STATE_DOWN;
-	
+	qnet_memcpy(iface->mac_address, mac_address, 6);
 	if ((iface->layer2_raw_listeners_mutex = qnet_create_mutex(TRUE)) == NULL) return QFail;
 	iface->layer2_raw_listeners = NULL;
 	
@@ -27,7 +27,7 @@ QResult qnet_register_interface(QNetStack * qstk, QNetInterface * iface) {
 	qstk->ifaces = iface;
 	qnet_release_mutex(qstk->ifaces_mutex);
 	// Start the listener thread:
-	param = (QNetFrameListenerFuncParams *) qnet_alloc(sizeof(param)); // The thread need to free this struct.
+	param = (QNetFrameListenerFuncParams *) qnet_malloc(sizeof(param)); // The thread need to free this struct.
 	param->qstk = qstk;
 	param->iface = iface;
 	qnet_start_thread((QnetThreadFunc *) qnet_frame_listener_func, (void *) param);
@@ -45,9 +45,10 @@ void qnet_frame_listener_func(QNetFrameListenerFuncParams * param) {
 	iface->state = IFACE_STATE_UP;
 	// Start recieving packets:
 	while (iface->state == IFACE_STATE_UP) {
-		frame.pkt = NULL;
+		qnet_memset((uint8*)&frame, 0, sizeof(frame));
 		iface->recv_frame_func(&frame);
 		qnet_stats_pkt_arrive(qstk, iface, &frame);
 		qnet_ether_handle_frame(qstk, iface, &frame);
+		qnet_pkt_free_packet(frame.pkt);
 	}
 }
