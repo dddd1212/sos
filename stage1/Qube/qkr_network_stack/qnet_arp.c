@@ -52,12 +52,59 @@ BOOL _qnet_arp_cache_entry_free(struct _QNetCache *qcache, QNetCacheEntryCommon 
 
 
 /////////////////////////////
+// This thread is the resolver thread. it sleeps until it needs to send a packet.
+
+
+typedef struct {
+	QNetStack * qstk;
+	QNetInterface * iface;
+} ArpSenderThreadParam;
+void qnet_arp_sender_thread(void * param) {
+	ArpSenderThreadParam * astp = (ArpSenderThreadParam *)param;
+	QNetStack * qstk = astp->qstk;
+	QNetInterface * iface = artp->iface;
+	qnet_free(param);
+
+	while (1) {
+		// We are the only thread that wait on this event.
+		qnet_wait_for_event(iface->arp_sender_event, 0xffffffff); // wait forever.
+		if (TRUE == qnet_wait_for_event(iface->stop_event, 0)) { // The stop event is set! exit the thread...
+			goto end;
+		}
+		// Check what is about:
+
+	}
+
+end:
+	qnet_tpool_thread_finish(iface->tpool);
+	return;
+}
+
+typedef struct {
+	QNetStack * qstk;
+	QNetInterface * iface;
+} ArpWatchDogThreadParam;
+
+void qnet_arp_watchdog_thread(void * param) {
+	ArpWatchDogThreadParam * astp = (ArpWatchDogThreadParam *)param;
+	QNetStack * qstk = astp->qstk;
+	QNetInterface * iface = artp->iface;
+	qnet_free(param);
+
+	qnet_wait_for_event(iface->stop_event, 0xffffffff); // wait forever.
+	// signal all of the arp events to make all the threads exit:
+	qnet_set_event(iface->arp_sender_event);
+	return;
+}
+
+
 QResult qnet_arp_resolve(QNetStack * qstk, QNetInterface * iface, uint32 ip, char * mac_out) {
 	ArpCacheSearchEntity s;
 	s.ip = ip;
 	s.match_ip = TRUE;
 	s.match_mac = FALSE;
 	s.found = FALSE;
+	if (iface->arp_thread == NULL) return QFail;
 	if (FALSE == qnet_arp_cache_find(iface->arp_cache, &s)) { // need to send arp packet:
 		
 		qnet_arp_send_packet(QNetStack * qstk, QNetInterface * iface, QNetFrameToSend * frame);

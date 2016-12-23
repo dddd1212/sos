@@ -1,54 +1,35 @@
 #include "qnetstack.h"
 #include "qnet_ether.h"
 #include "qnet_stats.h"
+#include "qnet_os.h"
+
+
 QResult qnet_create_stack(QNetStack * qstk) {
 	if (QSuccess != (qstk->ifaces_mutex = qnet_create_mutex(TRUE))) return QFail;
 	qstk->ifaces = NULL;
 	return QSuccess;
 }
-QResult qnet_init_iface(QNetInterface * iface, QNetRecvFrameFunc recv_frame_func, QNetSendFrameFunc send_frame_func, uint8 * mac_address, struct QNetOsInterface * os_iface) {
-	iface->recv_frame_func = recv_frame_func;
-	iface->send_frame_func = send_frame_func;
-	iface->os_iface = os_iface;
-	iface->next = NULL;
-	iface->state = IFACE_STATE_DOWN;
-	qnet_memcpy(iface->mac_address, mac_address, 6);
-	if ((iface->layer2_raw_listeners_mutex = qnet_create_mutex(TRUE)) == NULL) return QFail;
-	iface->layer2_raw_listeners = NULL;
-	
-	return QSuccess;
-}
 
-QResult qnet_register_interface(QNetStack * qstk, QNetInterface * iface) {
-	QNetFrameListenerFuncParams * param;
+QResult qnet_register_interface(QNetStack * qstk, QNetInterface * iface, BOOL to_start) {
+	
 	// Register the interface in the interfaces list:
 	qnet_acquire_mutex(qstk->ifaces_mutex);
 	iface->next = qstk->ifaces->next;
 	qstk->ifaces = iface;
+	qnet_iface_change_state(IFACE_STATE_GOING_UP);
 	qnet_release_mutex(qstk->ifaces_mutex);
-	// Start the listener thread:
-	param = (QNetFrameListenerFuncParams *) qnet_malloc(sizeof(param)); // The thread need to free this struct.
-	param->qstk = qstk;
-	param->iface = iface;
-	qnet_start_thread((QnetThreadFunc *) qnet_frame_listener_func, (void *) param);
-
+	
+	if (to_start) {
+		QResult ret = qnet_iface_start(iface);
+		if (ret != QSuccess) {
+			qnet_deregister_interface(qstk, iface);
+			return QFail;
+		}
+	}
 	return QSuccess;
 }
 
-void qnet_frame_listener_func(QNetFrameListenerFuncParams * param) {
-	QNetFrameToRecv frame;
-	
-	QNetStack * qstk = param->qstk;
-	QNetInterface * iface = param->iface;
-	
-	qnet_free((void*)param);
-	iface->state = IFACE_STATE_UP;
-	// Start recieving packets:
-	while (iface->state == IFACE_STATE_UP) {
-		qnet_memset((uint8*)&frame, 0, sizeof(frame));
-		iface->recv_frame_func(&frame);
-		qnet_stats_pkt_arrive(qstk, iface, &frame);
-		qnet_ether_handle_frame(qstk, iface, &frame);
-		qnet_pkt_free_packet(frame.pkt);
-	}
+QResult qnet_deregister_interface(QNetStack * qstk, QNetInterface * iface) {
+	return QFail;
 }
+

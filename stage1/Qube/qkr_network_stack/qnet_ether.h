@@ -16,10 +16,7 @@ enum Layer2ProtocolType {
 	ETHERNET = 1,
 };
 
-struct _Layer2Listener {
-	struct _Layer2Listener * next;
-	QResult (*handle_frame)();
-};
+
 
 QResult qnet_ether_handle_frame(QNetStack * qstk, QNetInterface * iface, QNetFrameToRecv * frame);
 void qnet_ether_copy_mac(uint8 * dst, uint8 * src);

@@ -2,6 +2,10 @@
 #define __QNET_ARP__
 #include "qnetstack.h"
 #include "qnet_cache.h"
+
+struct _ArpCache;
+typedef struct _ArpCache ArpCache;
+
 // defines the cache struct and 4 functions:
 struct _ArpCacheEntry {
 	struct _QNetCacheEntryCommon common;

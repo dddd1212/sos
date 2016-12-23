@@ -96,6 +96,7 @@
     <ClCompile Include="qnet_packet.c" />
     <ClCompile Include="qnet_socket.c" />
     <ClCompile Include="qnet_stats.c" />
+    <ClCompile Include="qnet_threads_pool.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="qnet_arp.h" />
@@ -109,6 +110,7 @@
     <ClInclude Include="qnet_packet.h" />
     <ClInclude Include="qnet_socket.h" />
     <ClInclude Include="qnet_stats.h" />
+    <ClInclude Include="qnet_threads_pool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

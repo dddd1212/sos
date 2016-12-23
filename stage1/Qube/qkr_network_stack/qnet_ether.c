@@ -51,15 +51,6 @@ QResult qnet_ether_send_frame(QNetStack * qstk, QnetInterface * iface, QNetFrame
 	return iface->send_frame_func(&frame);
 }
 QResult qnet_ether_handle_frame(QNetStack * qstk, QNetInterface * iface, QNetFrameToRecv * frame) {
-	
-	// First, give the frame to the raw listeners:
-	qnet_acquire_mutex(iface->layer2_raw_listeners_mutex);
-	for (Layer2Listener * i = iface->layer2_raw_listeners; i != NULL; i = i->next) {
-		if (i->handle_frame(qstk, iface, frame) != QSuccess) return QFail;
-	}
-	qnet_release_mutex(iface->layer2_raw_listeners_mutex);
-
-	// Then, move the frame the next layer:
 	Packet * pkt = frame->pkt;
 	uint32 pkt_size = qnet_pkt_get_size(pkt);
 	if (pkt_size < ETHER_SIZE) return QFail;

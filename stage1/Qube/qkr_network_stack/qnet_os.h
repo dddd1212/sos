@@ -10,14 +10,14 @@
 // os specific interface struct. This struct is member of QnetInterface.
 struct QNetOsInterface;
 
-struct _QNetMutex; // mutex that could be held for long time.
-struct _QNetFastMutex; // mutex that held for short time.
+struct _QNetMutex;
 typedef struct _QNetMutex QNetMutex;
-typedef struct _QNetFastMutex QNetFastMutex;
+struct _QNetEvent;
+typedef struct _QNetEvent QNetEvent;
 
 
 // function to start a new thread.
-QResult qnet_start_thread(QnetThreadFunc * thread_func, void * param);
+QResult qnet_start_thread(QNetThreadFunc * thread_func, void * param);
 
 // function that allocate buffer to save packets data.
 uint8 * qnet_alloc_packet(uint32 size);
@@ -48,6 +48,22 @@ void qnet_release_mutex(QNetMutex * mutex);
 
 // panic on failure
 void qnet_delete_mutex(QNetMutex * mutex);
+
+// events api:
+// The implementation may use the *event_id address for internal use.
+
+// Create new event object. return TRUE on success.
+QNetEvent * qnet_create_event(BOOL is_auto_reset);
+void qnet_delete_event(QNetEvent *ev);
+
+// Wait until event_id will be in signal state.
+// Return TRUE if signaled, return FALSE if timeout.
+BOOL qnet_wait_for_event(QNetEvent *event_id, uint32 milliseconds);
+
+// signal and reset the event.
+void qnet_set_event(QNetEvent *event_id);
+void qnet_reset_event(QNetEvent *event_id);
+
 
 
 uint64 qnet_get_cur_time();
