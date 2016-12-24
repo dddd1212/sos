@@ -27,6 +27,13 @@ enum EtherType {
 	ETHER_TYPE_IPV6 = 0xdd68,
 };
 
-
+enum ProtocolsBitmap {
+	PROTOB_ETHER = 1 << 0,
+	PROTOB_ARP = 1 << 1,
+	PROTOB_IP = 1<<2,
+	PROTOB_TCP = 1 << 3,
+	PROTOB_UDP = 1<< 4,
+	PROTOB_ICMP = 1<< 5,
+};
 
 #endif // __QNET_DEFS__

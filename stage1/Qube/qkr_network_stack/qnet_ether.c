@@ -4,6 +4,7 @@
 #include "qnet_arp.h"
 #include "qnet_ip.h"
 #include "qnet_ipv6.h"
+#include "qnet_iface.h"
 
 QResult qnet_register_layer2_listener(QNetStack * qstk, QNetInterface * iface, Layer2Listener * listener) {
 	qnet_acquire_mutex(iface->layer2_raw_listeners_mutex);
@@ -96,4 +97,11 @@ void qnet_ether_copy_mac(uint8 * dst, uint8 * src) {
 }
 uint32 qnet_ether_compare_mac(uint8 * first, uint8 * second) {
 	return qnet_memcmp(first, second, 6);
+}
+
+
+QResult qnet_ether_start_protocol(QNetStack * qstk, QNetInterface * iface) {
+	// nothing to do...
+	iface->protos_up |= 
+	return QSuccess;
 }

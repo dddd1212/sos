@@ -59,6 +59,7 @@ typedef struct {
 	QNetStack * qstk;
 	QNetInterface * iface;
 } ArpSenderThreadParam;
+
 void qnet_arp_sender_thread(void * param) {
 	ArpSenderThreadParam * astp = (ArpSenderThreadParam *)param;
 	QNetStack * qstk = astp->qstk;

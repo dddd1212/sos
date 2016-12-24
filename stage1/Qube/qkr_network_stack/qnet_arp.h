@@ -35,6 +35,11 @@ typedef struct {
 	uint32 TPA; //target protocol address
 } ArpPacket;
 
+
+typedef struct {
+	int dodo;
+} ArpProtocol;
+
 BOOL _qnet_arp_cache_entry_search(struct _QNetCache * qcache, QNetCacheEntryCommon * entry, void * user_defined_struct);
 uint32 _qnet_arp_cache_entry_compare(struct _QNetCache *qcache, QNetCacheEntryCommon * first, QNetCacheEntryCommon * second);
 BOOL _qnet_arp_cache_entry_copy(struct _QNetCache *qcache, QNetCacheEntryCommon * dst, QNetCacheEntryCommon * src); 

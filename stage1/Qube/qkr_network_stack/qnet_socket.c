@@ -1,6 +1,7 @@
 #include "qnet_socket.h"
 
 QNetSocket * socket(enum QNetSocketDomain domain, enum QNetSocketType type, enum QNetSocketProtocol protocol) {
+	
 	switch (domain) {
 	case AF_PACKET:
 		switch (type) {

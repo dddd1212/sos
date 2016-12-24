@@ -15,6 +15,7 @@ typedef struct _QNetMutex QNetMutex;
 struct _QNetEvent;
 typedef struct _QNetEvent QNetEvent;
 
+#define PANIC
 
 // function to start a new thread.
 QResult qnet_start_thread(QNetThreadFunc * thread_func, void * param);
