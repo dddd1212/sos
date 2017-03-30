@@ -61,12 +61,12 @@ typedef struct {
 }PCIE_QNODE_CONTEXT;
 
 uint64 g_pcie_base_address;
-QResult pcie_create_qbject(void* qnode_context, char* path, ACCESS access, uint32 flags) {
+QHandle pcie_create_qbject(void* qnode_context, char* path, ACCESS access, uint32 flags) {
 	QHandle qhandle = allocate_qbject(0);
 	return qhandle;
 }
 
-QResult pcie_get_property(QHandle qbject, uint32 id, void* out) {
+QResult pcie_get_property(QHandle qbject, uint32 id, QbjectProperty* out) {
 	if (id == PCIE_CONFIGURATION_SPACE) {
 		*((uint64*)out) = ((PCIE_QNODE_CONTEXT*)get_qbject_associated_qnode_context(qbject))->pcie_configuration_space;
 	}
