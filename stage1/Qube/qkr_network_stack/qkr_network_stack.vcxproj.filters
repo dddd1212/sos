@@ -54,6 +54,12 @@
     <ClCompile Include="qnet_cache.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="qnet_threads_pool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="qnet_iface.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="qnet_os.h">
@@ -87,6 +93,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="qnet_cache.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qnet_threads_pool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qnet_iface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

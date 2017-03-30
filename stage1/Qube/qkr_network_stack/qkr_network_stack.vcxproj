@@ -35,7 +35,7 @@
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>Makefile</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
@@ -78,8 +78,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NMakeBuildCommandLine>make all</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>make clean all</NMakeReBuildCommandLine>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <NMakePreprocessorDefinitions>VS_EDITOR</NMakePreprocessorDefinitions>
   </PropertyGroup>
-  <ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <EnablePREfast>true</EnablePREfast>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="readme.txt" />
@@ -91,15 +97,18 @@
     <ClCompile Include="qnet_arp.c" />
     <ClCompile Include="qnet_cache.c" />
     <ClCompile Include="qnet_ether.c" />
+    <ClCompile Include="qnet_iface.c" />
     <ClCompile Include="qnet_ip.c" />
     <ClCompile Include="qnet_ipv6.c" />
     <ClCompile Include="qnet_packet.c" />
     <ClCompile Include="qnet_socket.c" />
     <ClCompile Include="qnet_stats.c" />
+    <ClCompile Include="qnet_threads_pool.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="qnet_arp.h" />
     <ClInclude Include="qnet_cache.h" />
+    <ClInclude Include="qnet_iface.h" />
     <ClInclude Include="qnet_ip.h" />
     <ClInclude Include="qnet_ipv6.h" />
     <ClInclude Include="qnet_ether.h" />
@@ -109,6 +118,7 @@
     <ClInclude Include="qnet_packet.h" />
     <ClInclude Include="qnet_socket.h" />
     <ClInclude Include="qnet_stats.h" />
+    <ClInclude Include="qnet_threads_pool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

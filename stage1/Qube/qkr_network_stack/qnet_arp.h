@@ -2,6 +2,10 @@
 #define __QNET_ARP__
 #include "qnetstack.h"
 #include "qnet_cache.h"
+
+struct _ArpCache;
+typedef struct _ArpCache ArpCache;
+
 // defines the cache struct and 4 functions:
 struct _ArpCacheEntry {
 	struct _QNetCacheEntryCommon common;
@@ -30,6 +34,11 @@ typedef struct {
 	uint8 THA[6]; // target hardware address
 	uint32 TPA; //target protocol address
 } ArpPacket;
+
+
+typedef struct {
+	int dodo;
+} ArpProtocol;
 
 BOOL _qnet_arp_cache_entry_search(struct _QNetCache * qcache, QNetCacheEntryCommon * entry, void * user_defined_struct);
 uint32 _qnet_arp_cache_entry_compare(struct _QNetCache *qcache, QNetCacheEntryCommon * first, QNetCacheEntryCommon * second);

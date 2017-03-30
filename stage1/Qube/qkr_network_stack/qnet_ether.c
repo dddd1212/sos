@@ -4,6 +4,7 @@
 #include "qnet_arp.h"
 #include "qnet_ip.h"
 #include "qnet_ipv6.h"
+#include "qnet_iface.h"
 
 QResult qnet_register_layer2_listener(QNetStack * qstk, QNetInterface * iface, Layer2Listener * listener) {
 	qnet_acquire_mutex(iface->layer2_raw_listeners_mutex);
@@ -51,15 +52,6 @@ QResult qnet_ether_send_frame(QNetStack * qstk, QnetInterface * iface, QNetFrame
 	return iface->send_frame_func(&frame);
 }
 QResult qnet_ether_handle_frame(QNetStack * qstk, QNetInterface * iface, QNetFrameToRecv * frame) {
-	
-	// First, give the frame to the raw listeners:
-	qnet_acquire_mutex(iface->layer2_raw_listeners_mutex);
-	for (Layer2Listener * i = iface->layer2_raw_listeners; i != NULL; i = i->next) {
-		if (i->handle_frame(qstk, iface, frame) != QSuccess) return QFail;
-	}
-	qnet_release_mutex(iface->layer2_raw_listeners_mutex);
-
-	// Then, move the frame the next layer:
 	Packet * pkt = frame->pkt;
 	uint32 pkt_size = qnet_pkt_get_size(pkt);
 	if (pkt_size < ETHER_SIZE) return QFail;
@@ -105,4 +97,11 @@ void qnet_ether_copy_mac(uint8 * dst, uint8 * src) {
 }
 uint32 qnet_ether_compare_mac(uint8 * first, uint8 * second) {
 	return qnet_memcmp(first, second, 6);
+}
+
+
+QResult qnet_ether_start_protocol(QNetStack * qstk, QNetInterface * iface) {
+	// nothing to do...
+	iface->protos_up |= 
+	return QSuccess;
 }
