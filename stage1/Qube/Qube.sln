@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bootloader", "bootloader\bootloader.vcxproj", "{5DBE5941-57DD-4BED-AD76-B0C7CEB1D8F4}"
 EndProject
@@ -70,6 +70,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "intel82574", "intel82574\intel82574.vcxproj", "{F1AAD984-50C6-45A8-AE1F-1969641E0416}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qkr_network_stack", "qkr_network_stack\qkr_network_stack.vcxproj", "{81D23986-41EC-4AB1-99CD-BCB729329B78}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "network_manager", "network_manager\network_manager.vcxproj", "{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -667,6 +669,33 @@ Global
 		{81D23986-41EC-4AB1-99CD-BCB729329B78}.vmware|x64.Build.0 = Release|x64
 		{81D23986-41EC-4AB1-99CD-BCB729329B78}.vmware|x86.ActiveCfg = Release|Win32
 		{81D23986-41EC-4AB1-99CD-BCB729329B78}.vmware|x86.Build.0 = Release|Win32
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.bochs|x64.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.bochs|x64.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.bochs|x86.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.bochs|x86.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.BootLoader|x64.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.BootLoader|x64.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.BootLoader|x86.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.BootLoader|x86.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.Debug|x64.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.Debug|x64.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.Debug|x86.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.Debug|x86.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.native|x64.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.native|x64.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.native|x86.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.native|x86.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.Release|x64.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.Release|x64.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.Release|x86.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.vmware_native|x64.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.vmware_native|x64.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.vmware_native|x86.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.vmware_native|x86.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.vmware|x64.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.vmware|x64.Build.0 = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.vmware|x86.ActiveCfg = Release|x64
+		{8446E604-FFB1-4179-9B82-8D3A87C9CFD7}.vmware|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
