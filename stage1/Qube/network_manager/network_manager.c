@@ -15,7 +15,7 @@ QResult empty_network_queue(NetworkQueueManagerContextI* nm_queue_context) {
 QHandle create_network_qbject(void* qnode_context, char* path, ACCESS access, uint32 flags) {
 	NetworkInterfaceManagerContextI* interface_manager_context = (NetworkInterfaceManagerContextI*)qnode_context;
 	if (interface_manager_context->qbject_created) {
-		return QFail;
+		return NULL;
 	}
 	interface_manager_context->qbject_created = TRUE;
 	QHandle qhandle = allocate_qbject(0);
@@ -23,6 +23,19 @@ QHandle create_network_qbject(void* qnode_context, char* path, ACCESS access, ui
 }
 
 QResult read_network_qbject(QHandle qbject, uint8* buffer, uint64 position, uint64 num_of_bytes_to_read, uint64* res_num_read) {
+	NetworkInterfaceManagerContextI* interface_manager_context = (NetworkInterfaceManagerContextI*) get_qbject_associated_qnode_context(qbject);
+	wait_for_event(interface_manager_context->data_available_event);
+	NetworkData* network_data;
+
+	dequeue_network_data(interface_manager_context, &network_data);
+	NetworkBuffer* network_buffer = network_data->first_buffer;
+	uint64 total_buffer_size;
+	while (network_buffer) {
+		total_buffer_size += network_buffer->buffer_size;
+		network_buffer = network_buffer->next;
+	}
+
+	network_data->first_buffer->buffer;
 	return QFail;
 }
 
@@ -35,6 +48,7 @@ QResult register_interface(NetworkInterfaceRegisterData* interface_data) {
 	interface_manager_context->driver_context = interface_data->network_interface_driver_context;
 	interface_manager_context->num_of_queues = 0;
 	interface_manager_context->qbject_created = FALSE;
+	create_event(interface_manager_context->data_available_event);
 	interface_data->initialize(interface_manager_context, interface_data->network_interface_driver_context);
 	create_qnode("/Device/Network/Interfaces/Interface0");
 	QNodeAttributes qnode_attrs;

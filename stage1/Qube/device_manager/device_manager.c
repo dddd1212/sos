@@ -98,7 +98,7 @@ QResult pcie_bus_enum(uint32 bus_num) {
 					x[16] += device_num/10;
 					x[17] += device_num % 10;
 					x[20] += func_num;
-					screen_printf("QNode created: %s (deviceID=%d)\n", x, config_space->device_id,0,0);
+					screen_printf("QNode created: %s (deviceID=%d)\n", (uint64)x, config_space->device_id,0,0);
 					//sprintf(x, "Devices/PCIe/%d_%d_%d", bus_num, device_num, func_num);
 					create_qnode(x);
 					PCIE_QNODE_CONTEXT* pcie_qnode_context = (PCIE_QNODE_CONTEXT*) kheap_alloc(sizeof(PCIE_QNODE_CONTEXT));

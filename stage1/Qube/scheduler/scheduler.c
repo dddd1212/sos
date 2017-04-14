@@ -63,7 +63,7 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	register_isr(INT_SCHEDULER, scheduler_isr);
 	
 	lapic_timer_set_callback_function(timer_isr); // set timer callback.
-	lapic_timer_start(100 * 1000, TRUE); // charge the timer to run every 3 seconds.
+	lapic_timer_start(30 * 1000 * 1000, TRUE); // charge the timer to run every 3 seconds.
 
 	return QSuccess;
 }

@@ -55,8 +55,9 @@ void kernel_main(KernelGlobalData * kgd) {
 	screen_set_color(B_CYAN, BLACK);
 	screen_write_string("We actually can start to initialize the kernel!", TRUE);
 	int8 out[0x1000];
-	sprintf(out, "hello! this is int: %08d. Str%%in%123g is: %08s!\n hex:%04x, %04X, %x, %X", 1234,"aaa", 0x10a,0x23b,0x10c,0x99d);
+	//sprintf(out, "hello! this is int: %08d. Str%%in%123g is: %08s!\n hex:%04x, %04X, %x, %X", 1234,"aaa", 0x10a,0x23b,0x10c,0x99d);
 	screen_write_string(out, TRUE);
+	while (1);
 	return;
 	create_event(&event1);
 	create_event(&event2);
@@ -128,9 +129,9 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	kernel_main(kgd);
 	while (1) {
 		uint64 a = (uint64)getch();
-		screen_printf("%s", &a,0,0,0);
+		screen_printf("%s", (uint64)&a,0,0,0);
 	}
-	interrupts_test();
+	// interrupts_test();
 	while (1) {}
 
 

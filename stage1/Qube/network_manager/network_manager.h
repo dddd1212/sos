@@ -5,6 +5,7 @@
 #include "../scheduler/scheduler.h"
 #include "../Common/spin_lock.h"
 #include "../QbjectManager/Qbject.h"
+#include "../qkr_sync/sync.h"
 typedef void* NetworkInterfaceManagerContext;
 typedef void* NetworkQueueManagerContext;
 typedef void* NetworkInterfaceDriverContext;
@@ -36,6 +37,7 @@ typedef struct EthNetworkData_ {
 } EthNetworkData;
 
 struct NetworkData_ {
+	NetworkData* next_network_data; // used to concatenate NetworkData structures (in some queue for example)
 	NetworkDataType data_type;
 	ReleaseNetworkDataFunc free_network_data;
 	NetworkBuffer* first_buffer;
@@ -62,6 +64,9 @@ typedef struct NetworkInterfaceManagerContextI_ {
 	BOOL qbject_created;
 	uint32 num_of_queues;
 	NetworkQueueManagerContext queue_list[5]; // TODO: for now, this is the maximum number of queues, but it should not work this way.
+	Event data_available_event;
+	NetworkData* global_queue_head;
+
 } NetworkInterfaceManagerContextI;
 
 
