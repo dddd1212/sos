@@ -6,14 +6,17 @@ install VS15
 
 ===================================Compiling===================================
 
-To compile using Cygwin:
-	install Cygwin and compile cross compiler according to http://wiki.osdev.org/GCC_Cross-Compiler
-	add python, Cygwin64\bin, C:\cygwin64\home\=YOUR_USER=\opt\cross\bin to the enviroment variable "Path"
-	install gdb package at Cygwin
+compile all:
+	Create empty hd with the createhd.py script at tools directory and put it at "../_output/_disk/disk.vhd".
+	The createhd script must run in administrator privileges.
+	Add python to the enviroment variable "Path".
+	After this make.py will insert all the modules to the virtual harddisk and install the boot.
 
-	compile all:
-	create empty hd with the createhd.py script at tools directory and put it at "../_output/_disk/disk.vhd"
-	after this make.py will build all the modules and install the boot.
+
+To compile using Cygwin:
+	Install Cygwin and compile cross compiler according to http://wiki.osdev.org/GCC_Cross-Compiler
+	Add Cygwin64\bin, C:\cygwin64\home\=YOUR_USER=\opt\cross\bin to the enviroment variable "Path"
+	Install gdb package at Cygwin
 
 To compile with ubuntu on windows:
 	install ubuntu on windows
