@@ -19,7 +19,7 @@ wget http://ftp.gnu.org/gnu/binutils/binutils-2.26.tar.bz2
 tar xf binutils-2.26.tar.bz2
 
 
-mkdir $HOME/opt/cross
+mkdir -p $HOME/opt/cross
 export PREFIX="$HOME/opt/cross"
 export TARGET=x86_64-elf
 export PATH="$PREFIX/bin:$PATH"

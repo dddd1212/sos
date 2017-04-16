@@ -7,17 +7,36 @@ DISK_FOLDER_MOUNT = os.path.abspath("mount")
 DISK_FILEPATH = os.path.abspath("../_output/_disk/disk.vhd")
 BOOTLOADER_OUT = os.path.abspath("../_output/bootloader/boot.bin")
 
+def create():
+    open("diskpartscript","wb").write(
+r"""create vdisk file="%s\disk.vhd" maximum=128
+attach vdisk
+create partition primary
+format FS=FAT32 QUICK
+detach vdisk
+"""%(os.path.abspath(DISK_FOLDER)))
+    os.system("diskpart /s %s >> %s"%(os.path.abspath("diskpartscript"),os.path.abspath("diskpartscriptlog.txt")))
+    f = file(os.path.join(DISK_FOLDER,"disk.vhd"),"r+")
+    f.seek(0x1be)
+    x = ord(f.read(1))|0x80
+    f.seek(0x1be)
+    f.write(chr(x))
+    f.close()
+
 def mount():
     #import code
     #code.interact(local = locals())
     print "mount called"
-    os.system("md mount")
+    if not os.path.exists(os.path.join(DISK_FOLDER,"disk.vhd")):
+        print "creating vhd..."
+        create()
+    os.mkdir("mount")
     open("diskpartscript","wb").write(
 r"""select vdisk file="%s\disk.vhd"
 attach vdisk
 select partition=1
 assign mount=%s
-"""%(os.path.abspath(DISK_FOLDER ),os.path.abspath("mount")))
+"""%(os.path.abspath(DISK_FOLDER),os.path.abspath("mount")))
     os.system("diskpart /s %s >> %s"%(os.path.abspath("diskpartscript"),os.path.abspath("diskpartscriptlog.txt")))
 
 def unmount():
@@ -27,6 +46,7 @@ select partition=1
 detach vdisk
 """%(os.path.abspath(DISK_FOLDER)))
     os.system("diskpart /s %s >> %s"%(os.path.abspath("diskpartscript"),os.path.abspath("diskpartscriptlog.txt")))
+    os.rmdir("mount")
 
 def install_boot():
     f = open(DISK_FILEPATH,"r+b")

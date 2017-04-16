@@ -7,7 +7,7 @@ isNativeSnapshot="no"
 createType="vmfs"
 
 # Extent description
-RW 1048576 VMFS "..\..\_output\_disk\disk.vhd"
+RW 262144 VMFS "..\..\_output\_disk\disk.vhd"
 
 # The Disk Data Base 
 #DDB
