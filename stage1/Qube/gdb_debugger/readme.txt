@@ -7,8 +7,6 @@ install VS15
 ===================================Compiling===================================
 
 compile all:
-	Create empty hd with the createhd.py script at tools directory and put it at "../_output/_disk/disk.vhd".
-	The createhd script must run in administrator privileges.
 	Add python to the enviroment variable "Path".
 	After this make.py will insert all the modules to the virtual harddisk and install the boot.
 

@@ -1,6 +1,7 @@
 sudo apt-get update
 sudo apt-get install make
 sudo apt-get install gcc
+sudo apt-get install g++
 sudo apt-get install libgmp3-dev
 sudo apt-get install libmpfr-dev
 sudo apt-get install libisl-dev
