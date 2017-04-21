@@ -14,6 +14,13 @@
     <LocalDebuggerExecutable>$(SolutionDir)\gdb_debugger\qube_gdb_vmware.bat</LocalDebuggerExecutable>
     <LocalDebuggerServerAddress>localhost:8864</LocalDebuggerServerAddress>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='UbuntuOnWindows|x64'">
+    <DebuggerFlavor>LocalDebugger</DebuggerFlavor>
+    <LocalWorkingDirectory>$(SolutionDir)</LocalWorkingDirectory>
+    <LocalExecutable>_output\bootloader\boot.elf</LocalExecutable>
+    <LocalDebuggerExecutable>$(SolutionDir)\gdb_debugger\qube_gdb_vmware.bat</LocalDebuggerExecutable>
+    <LocalDebuggerServerAddress>localhost:8864</LocalDebuggerServerAddress>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='vmware_native|x64'">
     <DebuggerFlavor>LocalDebugger</DebuggerFlavor>
     <LocalWorkingDirectory>$(SolutionDir)</LocalWorkingDirectory>

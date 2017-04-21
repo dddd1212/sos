@@ -174,3 +174,4 @@
 /stage1/Qube/screen/x64/UbuntuOnWindows/screen.log
 /stage1/Qube/screen/make_result
 /stage1/Qube/_output/bootloader/inter/bootloader.log
+/stage1/Qube/gdb_debugger/x64/UbuntuOnWindows/gdb_debugger.log

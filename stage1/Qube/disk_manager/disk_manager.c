@@ -35,9 +35,12 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	uint8 buf[0x200];
 	res = create_qnode("Devices/Default/HD");
 	DefHdQNodeContext* qnode_context;
+
+
+
 	qnode_context = (DefHdQNodeContext*)kheap_alloc(sizeof(DefHdQNodeContext));
 	def_hd_read_raw_sectors(0, 1, buf);
-	qnode_context->first_sector_lba = *((uint32*)(&buf[446 + 8]));
+	qnode_context->first_sector_lba = 0; // first try to mount as raw (without MBR header)
 	qnode_attrs.qnode_context = qnode_context;
 	qnode_attrs.create_qbject = def_hd_create_qbject;
 	qnode_attrs.read = def_hd_read;
@@ -45,6 +48,11 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	set_qnode_attributes("Devices/Default/HD", &qnode_attrs);
 	def_hd = create_qbject("Devices/Default/HD", ACCESS_READ | ACCESS_WRITE);
 	res = add_file_system(def_hd);
+	if (res == QFail) {
+		// if we failed, maybe there is an MBR header
+		qnode_context->first_sector_lba = *((uint32*)(&buf[446 + 8]));
+		res = add_file_system(def_hd);
+	}
 	if (res != QSuccess) {
 		return QFail;
 	}

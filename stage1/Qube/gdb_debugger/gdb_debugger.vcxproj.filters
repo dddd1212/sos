@@ -58,6 +58,12 @@
     <None Include="qube_gdb_vmware_native.bat">
       <Filter>gdb_files</Filter>
     </None>
+    <None Include="build_all_wsl.sh">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="install_boot.py">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme\readme.html">

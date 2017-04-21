@@ -51,7 +51,9 @@ detach vdisk
 def install_boot():
     f = open(DISK_FILEPATH,"r+b")
     f.seek(0x10000+90)
-    f.write(open(BOOTLOADER_OUT,"rb").read()[90:])
+    f.write(open(BOOTLOADER_OUT,"rb").read()[90:0x200])
+    f.seek(0x10000+0x400)
+    f.write(open(BOOTLOADER_OUT,"rb").read()[0x400:])
     f.close()
     print "here"
 
