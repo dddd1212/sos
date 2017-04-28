@@ -25,6 +25,8 @@ static inline void io_wait() __attribute__((always_inline));
 static inline uint64 __get_cr8() __attribute__((always_inline));
 static inline void __set_cr8(uint64 cr8) __attribute__((always_inline));
 static inline void* __get_processor_block() __attribute__((always_inline));
+
+static inline uint64 __lockxchg(uint64* addr, uint64 new_val);
 // #define __int(N) // implements later in the file.
 
 #define ___HELP_READ_FROM_GS_STRINGIFY(a) #a
@@ -174,6 +176,32 @@ static inline void* __get_processor_block() {
 		: 
 		);
 	return pb;
+}
+
+static inline uint64 __lockxchg(uint64* addr, uint64 new_val) {
+	int64 res = 0;
+	__asm__(
+		".intel_syntax noprefix;"
+		"lock xchg [rcx], rdx;"
+		".att_syntax;"
+		: "=d"(res)
+		: "c"(addr), "d"(new_val)
+		:
+	);
+	return res;
+}
+
+static inline uint64 __lockcmpxchg(uint64* addr, uint64 new_val, uint64 comperand) {
+	int64 res;
+	__asm__(
+		".intel_syntax noprefix;"
+		"lock cmpxchg [rcx],rdx;"
+		".att_syntax;"
+		: "=a"(res)
+		: "c"(addr),"d"(new_val),"a"(comperand)
+		:
+	);
+	return res;
 }
 
 #define __int(n) __asm__("int %0" : : "N"((n)) : "cc", "memory");

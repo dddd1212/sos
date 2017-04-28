@@ -81,6 +81,8 @@
     <NMakeReBuildCommandLine>start /WAIT c:\windows\sysnative\bash.exe -c  "export PATH=\"$HOME/opt/cross/bin:$PATH\";make clean all &amp;&gt; make_result" &amp;&amp; type make_result</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>start /WAIT c:\windows\sysnative\bash.exe -c  "export PATH=\"$HOME/opt/cross/bin:$PATH\";make clean &amp;&gt; make_result" &amp;&amp; type make_result</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>VS_EDITOR</NMakePreprocessorDefinitions>
+    <OutDir>../_output/system</OutDir>
+    <IntDir>../_output/system/inter</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>

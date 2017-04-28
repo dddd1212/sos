@@ -320,6 +320,11 @@ void schedule_next(RunningState current_thread_next_state) {
 	__int(INT_SCHEDULER);
 }
 
+void disable_scheduling() { set_scheduler_interrupt_in_service(); }
+void enable_scheduling() { end_scheduler_interrupt(); }
+BOOL is_scheduling_enabled() { return !is_scheduler_interrupt_in_service(); }
+
+
 void timer_isr() {
 	issue_scheduler_interrupt();
 }

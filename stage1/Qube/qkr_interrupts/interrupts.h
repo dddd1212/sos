@@ -120,6 +120,7 @@ typedef BOOL(*IsScheduleNeededFunction)();
 EXPORT QResult set_scheduler_interrupt_in_service();
 EXPORT QResult end_scheduler_interrupt();
 EXPORT QResult issue_scheduler_interrupt();
+EXPORT BOOL is_scheduler_interrupt_in_service();
 //static void serve_scheduling() { __int(INT_SCHEDULER); };
 
 EXPORT void enable_interrupts();

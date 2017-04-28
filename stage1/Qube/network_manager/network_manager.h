@@ -16,7 +16,7 @@ typedef struct NetworkData_ NetworkData;
 typedef QResult(*ReleaseNetworkDataFunc)(NetworkData* network_data);
 
 typedef struct NetworkBuffer_ {
-	struct NetworkBuffer* next;
+	struct NetworkBuffer_* next;
 	uint8* buffer;
 	uint64 buffer_size;
 } NetworkBuffer;
@@ -47,16 +47,23 @@ struct NetworkData_ {
 };
 
 typedef QResult(*InitializeNetworkInterfaceFunc)(NetworkInterfaceManagerContext network_interface_manager_context, NetworkInterfaceDriverContext network_interface_driver_context);
-typedef QResult(*GetNetworkDataFunc)(NetworkQueueDriverContext queue_driver_context, NetworkData* out);
+typedef QResult(*GetNetworkDataFunc)(NetworkQueueDriverContext queue_driver_context, NetworkData** out);
 typedef BOOL(*IsQueueEmptyFunc)(NetworkQueueDriverContext queue_driver_context);
+
+typedef union{
+	uint64 value;
+	struct {
+		uint64 new_data : 1;
+		uint64 worker_run : 1;
+	};
+} QueueWorkerStatus;
 
 typedef struct NetworkQueueManagerContextI_ {
 	NetworkQueueDriverContext driver_context;
 	struct NetworkInterfaceManagerContextI_* related_interface;
 	IsQueueEmptyFunc is_queue_empty;
 	GetNetworkDataFunc get_network_data;
-	BOOL emptying_queue;
-	SpinLock emptying_queue_lock;
+	QueueWorkerStatus queue_worker_status;
 } NetworkQueueManagerContextI;
 
 typedef struct NetworkInterfaceManagerContextI_ {
@@ -66,7 +73,7 @@ typedef struct NetworkInterfaceManagerContextI_ {
 	NetworkQueueManagerContext queue_list[5]; // TODO: for now, this is the maximum number of queues, but it should not work this way.
 	Event data_available_event;
 	NetworkData* global_queue_head;
-
+	SpinLock global_queue_lock;
 } NetworkInterfaceManagerContextI;
 
 

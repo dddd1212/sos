@@ -101,6 +101,11 @@ QResult issue_scheduler_interrupt() {
 	return QSuccess;
 }
 
+BOOL is_scheduler_interrupt_in_service()
+{
+	return this_processor_control_block()->scheduler_interrupt_in_service;
+}
+
 QResult end_scheduler_interrupt() {
 	disable_interrupts();
 	this_processor_control_block()->scheduler_interrupt_in_service = FALSE;
