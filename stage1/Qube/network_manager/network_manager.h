@@ -6,6 +6,8 @@
 #include "../Common/spin_lock.h"
 #include "../QbjectManager/Qbject.h"
 #include "../qkr_sync/sync.h"
+#include "../libc/string.h"
+#define MAX_QUEUES 5
 typedef void* NetworkInterfaceManagerContext;
 typedef void* NetworkQueueManagerContext;
 typedef void* NetworkInterfaceDriverContext;
@@ -70,7 +72,7 @@ typedef struct NetworkInterfaceManagerContextI_ {
 	NetworkInterfaceDriverContext driver_context;
 	BOOL qbject_created;
 	uint32 num_of_queues;
-	NetworkQueueManagerContext queue_list[5]; // TODO: for now, this is the maximum number of queues, but it should not work this way.
+	NetworkQueueManagerContext queue_list[MAX_QUEUES]; // TODO: for now, this is the maximum number of queues, but it should not work this way.
 	Event data_available_event;
 	NetworkData* global_queue_head;
 	SpinLock global_queue_lock;
@@ -92,5 +94,5 @@ typedef struct NetworkQueueRegisterData_ {
 EXPORT QResult register_interface(NetworkInterfaceRegisterData* interface_data);
 EXPORT QResult register_queue(NetworkInterfaceManagerContext nm_interface_context, NetworkQueueRegisterData* queue_register_data, NetworkQueueManagerContext** nm_queue_context);
 EXPORT QResult notify_queue_is_not_empty(NetworkQueueManagerContext nm_context);
-
+EXPORT QResult free_network_data(NetworkData* network_data);
 #endif

@@ -1,5 +1,8 @@
 #include "intel82574.h"
 #define PTE(x) ((uint64*)(0xFFFFF68000000000 + (((((uint64)x) & 0x0000FFFFFFFFFFFF)>>12)<<3)))
+#define RECV_DESCRIPTOR_SIZE 0x10
+#define NUM_OF_RECV_DESCRIPTORS 0x100
+#define DESCRIPTOR_BUFFER_SIZE 0x800
 typedef struct {
 	uint16 vendor_id;
 	uint16 device_id;
@@ -50,14 +53,99 @@ typedef struct {
 
 } __attribute__((packed)) PciConfigSpace;
 
+typedef struct {
+	QHandle pci;
+	NetworkQueueManagerContext* nm_queue_context;
+	PciConfigSpace* config_space;
+	uint8* memoryBAR;
+	uint32 current_descriptor_offset;
+} NicContext;
+
+
+NicContext* g_isr_context[0x100];
 uint8* Gtemp;
-void nullfunc(ProcessorContext* x) {
+void isr_func(ProcessorContext* x) {
+	NicContext* nic_context = g_isr_context[x->interrupt_vector];
 	screen_printf("network interrupt happend\n",0,0,0,0);
-	*((uint32*)(Gtemp + 0x000c0)) = 0x84;
+	*((uint32*)(nic_context->memoryBAR + 0x000c0)) = 0x84;
+	notify_queue_is_not_empty(nic_context->nm_queue_context);
 }
 
 
+QResult get_network_data(NetworkQueueDriverContext queue_driver_context, NetworkData** out) {
+
+}
+BOOL is_queue_empty(NetworkQueueDriverContext queue_driver_context) {
+	NicContext* nic_context = (NicContext*)queue_driver_context;
+	return (nic_context->current_descriptor_offset == *(uint32*)(nic_context->memoryBAR + 0x2810));
+}
+
+QResult initialize_nic(NetworkInterfaceManagerContext network_interface_manager_context, NetworkInterfaceDriverContext network_interface_driver_context) {
+	NicContext* nic_context = (NicContext*)network_interface_driver_context;
+	QHandle pci = create_qbject("Devices/PCIe/03_00_00\0", 0);
+	uint64 configuration_space_phys_addr;
+	get_qbject_property(pci, PCIE_CONFIGURATION_SPACE, (QbjectProperty*)&configuration_space_phys_addr);
+	PciConfigSpace* config_space = (PciConfigSpace*)commit_pages(KHEAP, sizeof(PciConfigSpace));
+	assign_committed(config_space, sizeof(PciConfigSpace), configuration_space_phys_addr);
+	uint8* memoryBAR = (uint8*)commit_pages(KHEAP, 0x8000);
+	Gtemp = memoryBAR;
+	assign_committed(memoryBAR, 0x8000, config_space->type0_header.bar0);
+	
+	nic_context->pci = pci;
+	nic_context->config_space = config_space;
+	nic_context->memoryBAR = memoryBAR;
+	nic_context->current_descriptor_offset = 0;
+
+	uint8 interrupt_vector = NETWORK_INTERRUPT; // TODO: we should get this number from some sort of PNP.
+	*((uint32*)((uint8*)config_space + 0xd4)) = 0xFEE00000;
+	*((uint16*)((uint8*)config_space + 0xdc)) = interrupt_vector; 
+	*((uint32*)((uint8*)config_space + 0xd2)) = 0x1;
+
+	uint8* recv_descs = (uint8*)alloc_pages(KHEAP, RECV_DESCRIPTOR_SIZE*NUM_OF_RECV_DESCRIPTORS);
+	*((uint32*)(memoryBAR + 0x02800)) = (uint32)(*PTE(recv_descs))&(~3);
+	*((uint32*)(memoryBAR + 0x02804)) = (uint32)(((*PTE(recv_descs))&(~3)) >> 32);
+	*((uint32*)(memoryBAR + 0x02808)) = RECV_DESCRIPTOR_SIZE*NUM_OF_RECV_DESCRIPTORS;
+	*((uint32*)(memoryBAR + 0x02810)) = 0;
+	*((uint32*)(memoryBAR + 0x02818)) = RECV_DESCRIPTOR_SIZE*(NUM_OF_RECV_DESCRIPTORS-1);
+
+	uint8* data = alloc_pages(KHEAP, NUM_OF_RECV_DESCRIPTORS*DESCRIPTOR_BUFFER_SIZE);
+	for (uint32 i = 0; i < NUM_OF_RECV_DESCRIPTORS; i++) {
+		*((uint64*)(recv_descs+RECV_DESCRIPTOR_SIZE*i)) = (*PTE(data+DESCRIPTOR_BUFFER_SIZE*i))&(~0xFFF) + (DESCRIPTOR_BUFFER_SIZE*i)&0xFFF;
+	}
+
+	register_isr(interrupt_vector, (ISR)isr_func);
+	g_isr_context[interrupt_vector] = nic_context;
+
+	*((uint32*)(memoryBAR + 0x000c8)) = 0; // ICS - Interrupt Cause Set Register
+	*((uint32*)(memoryBAR + 0x000d0)) = 0x00080; // enable interrupt RXDMT 
+	*((uint32*)(memoryBAR + 0x02c00)) = 0; // RSRPD - Receive Small Packet Detect Interrupt
+
+	NetworkQueueRegisterData queue_register_data;
+	queue_register_data.get_network_data = get_network_data;
+	queue_register_data.is_queue_empty = is_queue_empty;
+	queue_register_data.queue_driver_context = network_interface_driver_context;
+	if (QSuccess != register_queue(network_interface_manager_context, &queue_register_data, &nic_context->nm_queue_context)) {
+		return QFail;
+	}
+
+	*((uint32*)(memoryBAR + 0x00100)) = 0x202; // enable receive packets.
+}
+
+QResult register_nic() {
+	NetworkInterfaceRegisterData interface_data;
+	NicContext* nic_context = (NicContext*)kheap_alloc(sizeof(NicContext));
+	interface_data.initialize = initialize_nic;
+	interface_data.network_interface_driver_context = nic_context;
+	register_interface(&interface_data);
+}
+
 QResult qkr_main(KernelGlobalData * kgd) {
+	for (uint32 i = 0; i < sizeof(g_isr_context)/sizeof(g_isr_context[0]); i++){
+		g_isr_context[i] = NULL;
+	}
+	register_nic();
+	return QSuccess;
+	/*
 	QHandle pci = create_qbject("Devices/PCIe/03_00_00\0", 0);
 	uint64 configuration_space_phys_addr;
 	get_qbject_property(pci, PCIE_CONFIGURATION_SPACE, (QbjectProperty*)&configuration_space_phys_addr);
@@ -141,4 +229,5 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	screen_printf("intel 82574 interrupt mask is: %x\n", *((uint32*)(memoryBAR + 0xd0)), 0, 0, 0);
 
 	return QSuccess;
+	*/
 }

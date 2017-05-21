@@ -1,5 +1,4 @@
 #include "network_manager.h"
-#include "../libc/string.h"
 BOOL g_interface_registered;
 QResult qkr_main(KernelGlobalData* kgd) {
 	g_interface_registered = FALSE;
@@ -47,6 +46,10 @@ QResult empty_network_queue(NetworkQueueManagerContextI* nm_queue_context) {
 			}
 			spin_unlock(&nm_queue_context->related_interface->global_queue_lock);
 		}
+		else {
+			// TODO: what happends in this case?
+			while (1);
+		}
 	}
 }
 
@@ -84,7 +87,14 @@ QResult read_network_qbject(QHandle qbject, uint8* buffer, uint64 position, uint
 		}
 		network_buffer = network_buffer->next;
 	}
-
+	if (result == QSuccess) {
+		NetworkData* next_network_data = network_data->next_network_data;
+		interface_manager_context->global_queue_head = next_network_data;
+		if (next_network_data == NULL) {
+			unset_event(interface_manager_context->data_available_event);
+		}
+	}
+	free_network_data(network_data);
 	spin_unlock(&interface_manager_context->global_queue_lock);
 	if (scheduling_enabled) {
 		enable_scheduling();
@@ -122,7 +132,7 @@ QResult register_queue(NetworkInterfaceManagerContext nm_interface_context_, Net
 {
 	NetworkInterfaceManagerContextI* nm_interface_context = (NetworkInterfaceManagerContextI*)nm_interface_context_;
 	NetworkQueueManagerContextI** nm_queue_context = (NetworkQueueManagerContextI**)nm_queue_context_;
-	if (nm_interface_context->num_of_queues >= 5) {
+	if (nm_interface_context->num_of_queues >= MAX_QUEUES) {
 		return QFail;
 	}
 	NetworkQueueManagerContextI* queue_context = kheap_alloc(sizeof(NetworkQueueManagerContextI));
@@ -153,6 +163,6 @@ QResult notify_queue_is_not_empty(NetworkQueueManagerContext nm_queue_context_)
 	return QSuccess;
 }
 
-QResult register_network_data_queue() {
-
+QResult free_network_data(NetworkData* network_data) {
+	return network_data->free_network_data(network_data);
 }
