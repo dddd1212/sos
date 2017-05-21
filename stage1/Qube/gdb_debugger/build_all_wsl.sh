@@ -6,4 +6,5 @@ else
 fi
 find ../_output/system/ -maxdepth 1 -not -name "*gitignore" -not -name "*~*" -not -name "inter" -type f -exec mcopy -i ../_output/_disk/disk.vhd {} :: \;
 find ../_static_files/ -maxdepth 1 -not -name "*gitignore" -not -name "*vcx*" -not -name "*obj*" -not -name "*x64*" -type f -exec mcopy -i ../_output/_disk/disk.vhd {} :: \;
+python make8dot3files.py
 python install_boot.py

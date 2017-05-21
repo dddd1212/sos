@@ -77,6 +77,7 @@
   <ItemGroup>
     <None Include="build_all_wsl.sh" />
     <None Include="install_boot.py" />
+    <None Include="make8dot3files.py" />
     <None Include="qube_gdb_vmware_native.bat" />
     <None Include="vmware_files\MS-DOS.vmdk" />
     <None Include="vmware_files\MS-DOS.vmx" />

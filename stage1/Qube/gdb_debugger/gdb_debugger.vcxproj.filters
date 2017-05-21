@@ -64,6 +64,9 @@
     <None Include="install_boot.py">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="make8dot3files.py">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Readme\readme.html">
