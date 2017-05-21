@@ -107,7 +107,7 @@ QResult register_interface(NetworkInterfaceRegisterData* interface_data) {
 		return QFail;
 	}
 	g_interface_registered = TRUE;
-	NetworkInterfaceManagerContextI* interface_manager_context = kheap_alloc(sizeof(NetworkInterfaceManagerContext));
+	NetworkInterfaceManagerContextI* interface_manager_context = kheap_alloc(sizeof(NetworkInterfaceManagerContextI));
 	interface_manager_context->driver_context = interface_data->network_interface_driver_context;
 	interface_manager_context->num_of_queues = 0;
 	interface_manager_context->qbject_created = FALSE;
@@ -164,5 +164,5 @@ QResult notify_queue_is_not_empty(NetworkQueueManagerContext nm_queue_context_)
 }
 
 QResult free_network_data(NetworkData* network_data) {
-	return network_data->free_network_data(network_data);
+	return network_data->release_network_data_func(network_data->release_network_data_context,network_data);
 }

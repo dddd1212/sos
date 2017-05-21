@@ -175,3 +175,5 @@
 /stage1/Qube/screen/make_result
 /stage1/Qube/_output/bootloader/inter/bootloader.log
 /stage1/Qube/gdb_debugger/x64/UbuntuOnWindows/gdb_debugger.log
+/stage1/Qube/gdb_debugger/make_result
+/stage1/Qube/_static_files/x64/Release/NativeCodeAnalysis.read.1.tlog

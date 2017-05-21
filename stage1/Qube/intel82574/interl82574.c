@@ -58,7 +58,9 @@ typedef struct {
 	NetworkQueueManagerContext* nm_queue_context;
 	PciConfigSpace* config_space;
 	uint8* memoryBAR;
-	uint32 current_descriptor_offset;
+	uint32 current_descriptor_index;
+	uint8* recv_descs_buffer;
+	void** virtual_addresses_list;
 } NicContext;
 
 
@@ -66,18 +68,51 @@ NicContext* g_isr_context[0x100];
 uint8* Gtemp;
 void isr_func(ProcessorContext* x) {
 	NicContext* nic_context = g_isr_context[x->interrupt_vector];
-	screen_printf("network interrupt happend\n",0,0,0,0);
+	//screen_printf("network interrupt happend\n",0,0,0,0);
 	*((uint32*)(nic_context->memoryBAR + 0x000c0)) = 0x84;
 	notify_queue_is_not_empty(nic_context->nm_queue_context);
 }
 
-
-QResult get_network_data(NetworkQueueDriverContext queue_driver_context, NetworkData** out) {
-
+QResult release_network_data(void* context, NetworkData* network_data) {
+	NicContext* nic_context = (NicContext*)context;
+	uint32 new_tail_index = ((*(uint32*)(nic_context->memoryBAR + 0x02818)) + 1) % NUM_OF_RECV_DESCRIPTORS;
+	*(uint64*)(nic_context->recv_descs_buffer + new_tail_index*RECV_DESCRIPTOR_SIZE) = ((*PTE(network_data->first_buffer->buffer))&(~0xFFF)) +(((uint64)network_data->first_buffer->buffer) & 0xFFF);
+	nic_context->virtual_addresses_list[new_tail_index] = network_data->first_buffer->buffer;
+	kheap_free(network_data->first_buffer);
+	kheap_free(network_data);
+	*(uint32*)(nic_context->memoryBAR + 0x02818) = new_tail_index;
+	return QSuccess;
 }
+
 BOOL is_queue_empty(NetworkQueueDriverContext queue_driver_context) {
 	NicContext* nic_context = (NicContext*)queue_driver_context;
-	return (nic_context->current_descriptor_offset == *(uint32*)(nic_context->memoryBAR + 0x2810));
+	uint32 head = *(uint32*)(nic_context->memoryBAR + 0x2810);
+	return (nic_context->current_descriptor_index == head);
+}
+
+QResult get_network_data(NetworkQueueDriverContext queue_driver_context, NetworkData** out) {
+	if (is_queue_empty(queue_driver_context)){
+		return QFail;
+	}
+	NicContext* nic_context = (NicContext*)queue_driver_context;
+
+	NetworkBuffer* network_buffer = (NetworkBuffer*)kheap_alloc(sizeof(NetworkBuffer));
+	network_buffer->next = NULL;
+	network_buffer->buffer = nic_context->virtual_addresses_list[nic_context->current_descriptor_index];
+	network_buffer->buffer_size = *(uint16*)(nic_context->recv_descs_buffer + nic_context->current_descriptor_index*RECV_DESCRIPTOR_SIZE + 8);
+	screen_printf("network_data: 0x%x\n", network_buffer->buffer_size, 0, 0, 0);
+
+	NetworkData* network_data = kheap_alloc(sizeof(NetworkData));
+	network_data->next_network_data = NULL;
+	network_data->data_type = ETH_RAW;
+	network_data->release_network_data_func = release_network_data;
+	network_data->release_network_data_context = queue_driver_context;
+	network_data->first_buffer = network_buffer;
+	network_data->eth_data.network_buffer = network_buffer;
+	network_data->eth_data.eth_data_offset = 0;
+	nic_context->current_descriptor_index = (nic_context->current_descriptor_index + 1)%NUM_OF_RECV_DESCRIPTORS;
+	*out = network_data;
+	return QSuccess;
 }
 
 QResult initialize_nic(NetworkInterfaceManagerContext network_interface_manager_context, NetworkInterfaceDriverContext network_interface_driver_context) {
@@ -94,23 +129,32 @@ QResult initialize_nic(NetworkInterfaceManagerContext network_interface_manager_
 	nic_context->pci = pci;
 	nic_context->config_space = config_space;
 	nic_context->memoryBAR = memoryBAR;
-	nic_context->current_descriptor_offset = 0;
+	nic_context->current_descriptor_index = 0;
+	
+	nic_context->virtual_addresses_list = (void**)kheap_alloc(NUM_OF_RECV_DESCRIPTORS * sizeof(void*));
+	uint8* recv_descs = (uint8*)alloc_pages(KHEAP, RECV_DESCRIPTOR_SIZE*NUM_OF_RECV_DESCRIPTORS);
+	nic_context->recv_descs_buffer = recv_descs;
+
+	if ((recv_descs == NULL) || (nic_context->virtual_addresses_list == NULL)) {
+		return QFail;
+	}
 
 	uint8 interrupt_vector = NETWORK_INTERRUPT; // TODO: we should get this number from some sort of PNP.
 	*((uint32*)((uint8*)config_space + 0xd4)) = 0xFEE00000;
 	*((uint16*)((uint8*)config_space + 0xdc)) = interrupt_vector; 
 	*((uint32*)((uint8*)config_space + 0xd2)) = 0x1;
 
-	uint8* recv_descs = (uint8*)alloc_pages(KHEAP, RECV_DESCRIPTOR_SIZE*NUM_OF_RECV_DESCRIPTORS);
+	
 	*((uint32*)(memoryBAR + 0x02800)) = (uint32)(*PTE(recv_descs))&(~3);
 	*((uint32*)(memoryBAR + 0x02804)) = (uint32)(((*PTE(recv_descs))&(~3)) >> 32);
 	*((uint32*)(memoryBAR + 0x02808)) = RECV_DESCRIPTOR_SIZE*NUM_OF_RECV_DESCRIPTORS;
 	*((uint32*)(memoryBAR + 0x02810)) = 0;
-	*((uint32*)(memoryBAR + 0x02818)) = RECV_DESCRIPTOR_SIZE*(NUM_OF_RECV_DESCRIPTORS-1);
+	*((uint32*)(memoryBAR + 0x02818)) = (NUM_OF_RECV_DESCRIPTORS-1);
 
 	uint8* data = alloc_pages(KHEAP, NUM_OF_RECV_DESCRIPTORS*DESCRIPTOR_BUFFER_SIZE);
 	for (uint32 i = 0; i < NUM_OF_RECV_DESCRIPTORS; i++) {
 		*((uint64*)(recv_descs+RECV_DESCRIPTOR_SIZE*i)) = (*PTE(data+DESCRIPTOR_BUFFER_SIZE*i))&(~0xFFF) + (DESCRIPTOR_BUFFER_SIZE*i)&0xFFF;
+		nic_context->virtual_addresses_list[i] = data + DESCRIPTOR_BUFFER_SIZE*i;
 	}
 
 	register_isr(interrupt_vector, (ISR)isr_func);

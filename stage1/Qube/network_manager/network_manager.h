@@ -15,7 +15,7 @@ typedef void* NetworkQueueDriverContext;
 
 typedef struct NetworkData_ NetworkData;
 
-typedef QResult(*ReleaseNetworkDataFunc)(NetworkData* network_data);
+typedef QResult(*ReleaseNetworkDataFunc)(void* context, NetworkData* network_data);
 
 typedef struct NetworkBuffer_ {
 	struct NetworkBuffer_* next;
@@ -41,7 +41,8 @@ typedef struct EthNetworkData_ {
 struct NetworkData_ {
 	NetworkData* next_network_data; // used to concatenate NetworkData structures (in some queue for example)
 	NetworkDataType data_type;
-	ReleaseNetworkDataFunc free_network_data;
+	ReleaseNetworkDataFunc release_network_data_func;
+	void* release_network_data_context;
 	NetworkBuffer* first_buffer;
 	union {
 		EthNetworkData eth_data;
