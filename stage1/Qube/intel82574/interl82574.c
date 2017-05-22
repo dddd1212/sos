@@ -100,7 +100,7 @@ QResult get_network_data(NetworkQueueDriverContext queue_driver_context, Network
 	network_buffer->next = NULL;
 	network_buffer->buffer = nic_context->virtual_addresses_list[nic_context->current_descriptor_index];
 	network_buffer->buffer_size = *(uint16*)(nic_context->recv_descs_buffer + nic_context->current_descriptor_index*RECV_DESCRIPTOR_SIZE + 8);
-	screen_printf("network_data: 0x%x\n", network_buffer->buffer_size, 0, 0, 0);
+	// screen_printf("network_data: 0x%x\n", network_buffer->buffer_size, 0, 0, 0);
 
 	NetworkData* network_data = kheap_alloc(sizeof(NetworkData));
 	network_data->next_network_data = NULL;
@@ -153,7 +153,7 @@ QResult initialize_nic(NetworkInterfaceManagerContext network_interface_manager_
 
 	uint8* data = alloc_pages(KHEAP, NUM_OF_RECV_DESCRIPTORS*DESCRIPTOR_BUFFER_SIZE);
 	for (uint32 i = 0; i < NUM_OF_RECV_DESCRIPTORS; i++) {
-		*((uint64*)(recv_descs+RECV_DESCRIPTOR_SIZE*i)) = (*PTE(data+DESCRIPTOR_BUFFER_SIZE*i))&(~0xFFF) + (DESCRIPTOR_BUFFER_SIZE*i)&0xFFF;
+		*((uint64*)(recv_descs+RECV_DESCRIPTOR_SIZE*i)) = ((*PTE(data + DESCRIPTOR_BUFFER_SIZE*i))&(~0xFFF)) + ((DESCRIPTOR_BUFFER_SIZE*i) & 0xFFF);
 		nic_context->virtual_addresses_list[i] = data + DESCRIPTOR_BUFFER_SIZE*i;
 	}
 

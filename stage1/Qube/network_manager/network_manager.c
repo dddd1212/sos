@@ -1,4 +1,5 @@
 #include "network_manager.h"
+#include "../screen/screen.h"
 BOOL g_interface_registered;
 QResult qkr_main(KernelGlobalData* kgd) {
 	g_interface_registered = FALSE;
@@ -64,6 +65,7 @@ QHandle create_network_qbject(void* qnode_context, char* path, ACCESS access, ui
 }
 
 QResult read_network_qbject(QHandle qbject, uint8* buffer, uint64 position, uint64 num_of_bytes_to_read, uint64* res_num_read) {
+	*res_num_read = 0;
 	QResult result = QSuccess;
 	NetworkInterfaceManagerContextI* interface_manager_context = (NetworkInterfaceManagerContextI*) get_qbject_associated_qnode_context(qbject);
 	wait_for_event(interface_manager_context->data_available_event);
@@ -87,6 +89,7 @@ QResult read_network_qbject(QHandle qbject, uint8* buffer, uint64 position, uint
 		}
 		network_buffer = network_buffer->next;
 	}
+	*res_num_read = total_buffer_size;
 	if (result == QSuccess) {
 		NetworkData* next_network_data = network_data->next_network_data;
 		interface_manager_context->global_queue_head = next_network_data;
@@ -117,7 +120,7 @@ QResult register_interface(NetworkInterfaceRegisterData* interface_data) {
 		return QFail;
 	}
 	interface_data->initialize(interface_manager_context, interface_data->network_interface_driver_context);
-	create_qnode("/Device/Network/Interfaces/Interface0");
+	create_qnode("Device/Network/Interfaces/Interface0");
 	QNodeAttributes qnode_attrs;
 	qnode_attrs.create_qbject = create_network_qbject;
 	qnode_attrs.get_property = NULL;
@@ -125,7 +128,7 @@ QResult register_interface(NetworkInterfaceRegisterData* interface_data) {
 	qnode_attrs.read = read_network_qbject;
 	qnode_attrs.write = NULL;
 
-	set_qnode_attributes("/Device/Network/Interfaces/Interface0", &qnode_attrs);
+	set_qnode_attributes("Device/Network/Interfaces/Interface0", &qnode_attrs);
 }
 
 QResult register_queue(NetworkInterfaceManagerContext nm_interface_context_, NetworkQueueRegisterData * queue_register_data, NetworkQueueManagerContext ** nm_queue_context_)
@@ -159,6 +162,7 @@ QResult notify_queue_is_not_empty(NetworkQueueManagerContext nm_queue_context_)
 	
 	if (!old_status.worker_run) {
 		add_system_task((SystemTaskFunction)empty_network_queue, nm_queue_context);
+		// screen_write_string("empty queue added", TRUE);
 	}
 	return QSuccess;
 }

@@ -133,8 +133,8 @@ void handle_interrupts(ProcessorContext * regs) {
 start_handle_for_schedule_call: // We can replace it with {do while} but I think that this way is clearer.
 #ifdef DEBUG
 								//screen_write_string("Interrupt called!", TRUE);
-	screen_set_color(regs->interrupt_vector % 8, (regs->interrupt_vector % 8)+1);
-	screen_printf("Interrupt called: %d\n", regs->interrupt_vector, 0, 0, 0);
+	// screen_set_color(regs->interrupt_vector % 8, (regs->interrupt_vector % 8)+1);
+	// screen_printf("Interrupt called: %d\n", regs->interrupt_vector, 0, 0, 0);
 #endif
 	// 2. set the TPR to be corellated to the vector:
 	// TODO: TO THINK - because the masking is determines by the max(TPR, highest ISRV priority), so in regular interrupt we do not need to set this.
@@ -184,8 +184,8 @@ start_handle_for_schedule_call: // We can replace it with {do while} but I think
 	//g_lapic_regs->EOI = 0;
 #ifdef DEBUG
 	//screen_write_string("Interrupt called!", TRUE);
-	screen_set_color(regs->interrupt_vector % 8, (regs->interrupt_vector % 8) + 1);
-	screen_printf("Interrupt returned: %d\n", regs->interrupt_vector, 0, 0, 0);
+	// screen_set_color(regs->interrupt_vector % 8, (regs->interrupt_vector % 8) + 1);
+	// screen_printf("Interrupt returned: %d\n", regs->interrupt_vector, 0, 0, 0);
 #endif
 	return;
 }

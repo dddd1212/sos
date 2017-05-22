@@ -17,7 +17,7 @@ Event event1;
 Event event2;
 void thread_a_loop() {
 	while (TRUE) {
-		screen_write_string("hello from thread a!", TRUE);
+		screen_write_string("[thread a] hello from thread a!", TRUE);
 		set_event(event1);
 		wait_for_event(event2);
 		unset_event(event2);
@@ -27,7 +27,7 @@ void thread_b_loop() {
 	while (TRUE) {
 		wait_for_event(event1);
 		unset_event(event1);
-		screen_write_string("hello from thread b!", TRUE);
+		screen_write_string("[thread b] hello from thread b!", TRUE);
 		set_event(event2);
 	}
 }
@@ -35,15 +35,35 @@ void thread_c_loop() {
 	while (TRUE) {
 		//wait_for_event(event1);
 		//unset_event(event1);
-		for (int i = 0; i < 100*1000*1000; i++) {
+		for (int i = 0; i < 1000*1000*1000; i++) {
 			if (*(uint32*)screen_clear == i) {
 				*(uint32*)screen_clear = i*i;
 			}
 		}
-		screen_write_string("hello from thread c!", TRUE);
+		screen_write_string("[thread c] hello from thread c!", TRUE);
 		//set_event(event2);
 	}
 }
+void thread_d_loop() {
+	QHandle net = create_qbject("Device/Network/Interfaces/Interface0", ACCESS_READ | ACCESS_WRITE);
+	while (TRUE) {
+		uint8 buf[2048];
+		uint64 bytes_read;
+		read_qbject(net, buf, 0, sizeof(buf), &bytes_read);
+		screen_write_string("[thread d] frame received: ", FALSE);
+		uint32 loop_len = 16 < bytes_read ? 16 : bytes_read;
+		uint32 i;
+		for (i = 0; i < loop_len; i++) {
+			screen_printf("%02x ", buf[i], 0, 0, 0);
+		}
+		if (i < bytes_read) {
+			screen_write_string("...", FALSE);
+		}
+		screen_new_line();
+	}
+}
+
+
 void kernel_main(KernelGlobalData * kgd) {
 	// This is the main kernel function.
 	// The function should not return.
@@ -57,12 +77,13 @@ void kernel_main(KernelGlobalData * kgd) {
 	int8 out[0x1000];
 	//sprintf(out, "hello! this is int: %08d. Str%%in%123g is: %08s!\n hex:%04x, %04X, %x, %X", 1234,"aaa", 0x10a,0x23b,0x10c,0x99d);
 	screen_write_string(out, TRUE);
-	while (1);
-	return;
+	//while (1);
+	//return;
 	create_event(&event1);
 	create_event(&event2);
 	start_new_thread(thread_b_loop);
 	start_new_thread(thread_c_loop);
+	start_new_thread(thread_d_loop);
 	thread_a_loop();
 
 	//char * a = 0xffffffffffffffff;
