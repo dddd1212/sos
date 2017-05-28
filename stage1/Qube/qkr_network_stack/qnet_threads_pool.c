@@ -48,20 +48,40 @@ QResult qnet_tpool_start_pool(QNetThreadsPool * pool) {
 	return QSuccess;
 }
 
+typedef struct {
+	QNetThreadsPool * pool;
+	QNetThreadFunc thread_func;
+	void * param;
+} ThreadsPoolThreadWrapperStruct;
+void qnet_tpool_thread_wrapper(void * param) {
+	ThreadsPoolThreadWrapperStruct * t = (ThreadsPoolThreadWrapperStruct*)param;
+	t->thread_func(t->param);
+	qnet_tpool_thread_finish(t->pool);
+	return;
+}
+
 QResult qnet_tpool_start_new(QNetThreadsPool * pool, QNetThreadFunc * thread_func, void * param) {
-	QResult ret;
+	
+
 	// First check if we have permission to start new thread:
 	qnet_acquire_mutex(pool->start_thread_mutex);
 	if (qnet_wait_for_event(pool->stop_event, 0) == TRUE) { // The event is set!
 		qnet_release_mutex(pool->start_thread_mutex);
 		return QFail;
 	}
+	
+	QResult ret;
+	ThreadsPoolThreadWrapperStruct * t = (ThreadsPoolThreadWrapperStruct *)qnet_alloc(sizeof(ThreadsPoolThreadWrapperStruct));
+	if (t == NULL) return QFail;
+	t->param = param;
+	t->pool = pool;
+	t->thread_func = thread_func;
 	qnet_reset_event(pool->threads_zero_event);
 	pool->threads_count++;
 	qnet_release_mutex(pool->start_thread_mutex);
 	// From here, from the point of view of the pool manager, the thread exists, and from now on, if the pool wants to be closed,
 	// the manager will wait until we decrease the threads_count.
-	if (qnet_start_thread(thread_func, param) == QSuccess) {
+	if (qnet_start_thread(qnet_tpool_thread_wrapper, (void*)t) == QSuccess) {
 		return QSuccess; // The thread needs to call qnet_tpool_thread_finish when it finish.
 	}
 	qnet_tpool_thread_finish(pool);

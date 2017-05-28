@@ -108,6 +108,7 @@
   <ItemGroup>
     <ClInclude Include="qnet_arp.h" />
     <ClInclude Include="qnet_cache.h" />
+    <ClInclude Include="qnet_icmp.h" />
     <ClInclude Include="qnet_iface.h" />
     <ClInclude Include="qnet_ip.h" />
     <ClInclude Include="qnet_ipv6.h" />
@@ -118,7 +119,9 @@
     <ClInclude Include="qnet_packet.h" />
     <ClInclude Include="qnet_socket.h" />
     <ClInclude Include="qnet_stats.h" />
+    <ClInclude Include="qnet_tcp.h" />
     <ClInclude Include="qnet_threads_pool.h" />
+    <ClInclude Include="qnet_udp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

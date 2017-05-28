@@ -101,7 +101,7 @@ typedef struct _QNetCache QNetCache;
 	// The function insert entry to an existing cache.
 	// The entry will be valid for 'timeout' seconds.
 	// If the entry is already in the cache (we check this by the user-defined compare function)
-	// we just fix the timeout of the entry.
+	// we replace it by the new entry.
 	QResult qnet_cache_add_entry(QNetCache * qcache, QNetCacheEntryCommon * entry, uint32 timeout);
 
 	// The function removes an entry from the qcache.

@@ -70,7 +70,7 @@ QResult qnet_ether_handle_frame(QNetStack * qstk, QNetInterface * iface, QNetFra
 		}
 	}
 	else { // unicast
-		if (qnet_ether_compare_mac(ether->dst_mac, iface->mac_address) != 0) {
+		if (qnet_ether_compare_mac(ether->dst_mac, iface->eth.mac_address) != 0) {
 			return QFail; // not to us.
 		}
 	}
@@ -102,6 +102,10 @@ uint32 qnet_ether_compare_mac(uint8 * first, uint8 * second) {
 
 QResult qnet_ether_start_protocol(QNetStack * qstk, QNetInterface * iface) {
 	// nothing to do...
-	iface->protos_up |= 
 	return QSuccess;
 }
+QResult qnet_ether_stop_protocol(QNetStack * qstk, QNetInterface * iface) {
+	// nothing to do...
+	return QSuccess;
+}
+
