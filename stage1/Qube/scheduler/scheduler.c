@@ -63,7 +63,7 @@ QResult qkr_main(KernelGlobalData * kgd) {
 	register_isr(INT_SCHEDULER, scheduler_isr);
 	
 	lapic_timer_set_callback_function(timer_isr); // set timer callback.
-	lapic_timer_start(100 * 1000, TRUE); // charge the timer to run every 3 seconds.
+	lapic_timer_start(3 * 1000 * 1000, TRUE); // charge the timer to run every 3 seconds.
 
 	return QSuccess;
 }
@@ -319,6 +319,11 @@ void schedule_next(RunningState current_thread_next_state) {
 	this_processor_control_block()->scheduler_info.prev_thread_new_state = current_thread_next_state;
 	__int(INT_SCHEDULER);
 }
+
+void disable_scheduling() { set_scheduler_interrupt_in_service(); }
+void enable_scheduling() { end_scheduler_interrupt(); }
+BOOL is_scheduling_enabled() { return !is_scheduler_interrupt_in_service(); }
+
 
 void timer_isr() {
 	issue_scheduler_interrupt();

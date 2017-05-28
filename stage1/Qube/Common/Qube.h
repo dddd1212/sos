@@ -34,6 +34,10 @@ typedef int32 QResult;
 #define QSuccess 0
 #define QFail -1
 
+#define QBufferTooSmall -1001
+
+
+
 // base configuration and basic defines:
 #define BOOT_TXT_FILE_MAX_SIZE 0x1000
 #define MAX_BOOT_MODULES 0x10

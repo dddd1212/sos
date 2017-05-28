@@ -94,15 +94,16 @@ enum InterruptVectors {
 	PIC2_IRQ7 = 0x2f,
 	APIC_SPURIOUS = 0x30,
 
-	
+
 	INT_SCHEDULER = 0x40,
-	
+
 	APIC_USER_DEFINED_START = 0x41,
 	APIC_USER_DEFINED_END = 0xa0,
 
 
 
 	APIC_KEYBOARD_CONTROLLER = 0xa3,
+	NETWORK_INTERRUPT = 0xa4,
 
 
 	
@@ -119,6 +120,7 @@ typedef BOOL(*IsScheduleNeededFunction)();
 EXPORT QResult set_scheduler_interrupt_in_service();
 EXPORT QResult end_scheduler_interrupt();
 EXPORT QResult issue_scheduler_interrupt();
+EXPORT BOOL is_scheduler_interrupt_in_service();
 //static void serve_scheduling() { __int(INT_SCHEDULER); };
 
 EXPORT void enable_interrupts();

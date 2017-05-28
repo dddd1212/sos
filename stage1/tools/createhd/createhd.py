@@ -10,7 +10,7 @@ create partition primary
 format FS=FAT32 QUICK
 detach vdisk
 """%(os.path.abspath(".")))
-    os.system("diskpart /s diskpartscript >> log.txt")
+    os.system("diskpart /s %s >> %s"%(os.path.abspath("diskpartscript"),os.path.abspath("diskpartscriptlog.txt")))
     f = file("disk.vhd","r+")
     f.seek(0x1be)
     x = ord(f.read(1))|0x80
@@ -25,7 +25,7 @@ select partition=1
 remove mount=%s\mount
 detach vdisk
 """%(os.path.abspath("."),os.path.abspath(".")))
-    os.system("diskpart /s diskpartscript >> log.txt")
+    os.system("diskpart /s %s >> %s"%(os.path.abspath("diskpartscript"),os.path.abspath("diskpartscriptlog.txt")))
     os.system("rmdir mount")
     
 def mount():
@@ -36,7 +36,7 @@ attach vdisk
 select partition=1
 assign mount=%s\mount
 """%(os.path.abspath("."),os.path.abspath(".")))
-    os.system("diskpart /s diskpartscript >> log.txt")
+    os.system("diskpart /s %s >> %s"%(os.path.abspath("diskpartscript"),os.path.abspath("diskpartscriptlog.txt")))
 
 def install_boot(boot_path):
     f = file("disk.vhd","r+b")

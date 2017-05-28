@@ -1,6 +1,6 @@
-CC = x86_64-elf-gcc.exe
-AS = x86_64-elf-as.exe
-LD = x86_64-elf-ld.exe
+CC = x86_64-elf-gcc
+AS = x86_64-elf-as
+LD = x86_64-elf-ld
 OUT_DIR = ../_output/system
 qbject_manager:
 	$(CC) -c *.c -Wall -fpic -fvisibility=hidden -g -o qbject_manager.o

@@ -46,9 +46,9 @@ QResult screen_write_buffer(char * buf, int size, BOOL newline)
 		} else if (*buf == '\b') {
 			if ((g_screen.cur_screen_ptr - g_screen.start_screen_ptr) % COLS) g_screen.cur_screen_ptr--;
 		} else if (*buf == '\t') {
-			uint64 t1 = g_screen.cur_screen_ptr;
-			uint64 t2 = g_screen.start_screen_ptr;
-			uint64 t3 = TAB_SIZE - ((g_screen.cur_screen_ptr - g_screen.start_screen_ptr) % TAB_SIZE);
+			//uint64 t1 = g_screen.cur_screen_ptr;
+			//uint64 t2 = g_screen.start_screen_ptr;
+			//uint64 t3 = TAB_SIZE - ((g_screen.cur_screen_ptr - g_screen.start_screen_ptr) % TAB_SIZE);
 			g_screen.cur_screen_ptr += ((TAB_SIZE - ((g_screen.cur_screen_ptr - g_screen.start_screen_ptr) % TAB_SIZE)) % TAB_SIZE);
 			_scroll_if_need();
 		} else {

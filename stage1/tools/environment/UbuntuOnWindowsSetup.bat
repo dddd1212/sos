@@ -1,0 +1,1 @@
+bash ubuntu_on_windows_compiler_compile.sh

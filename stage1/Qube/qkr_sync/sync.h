@@ -3,6 +3,8 @@
 #include "../Common/Qube.h"
 #include "../QbjectManager/Qbject.h"
 #include "../qkr_interrupts/interrupts.h"
+#define interlocked_cmpxchg __lockcmpxchg
+#define interlocked_xchg __lockxchg
 typedef void* Event;
 EXPORT QResult create_event(Event* p_event);
 EXPORT QResult delete_event(Event p_event);

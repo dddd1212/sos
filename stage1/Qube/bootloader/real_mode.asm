@@ -27,6 +27,12 @@ Boot:
 	# CR - Gilad - you need to EXPLAIN what you want to do in the above code.. I had enough reversereverse engineering.
 	# CR ANSWER - Dror: Not rlevant anymore
 
+# zero some register
+	xor ax,ax
+	mov ss,ax
+	mov es,ax
+	mov ds,ax
+
 # first, verify that int 13h extensions are supported.
 	mov ah, 0x41
 	mov bx, 0x55aa
@@ -36,7 +42,8 @@ Boot:
 
 # now we read the sectors
 	mov eax,[0x7c00+28] # num of hidden sectors (in FAT32). 0x7c00 is where the first sector loaded to.
-	inc eax
+	inc eax # first sector is the Boot sector which is already loaded
+	inc eax # second sector is the FSInfo
 	mov [DISK_ADDRESS_PACKET_LBA], eax
 	xor bx, bx
 	mov ds, bx
@@ -66,6 +73,8 @@ PadOutWithZeroesSectorOne:
 BootSectorSignature:
     .word 0xAA55
 
+# leave space for the FSInfo structure of FAT32
+	. = real_mode + 0x400
 #===========================================
 # From here is the code that we read in the above code
 Main:

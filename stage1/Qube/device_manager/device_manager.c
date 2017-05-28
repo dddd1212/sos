@@ -61,12 +61,12 @@ typedef struct {
 }PCIE_QNODE_CONTEXT;
 
 uint64 g_pcie_base_address;
-QResult pcie_create_qbject(void* qnode_context, char* path, ACCESS access, uint32 flags) {
+QHandle pcie_create_qbject(void* qnode_context, char* path, ACCESS access, uint32 flags) {
 	QHandle qhandle = allocate_qbject(0);
 	return qhandle;
 }
 
-QResult pcie_get_property(QHandle qbject, uint32 id, void* out) {
+QResult pcie_get_property(QHandle qbject, uint32 id, QbjectProperty* out) {
 	if (id == PCIE_CONFIGURATION_SPACE) {
 		*((uint64*)out) = ((PCIE_QNODE_CONTEXT*)get_qbject_associated_qnode_context(qbject))->pcie_configuration_space;
 	}
@@ -98,7 +98,7 @@ QResult pcie_bus_enum(uint32 bus_num) {
 					x[16] += device_num/10;
 					x[17] += device_num % 10;
 					x[20] += func_num;
-					screen_printf("QNode created: %s (deviceID=%d)\n", x, config_space->device_id,0,0);
+					screen_printf("QNode created: %s (deviceID=%d)\n", (uint64)x, config_space->device_id,0,0);
 					//sprintf(x, "Devices/PCIe/%d_%d_%d", bus_num, device_num, func_num);
 					create_qnode(x);
 					PCIE_QNODE_CONTEXT* pcie_qnode_context = (PCIE_QNODE_CONTEXT*) kheap_alloc(sizeof(PCIE_QNODE_CONTEXT));

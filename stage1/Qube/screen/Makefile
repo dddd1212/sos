@@ -1,6 +1,6 @@
-CC = x86_64-elf-gcc.exe
-AS = x86_64-elf-as.exe
-LD = x86_64-elf-ld.exe
+CC = x86_64-elf-gcc
+AS = x86_64-elf-as
+LD = x86_64-elf-ld
 OUT_DIR = ../_output/system
 module1:
 	$(CC) -c *.c -fvisibility=hidden -fpic -g -o screen.o

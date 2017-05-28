@@ -1,7 +1,7 @@
-CC = x86_64-elf-gcc.exe
-AS = x86_64-elf-as.exe
-OBJCOPY = x86_64-elf-objcopy.exe
-NM = x86_64-elf-nm.exe
+CC = x86_64-elf-gcc
+AS = x86_64-elf-as
+OBJCOPY = x86_64-elf-objcopy
+
 OUT_DIR = ../_output/bootloader
 INTER_DIR = ../_output/bootloader/inter
 
