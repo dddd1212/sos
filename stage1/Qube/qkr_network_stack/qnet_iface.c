@@ -1,8 +1,17 @@
 #include "qnet_iface.h"
 #include "qnet_stats.h"
-static g_iface_state_transitions[IFACE_STATE_NUM_OF_STATES] = { IFACE_STATE_GOING_DOWN, IFACE_STATE_UP, IFACE_STATE_DOWN, IFACE_STATE_GOING_UP };
 
-QResult qnet_init_iface(QNetStack * qstk, QNetInterface * iface, QNetRecvFrameFunc recv_frame_func, QNetSendFrameFunc send_frame_func, enum ProtocolsBitmap * protos, struct QNetOsInterface * os_iface) {
+static g_iface_state_transitions[IFACE_STATE_NUM_OF_STATES] = { IFACE_STATE_GOING_DOWN, IFACE_STATE_UP, IFACE_STATE_DOWN, IFACE_STATE_GOING_UP };
+static QNetProtocol PROTOCOLS[PROTO_NUM_OF_PROTOS] = { 
+							{ PROTO_ETHER, qnet_ether_start_protocol, qnet_ether_stop_protocol },
+							{ PROTO_ARP  , qnet_arp_start_protocol  , qnet_arp_stop_protocol },
+							{ PROTO_IP   , qnet_ip_start_protocol   , qnet_ip_stop_protocol },
+							{ PROTO_TCP  , qnet_tcp_start_protocol  , qnet_tcp_stop_protocol },
+							{ PROTO_UDP  , qnet_udp_start_protocol  , qnet_udp_stop_protocol },
+							{ PROTO_ICMP , qnet_icmp_start_protocol , qnet_icmp_stop_protocol } 
+													  };
+
+QResult qnet_init_iface(QNetStack * qstk, QNetInterface * iface, QNetRecvFrameFunc recv_frame_func, QNetSendFrameFunc send_frame_func, enum Protocols * protos, struct QNetOsInterface * os_iface) {
 	iface->recv_frame_func = recv_frame_func;
 	iface->send_frame_func = send_frame_func;
 	iface->os_iface = os_iface;
@@ -51,15 +60,13 @@ QResult qnet_iface_start(QNetStack * qstk, QNetInterface * iface) {
 	}
 	iface->protos;
 	// Now we need to start the protocols threads:
-	if (PROTO_ENABLE(PROTOB_ETHER)) {
-		if (QSuccess != qnet_ether_start_protocol(qstk, iface)) goto fail3;
-	}
-	if (PROTO_ENABLE(PROTOB_ARP)) {
-		qnet_arp_start_protocol(qstk, iface);
+	for (uint8 i = 0; i < PROTO_NUM_OF_PROTOS; i++) {
+		if (IS_PROTO_ENABLE(i)) {
+			if (QSuccess != PROTOCOLS[i].proto_start_func(qstk, iface)) goto fail2;
+		}
+		PROTO_MARK_UP(i);
 	}
 	
-	// ARP thread:
-	qnet_start_thread((QNetThreadFunc *)qnet_arp_resolver_thread, (void *)param) goto fail;
 	
 	qnet_iface_change_state(iface, IFACE_STATE_UP);
 	ret = QSuccess;
@@ -67,6 +74,13 @@ QResult qnet_iface_start(QNetStack * qstk, QNetInterface * iface) {
 
 fail2:
 	if (QSuccess != qnet_tpool_stop_pool(iface->tpool)) goto fail0; // Don't change the state to state-down.
+	// After the threads are down:
+	for (uint8 i = 0; i < PROTO_NUM_OF_PROTOS; i++) {
+		if (IS_PROTO_UP(i)) {
+			PROTOCOLS[i].proto_stop_func(qstk, iface);
+			PROTO_MARK_DOWN(i);
+		}
+	}
 fail1:
 	qnet_iface_change_state(iface, IFACE_STATE_DOWN);
 fail0:

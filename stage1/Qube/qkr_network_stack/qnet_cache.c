@@ -45,15 +45,14 @@ QResult qnet_cache_add_entry(QNetCache * qcache, QNetCacheEntryCommon * entry, u
 	entry->timeout = now + timeout;
 	qnet_acquire_mutex(qcache->cache_mutex);
 	QNetCacheEntryCommon * ret = _qnet_cache_iterate(qcache, _qnet_cache__iter_func__check_ident, (void*)entry);
-	if (ret != NULL) { // Out entry already in the cache!
-		ret->timeout = now + timeout;
+	if (ret != NULL) { // Our entry already in the cache - remove it!
+		_qnet_cache_remove_entry(qcache, ret);
 	}
 	// If we need to add the entry to the cache:
-	/* We don't need to do this beacuse we already iterate over the cache just before.
 	if (qcache->max_size == qcache->actual_size) {
 		qnet_cache_remove_invalids(qcache);
 	}
-	*/
+	
 	if (qcache->max_size == qcache->actual_size) {
 		// remove the last one:
 		_qnet_cache_remove_entry(qcache, qcache->last);

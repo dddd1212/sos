@@ -12,9 +12,7 @@ typedef struct {
 
 // The protocol struct
 typedef struct {
-	uint8 dst_mac[6];
-	uint8 src_mac[6];
-	uint16 ether_type;
+	uint8 mac_address[6];
 } EthernetProtocol;
 
 #define ETHER_SIZE 14
@@ -30,6 +28,7 @@ QResult qnet_ether_handle_frame(QNetStack * qstk, QNetInterface * iface, QNetFra
 void qnet_ether_copy_mac(uint8 * dst, uint8 * src);
 uint32 qnet_ether_compare_mac(uint8 * first, uint8 * second);
 QResult qnet_ether_start_protocol(QNetStack * qstk, QNetInterface * iface);
+QResult qnet_ether_stop_protocol (QNetStack * qstk, QNetInterface * iface);
 
 
 

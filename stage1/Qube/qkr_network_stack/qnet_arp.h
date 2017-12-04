@@ -35,9 +35,16 @@ typedef struct {
 	uint32 TPA; //target protocol address
 } ArpPacket;
 
-
+struct _ArpResolvePacket {
+	struct _ArpResolvePacket * next;
+	uint32 ip;
+	uint64 last_sent_time;
+	uint32 send_count;
+	QNetEvent * ev;
+};
+typedef struct _ArpResolvePacket ArpResolvePacket;
 typedef struct {
-	int dodo;
+	ArpResolvePacket * res_pkts;
 } ArpProtocol;
 
 BOOL _qnet_arp_cache_entry_search(struct _QNetCache * qcache, QNetCacheEntryCommon * entry, void * user_defined_struct);
@@ -60,6 +67,9 @@ BOOL _qnet_arp_cache_entry_free(struct _QNetCache *qcache, QNetCacheEntryCommon 
 
 QResult qnet_arp_send_packet(QNetStack * qstk, QnetInterface * iface, QNetFrameToSend * frame);
 QResult qnet_arp_handle_packet(QNetStack * qstk, QNetInterface * iface, QNetFrameToRecv * frame);
+
+QResult qnet_arp_start_protocol(QNetStack * qstk, QNetInterface * iface);
+QResult qnet_arp_stop_protocol(QNetStack * qstk, QNetInterface * iface);
 
 
 #endif // __QNET_ARP__

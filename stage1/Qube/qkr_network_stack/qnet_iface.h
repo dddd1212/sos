@@ -11,7 +11,9 @@
 #include "qnet_arp.h"
 #include "qnet_ip.h"
 #include "qnet_ipv6.h"
-
+#include "qnet_udp.h"
+#include "qnet_tcp.h"
+#include "qnet_icmp.h"
 ////////////////////////////// General packets declarations: /////////////////////////////////////
 
 // Every Packet that recieved / sent has some typical fields that we use in the general packet 
@@ -89,13 +91,17 @@ struct _QNetInterface {
 	uint32 recv_pkts_drop;
 
 	// protocols:
-	enum ProtocolsBitmap protos;
-	enum ProtocolsBitmap protos_up;
+	enum Protocols protos;
+	enum Protocols protos_up;
 	EthernetProtocol eth;
 	ArpProtocol arp;
 };
 typedef struct _QNetInterface QNetInterface;
-#define PROTO_ENABLE(x) ((iface->protos & x) != 0)
+#define IS_PROTO_ENABLE(x) ((iface->protos & (1<<x)) != 0)
+#define PROTO_MARK_UP(x) (iface->protos_up |= (1<<x))
+#define PROTO_MARK_DOWN(x) (iface->protos_up &= ~(1<<x))
+#define IS_PROTO_UP(x) ((iface->protos_up & (1<<x)) != 0)
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////// Protocols ///////////////////////////////////////////////////////////////////////
 
@@ -107,14 +113,12 @@ typedef QResult (*qnet_proto_start_protocol_t)(QNetStack * qstk, QNetInterface *
 typedef QResult (*qnet_proto_stop_protocol_t)(QNetStack * qstk, QNetInterface * iface);
 
 typedef struct {
-	char name[10];
+	enum Protocols proto;
 	qnet_proto_start_protocol_t proto_start_func;
 	qnet_proto_stop_protocol_t proto_stop_func;
 } QNetProtocol;
-static QNetProtocol PROTOCOLS[4] = {{}
-
-}
-
+static QNetProtocol PROTOCOLS[];
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /////////////// interface interface (so funny) ////////////////////////////////////////////////////////////
 EXPORT QResult qnet_init_iface(QNetStack * qstk, QNetInterface * iface, QNetRecvFrameFunc recv_frame_func, QNetSendFrameFunc send_frame_func, struct QNetOsInterface * os_iface);
