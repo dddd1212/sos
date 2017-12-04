@@ -3,17 +3,17 @@
 
 typedef struct{
 	char name[11];
-	int8 attr;
-	int8 reserved1;
-	int8 crtTimeTenth;
-	int16 crtTime;
-	int16 crtDate;
-	int16 lstAccDate;
-	int16 fstClusHi;
-	int16 wrtTime;
-	int16 wrtDate;
-	int16 fstClusLo;
-	int32 fileSize;
+	uint8 attr;
+	uint8 reserved1;
+	uint8 crtTimeTenth;
+	uint16 crtTime;
+	uint16 crtDate;
+	uint16 lstAccDate;
+	uint16 fstClusHi;
+	uint16 wrtTime;
+	uint16 wrtDate;
+	uint16 fstClusLo;
+	uint32 fileSize;
 } __attribute__((packed)) DirectoryEntry;
 
 QResult init_FAT32(BootLoaderAllocator *allocator, uint32 BPB_sector, FAT32Desc *fat32_desc){
