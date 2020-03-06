@@ -1,0 +1,20 @@
+###### make.py template ##############
+
+
+
+########## import make_class ###############
+import os
+import sys
+this_file_dir = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
+scripts_dir = os.path.join(this_file_dir,"..","..","build","scripts")
+sys.path.insert(0,scripts_dir)
+import make_class
+############################################
+
+
+def get_make_class():
+    ret = make_class.Make(project_path = this_file_dir)
+    return ret
+
+if __name__ == '__main__':
+    get_make_class().run(sys.argv)

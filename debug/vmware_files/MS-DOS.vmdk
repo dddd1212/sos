@@ -1,0 +1,21 @@
+# Disk DescriptorFile
+version=1
+encoding="UTF-8"
+CID=c9b58254
+parentCID=ffffffff
+isNativeSnapshot="no"
+createType="vmfs"
+
+# Extent description
+RW 204800 VMFS "C:\projects\qube\Qube\_output\x86_64\bin\image\qube.vhd"
+
+# The Disk Data Base 
+#DDB
+
+ddb.adapterType = "lsilogic"
+ddb.geometry.cylinders = "512"
+ddb.geometry.heads = "64"
+ddb.geometry.sectors = "32"
+ddb.longContentID = "e2f65ac84feef46a1815c03cc9b58254"
+ddb.uuid = "60 00 C2 9a 81 87 b4 5a-a0 59 e6 9d da b6 d0 47"
+ddb.virtualHWVersion = "11"
