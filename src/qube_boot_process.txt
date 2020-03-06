@@ -1,0 +1,31 @@
+The Qube kernel boot process:
+
+1. Boot:
+	This part is the assembly opcodes that we first execute.
+	Depend on the architecture, this could be the first opcodes that the processor executes, or maybe not the very first stage.
+	In Intel, for example, this code is executes after the BIOS.
+	Anyway, this is our entry point, and the code in most of the cases this code will be written on pure assembly.
+	The code purpose is to do the initial preperations of the system in order to let compiled c code to execute.
+	The code switch the mode of the processor to the wanted mode of work (for example in Intel - long mode), and 
+	activate the mmu if exists, to make all of our code to execute in the virtual-memory space.
+	At the end - the code calls to the achitecture generic function _start.
+	
+2. _start:
+	_start is architecture independent function that responsible to load all of the kernel pieces of codes (the KQR files) from
+	the 'BOOT.TXT' file.
+	In order to do it, the _start function needs couple of kernel-loader dedicated services:
+	1. hd - The ability to read files by name.
+	2. mem - The ability to allocate virtual pages for use.
+	3. loader - The ability to load elves to the memory
+	4. libc - some basic libc functions.
+	5. debug-interface - in order to send debug info characters.
+	
+	Some of these services are architecture specific (like the mem service) and some of them are generic.
+	Some of them may use more services (For example, the hd service may use fat32 service as well).
+	
+	The _start function will load the desired kernel parts from the data on BOOT.TXT. Part of the wanted modules will be 
+	achitecture dependent and some of them not.
+	
+	Since some of the kernel features are mandatory and some are not, the BOOT.TXT will not look alike cross architectures.
+	
+	
