@@ -1,9 +1,9 @@
 #include "processors.h"
 #include "interrupts.h"
-#include "../MemoryManager/heap.h"
-#include "../Common/intrinsics.h"
-#include "../Common/spin_lock.h"
-#include "../libc/string.h"
+#include "../qkr_memory_manager/heap.h"
+#include "../common/intrinsics.h"
+#include "../common/spin_lock.h"
+#include "../qkr_libc/string.h"
 
 ProcessorControlBlock g_pcbs[MAX_NUM_OF_PROCESSORS];
 BOOL init_processors_data() {

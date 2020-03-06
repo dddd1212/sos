@@ -1,9 +1,9 @@
 #include "ioapic.h"
-#include "../MemoryManager/heap.h"
+#include "../qkr_memory_manager/heap.h"
 #include "../qkr_acpi/acpi.h"
-#include "../screen/screen.h"
-#include "../libc/string.h"
-#include "../MemoryManager/memory_manager.h"
+#include "../qkr_screen/screen.h"
+#include "../qkr_libc/string.h"
+#include "../qkr_memory_manager/memory_manager.h"
 IOAPICControl g_ioapic_control;
 
 
@@ -51,8 +51,9 @@ QResult parse_apic_table(IOAPICControl * ioapic) {
 			uint32 global_system_int = *((uint32*)(&data[idx + 4]));
 			ioapic->isa_map[source] = global_system_int;
 			uint16 flags = *((uint16*)(&data[idx + 8]));
-			if (flags != 0 && flags != 5) { // 0 is the default, 5 is edge-triggerd, active-high - that is the ISA interrupt regular config.
-				screen_printf("ERROR! NOT IMPLEMENTED! flags not 0 or 5!\n", 0, 0, 0, 0);
+			if (flags != 0 && flags != 5 && flags != 13) { // 0 is the default, 5 is edge-triggerd, active-high - that is the ISA interrupt regular config.
+														   // 13 been seen in qemu. TODO: check what is 13
+				screen_printf("ERROR! NOT IMPLEMENTED! flags not 0 or 5. its %d!\n", flags, 0, 0, 0);
 				return QFail;
 			}
 		} else if (type != TT_PROCESSOR_LOCAL_APIC) {

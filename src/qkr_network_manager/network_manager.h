@@ -1,12 +1,12 @@
 #ifndef NETWORK_MANAGER_H
 #define NETWORK_MANAGER_H
 #include "../Common/Qube.h"
-#include "../MemoryManager/memory_manager.h"
-#include "../scheduler/scheduler.h"
+#include "../qkr_memory_manager/memory_manager.h"
+#include "../qkr_scheduler/scheduler.h"
 #include "../Common/spin_lock.h"
-#include "../QbjectManager/Qbject.h"
+#include "../qkr_qbject_manager/Qbject.h"
 #include "../qkr_sync/sync.h"
-#include "../libc/string.h"
+#include "../qkr_libc/string.h"
 #define MAX_QUEUES 5
 typedef void* NetworkInterfaceManagerContext;
 typedef void* NetworkQueueManagerContext;

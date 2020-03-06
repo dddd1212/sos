@@ -1,7 +1,7 @@
 #include "Qbject.h"
-#include "../libc/string.h"
-#include "../MemoryManager/memory_manager.h"
-#include "../Common/spin_lock.h"
+#include "../qkr_libc/string.h"
+#include "../qkr_memory_manager/memory_manager.h"
+#include "../common/spin_lock.h"
 // TODO: Use better synchronization.
 QNode root;
 SpinLock treelock;

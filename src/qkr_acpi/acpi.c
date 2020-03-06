@@ -1,9 +1,9 @@
 #include "acpi.h"
-#include "../screen/screen.h"
-#include "../libc/string.h"
-#include "../MemoryManager/memory_manager.h"
-#include "../MemoryManager/physical_memory.h"
-#include "../MemoryManager/heap.h"
+#include "../qkr_screen/screen.h"
+#include "../qkr_libc/string.h"
+#include "../qkr_memory_manager/memory_manager.h"
+#include "../qkr_memory_manager/physical_memory.h"
+#include "../qkr_memory_manager/heap.h"
 ACPITable * g_tables_head;
 QResult qkr_main(KernelGlobalData * kgd) {
 	init_acpi();
@@ -101,7 +101,7 @@ QResult init_acpi() {
 	ACPITable * tail = head;
 	dump_table(head);
 	rsdt = &head->entry;
-	if (ver == 0 && memcmp(rsdt->Signature, "RSDT", 4) != 0 || ver == 2 && memcmp(rsdt->Signature, "XSDT", 4) != 0) {
+	if ((ver == 0 && memcmp(rsdt->Signature, "RSDT", 4) != 0) || (ver == 2 && memcmp(rsdt->Signature, "XSDT", 4)) != 0) {
 		screen_printf("ERROR: rsdt/xsdt signature error!\n", 0, 0, 0, 0);
 		ret = QFail;
 		goto end;
@@ -168,6 +168,7 @@ ACPITable * alloc_and_copy_table(uint64 phys_mem_table, PhysicalMemory * pmem) {
 }
 
 void dump_table(ACPITable * table) {
+	/*
 	table->entry.CreatorID;
 	table->entry.CreatorRevision;
 	table->entry.Length;
@@ -176,6 +177,7 @@ void dump_table(ACPITable * table) {
 	table->entry.OEMTableID;
 	table->entry.Revision;
 	table->entry.Signature;
+	*/
 	char temp[10], temp2[10];
 	memcpy(temp, table->entry.Signature, sizeof(table->entry.Signature));
 	temp[sizeof(table->entry.Signature)] = '\0';

@@ -1,5 +1,5 @@
 #include "disk_manager.h"
-#include "../fat32/fat32.h"
+#include "../qkr_fat32/fat32.h"
 QHandle def_hd_create_qbject(void* qnode_context, char* path, ACCESS access, uint32 flags);
 QResult def_hd_read(QHandle qbject, uint8* buffer, uint64 position, uint64 num_of_bytes_to_read, uint64* res_num_read);
 QResult def_hd_write(QHandle qbject, uint8* buffer, uint64 position, uint64 num_of_bytes_to_write, uint64* res_num_written);

@@ -1,7 +1,7 @@
 #include "sync.h"
-#include "../MemoryManager/memory_manager.h"
+#include "../qkr_memory_manager/memory_manager.h"
 #include "../Common/spin_lock.h"
-#include "../scheduler/scheduler.h"
+#include "../qkr_scheduler/scheduler.h"
 typedef struct Waiter Waiter;
 struct Waiter {
 	ThreadBlock *thread;

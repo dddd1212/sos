@@ -1,10 +1,10 @@
-#include "../Common/Qube.h"
+#include "../common/Qube.h"
 #include "../qkr_interrupts/interrupts.h"
-#include "../screen/screen.h"
+#include "../qkr_screen/screen.h"
 #include "../qkr_interrupts/ioapic.h"
-#include "../libc/qqueue.h"
+#include "../qkr_libc/qqueue.h"
 #include "keyboard.h"
-#include "../libc/string.h"
+#include "../qkr_libc/string.h"
 QQueue * g_scancodes_queue;
 QQueue * g_ascii_queue;
 typedef struct {

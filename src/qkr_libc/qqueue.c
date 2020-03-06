@@ -1,5 +1,5 @@
 #include "qqueue.h"
-#include "../MemoryManager/heap.h"
+#include "../qkr_memory_manager/heap.h"
 #include "string.h"
 
 

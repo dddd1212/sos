@@ -1,2 +1,0 @@
-﻿  x86_64-elf-gcc.exe -c *.c -Wall -fpic -fvisibility=hidden -g -o qbject_manager.o
-  x86_64-elf-ld.exe -fpic -fvisibility=hidden -shared qbject_manager.o -o ../_output/system/qbject_manager.qkr

@@ -1,0 +1,4 @@
+select vdisk file="C:\projects\qube\sos\stage1\Qube\_output\_disk\disk.vhd"
+attach vdisk
+select partition=1
+assign mount=C:\projects\qube\sos\stage1\Qube\_output\_disk\mount

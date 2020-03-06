@@ -173,6 +173,7 @@ QResult initialize_nic(NetworkInterfaceManagerContext network_interface_manager_
 	}
 
 	*((uint32*)(memoryBAR + 0x00100)) = 0x202; // enable receive packets.
+	
 }
 
 QResult register_nic() {

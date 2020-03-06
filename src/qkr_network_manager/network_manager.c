@@ -1,5 +1,5 @@
 #include "network_manager.h"
-#include "../screen/screen.h"
+#include "../qkr_screen/screen.h"
 BOOL g_interface_registered;
 QResult qkr_main(KernelGlobalData* kgd) {
 	g_interface_registered = FALSE;

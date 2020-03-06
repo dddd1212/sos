@@ -1,6 +1,6 @@
 #include "device_manager.h"
-#include "../screen/screen.h"
-#include "../libc/stdio.h"
+#include "../qkr_screen/screen.h"
+#include "../qkr_libc/stdio.h"
 typedef struct {
 	void* base_address;
 	uint8 start_bus_num;
@@ -136,5 +136,5 @@ QResult enum_devices() {
 	//uint8 end_bus_num = *(uint8*)&mcfg_table->entry.data[8 + 11];
 	create_qnode("Devices/PCIe");
 	pcie_bus_enum(0);
-	
+	return QSuccess;
 }

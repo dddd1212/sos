@@ -1,7 +1,7 @@
 #ifndef SYNC_H
 #define SYNC_H
 #include "../Common/Qube.h"
-#include "../QbjectManager/Qbject.h"
+#include "../qkr_qbject_manager/Qbject.h"
 #include "../qkr_interrupts/interrupts.h"
 #define interlocked_cmpxchg __lockcmpxchg
 #define interlocked_xchg __lockxchg

@@ -1,6 +1,6 @@
-#include "../Common/Qube.h"
+#include "../common/Qube.h"
 #include "screen.h"
-#include "../libc/string.h"
+#include "../qkr_libc/string.h"
 
 Screen g_screen;
 QResult qkr_main(KernelGlobalData * kgd) {
@@ -36,7 +36,7 @@ void _scroll_if_need() {
 
 QResult screen_write_buffer(char * buf, int size, BOOL newline)
 {
-	Screen * screen = &g_screen;
+	//Screen * screen = &g_screen;
 	for (int i = 0; i < size ; i++) {
 		_scroll_if_need();
 		if (*buf == '\r') {

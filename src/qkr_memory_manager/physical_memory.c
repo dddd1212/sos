@@ -1,7 +1,7 @@
 #include "../Common/Qube.h"
 #include "physical_memory.h"
 #include "memory_manager.h"
-#include "../libc/string.h"
+#include "../qkr_libc/string.h"
 // phys_addr must be page aligned.
 // size must be page aligned.
 QResult _physical_alloc(PhysicalMemory * pmem, uint64 phys_addr, uint64 size) {

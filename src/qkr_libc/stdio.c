@@ -2,12 +2,11 @@
 #include "string.h"
 uint32 vgprintf(WriteCharFunc f, void * ctx, int8 * fmt, va_list ap) {
 	uint32 write_count = 0;
-	uint64 param;
 	char num_arr[21]; // max uint64 base10 size + null.
 	int num_arr_idx = 0;
 	int base = 0;
 	int32 padding = 0;
-	uint8 * orig;
+	int8 * orig;
 	while (*fmt != '\x00') { // go over the format
 		if (*fmt == '%') { // special character:
 			orig = fmt;

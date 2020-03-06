@@ -1,7 +1,7 @@
 #include "scheduler.h"
 #include "../qkr_interrupts/interrupts.h"
 #include "../qkr_interrupts/processors.h"
-#include "../MemoryManager/heap.h"
+#include "../qkr_memory_manager/heap.h"
 QResult add_system_task(SystemTaskFunction func, void* arg) {
 	SYSTEM_TASK* task = (SYSTEM_TASK*)kheap_alloc(sizeof(SYSTEM_TASK));
 	task->arg = arg;

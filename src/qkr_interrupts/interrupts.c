@@ -1,17 +1,21 @@
 
 #include "interrupts.h"
-#include "../Common/Qube.h"
-#include "../Common/intrinsics.h"
-#include "../MemoryManager/memory_manager.h"
-#include "../Common/spin_lock.h"
+#include "../common/Qube.h"
+#include "../common/intrinsics.h"
+#include "../qkr_memory_manager/memory_manager.h"
+#include "../common/spin_lock.h"
 #include "lapic.h"
 #include "processors.h"
 #include "../qkr_acpi/acpi.h"
 #include "ioapic.h"
-#include "../libc/string.h"
+#include "../qkr_libc/string.h"
 #ifdef DEBUG
-#include "../screen/screen.h"
+#include "../qkr_screen/screen.h"
 #endif
+
+void handle_interrupts(ProcessorContext * regs);
+#include "isrs.S.h"
+
 
 
 IsScheduleNeededFunction g_is_schedule_call_needed = NULL;
@@ -157,6 +161,7 @@ start_handle_for_schedule_call: // We can replace it with {do while} but I think
 	else {
 		screen_set_color(regs->interrupt_vector % 8, (regs->interrupt_vector % 8) + 1);
 		screen_printf("Interrupt has no interrupt vector! (%d)", regs->interrupt_vector, 0, 0, 0);
+		while(1);
 	}
 #endif
 

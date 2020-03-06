@@ -1,7 +1,7 @@
 #ifndef __acpi_h__
 #define __acpi_h__
-#include "../Common/Qube.h"
-#include "../MemoryManager/physical_memory.h"
+#include "../common/Qube.h"
+#include "../qkr_memory_manager/physical_memory.h"
 // Note that GCC support to use these pragmas. We use it and not __attribute__((pack)) because of visual studio.
 #pragma pack(push)
 #pragma pack(1)

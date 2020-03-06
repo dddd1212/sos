@@ -23,8 +23,10 @@ void _start() {
 	hdDesc hd_desc;
 	// CR: Gilad - check the return values
 	init_allocator(&allocator);
-	init_hd(&allocator, &hd_desc); 
-    
+	if (QFail == init_hd(&allocator, &hd_desc)) {
+		STAGE0_suicide(NULL, 0x1000);
+	}
+
 	char boot_txt_data[BOOT_TXT_FILE_MAX_SIZE];
 	struct STAGE0BootModule boot_modules[MAX_BOOT_MODULES];
 	//char * boot_txt_end;
@@ -43,7 +45,7 @@ void _start() {
 	alloc_bytes = 0;
 	// CR: ret set to NULL...
 	if (kgd == NULL) {
-		STAGE0_suicide(0x5000);
+		STAGE0_suicide(NULL, 0x5000);
 	}
 	// Initialize the kgd:
 	memset((char *)kgd, 0, ALIGN_UP(sizeof(KernelGlobalData)) + ALIGN_UP(sizeof(ModulesList)));
@@ -59,6 +61,7 @@ void _start() {
 	INIT_SCREEN(&scr, kgd->first_MB);
 	kgd->boot_info->scr = &scr;
 	PUTS(&scr, "Screen init complete successfuly!");
+
 	//acpi_test(&scr, kgd);
 	
 
@@ -68,13 +71,17 @@ void _start() {
 	// First, calculate how many bytes we need to allocate for the kgd (KernelGlobalData), for the symbol table, and for the boot modules:
 	//DBG_PRINTF("Calculate how many bytes we need to allocate the boot modules.."); ENTER;
 	boot_txt_file_size = get_file_size(&hd_desc, boot_txt_file_name);
+	if (boot_txt_file_size == 0xffffffff) {
+		DBG_PRINTF("Cannot find boot file!"); ENTER;
+		STAGE0_suicide(&scr, 0x1080);
+	}
 	if (boot_txt_file_size >= BOOT_TXT_FILE_MAX_SIZE) {
-		//DBG_PRINTF2("BOOT_TXT_FILE too big! (%d > %d)", boot_txt_file_size, BOOT_TXT_FILE_MAX_SIZE); ENTER;
-		STAGE0_suicide(0x1000);
+		DBG_PRINTF2("BOOT_TXT_FILE too big! (%d > %d)", boot_txt_file_size, BOOT_TXT_FILE_MAX_SIZE); ENTER;
+		STAGE0_suicide(&scr, 0x1100);
 	}
  	if (boot_txt_file_size == 0) {
 		//DBG_PRINTF2("BOOT_TXT_FILE size is zero!", boot_txt_file_size, BOOT_TXT_FILE_MAX_SIZE); ENTER;
-		STAGE0_suicide(0x2000);
+		STAGE0_suicide(&scr, 0x2000);
 	}
 	// TODO: check return value
 	read_file(&hd_desc, boot_txt_file_name, boot_txt_data);
@@ -84,7 +91,7 @@ void _start() {
 	line = 0;
 	while (boot_txt_data[i] != '\x00') {
 		if (line >= MAX_BOOT_MODULES) {
-			STAGE0_suicide(0x3000);
+			STAGE0_suicide(&scr, 0x3000);
 		}
 		boot_modules[line].file_name = &boot_txt_data[i]; // File
 		
@@ -110,7 +117,7 @@ void _start() {
 	for (line = 0; line < num_of_lines; line++) {
 		temp = get_file_size(&hd_desc, boot_modules[line].file_name);
 		boot_modules[line].file_pages = NUM_OF_PAGES(temp);
-		if (temp == -1) STAGE0_suicide(0x4000 + line); // error reading the file.
+		if (temp == -1) STAGE0_suicide(&scr, 0x4000 + line); // error reading the file.
 		alloc_bytes += boot_modules[line].file_pages * PAGE_SIZE;
 		DBG_PRINTF3("module %d size: 0x%x. Allocate %d pages.", line, temp, boot_modules[line].file_pages); ENTER;
 	}
@@ -118,7 +125,7 @@ void _start() {
 	modules_addr = mem_alloc(&allocator, alloc_bytes, TRUE);
 	if (modules_addr == NULL) {
 		//PUTS(&scr, "Can't allocate modules_addr!");
-		STAGE0_suicide(1234);
+		STAGE0_suicide(&scr, 1234);
 	}
 	DBG_PRINTF2("module raw data address: 0x%x total size: 0x%x", modules_addr, alloc_bytes); ENTER;
 
@@ -148,16 +155,15 @@ void _start() {
 
 	// load the modules:
 	int ret2 = load_modules_and_run_kernel(kgd, boot_modules, &allocator, num_of_lines);
-	if (ret2 != 0) STAGE0_suicide(ret2);
-
-
+	if (ret2 != 0) STAGE0_suicide(&scr, ret2);
 
 	// Should not reach here!
-	STAGE0_suicide(0xffffffff);
+	STAGE0_suicide(&scr, 0xffffffff);
 	
 }
 
-void STAGE0_suicide(int error) {
+void STAGE0_suicide(ScreenHandle * screen_ptr, int error) {
+	DBG_PRINTF2("Error %d (0x%x)", error, error);
 	while (1) {};
 	//int * s = (int*)0xffffffffffffffff;
 	//*s = 0;
